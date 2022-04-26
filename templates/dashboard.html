@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>iVINNO</title>
+
+    <!-- Custom fonts for this template -->
+    <link href="static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- google font -->
+    <link rel="stylesheet"
+        href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet"
+        href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+
+    <!-- Custom styles for this template -->
+    <link href="static/css/sb-admin-2.css" rel="stylesheet">
+
+
+    <!-- Custom styles for this page -->
+    <link href="static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="static/css/switch.css" rel="stylesheet">
+    <link href="static/css/dashboard.css" rel="stylesheet">
+    <link href="static/css/common.css" rel="stylesheet">
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL'1,
+                'wght'700,
+                'GRAD'200,
+                'opsz'40
+        }
+
+        .material-symbols-outlined.custom {
+            color: gray
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+        footer {
+            position: absolute;
+            width: 100%;
+            height: 60px;
+            padding: 0 !important;
+            bottom: 0;
+        }
+    </style>
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper"  style="height: 100%">
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <div class="h1 mt-4 text-gray-800 navtitle">
+                        <h1 class="header">iVINNO</h1>
+                    </div>
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid custom">
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <!-- Table Title -->
+                        <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h3 class=" h3 m-0 text-gray-600">Applications</h6>
+                                <a href="#" onclick="add_modal_event(); return false;" class="btn btn-circle"
+                                    data-toggle="modal" data-target="#addModal">
+                                    <!-- <i class="fa fa-plus-circle text-gray-500 add-app"></i> -->
+                                    <span class="material-symbols-outlined custom">add</span>
+                                </a>
+                        </div>
+                        <!-- Table body -->
+                        <div class="card-body shadow custom">
+                            <!-- Table -->
+                            <div class="table-responsive">
+                                {% block data %}
+                                {% set ready=data['ready'] %}
+                                {% set failed=data['failed'] %}
+                                <table class="table" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th style="display:none;">Framework</th>
+                                            <th>Category</th>
+                                            <th>Application</th>
+                                            <th>Status</th>
+                                            <th>Launch</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for app in ready %}
+                                        <tr>
+                                            <!-- Application Name -->
+                                            <td>
+                                                <div>
+                                                    {% if app['status']=='run' %}
+                                                    <a id="{{ app['uuid'] }}_name"
+                                                        href="http://172.16.92.130:4999/app/{{ app['uuid'] }}/stream"
+                                                        onclick={{ "strean_start( app['uuid'] );" }}>{{ app['app_name']
+                                                        }}</a>
+                                                    {% else %}
+                                                    <a id="{{ app['uuid'] }}_name">{{ app['app_name'] }}</a>
+                                                    {% endif %}
+                                                    <br>
+                                                    <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a>
+                                                </div>
+                                            </td>
+                                            <!-- Framework -->
+                                            <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">{{ app['framework'] }}</td>
+                                            <td id="{{ app['uuid'] }}_category">{{ app['category'] }}</td>
+                                            <!-- Application -->
+                                            <td id="{{ app['uuid'] }}_application">{{ app['application'] }}</td>
+                                            <!-- Status -->
+                                            {% if app['status']=='run' %}
+                                                <td>
+                                                    <span id="{{ app['uuid'] }}_status_btn" class="btn btn-green custom">
+                                                        <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span>
+                                                    </span>
+
+                                                </td>
+                                            {% elif app['status']=='err' %}
+                                                <td>
+                                                    <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom">
+                                                        <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span>
+                                                    </span>
+
+                                                </td>
+                                                {% else %}
+                                                <td>
+                                                    <span id="{{ app['uuid'] }}_status_btn" class="btn btn-gray custom">
+                                                        <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span>
+                                                    </span>
+                                                </td>
+                                            {% endif %}
+                                            <!-- Rounded switch -->
+                                            <td>
+                                                
+                                                <label class="switch">
+
+                                                    <input type="checkbox" name="checkbox" value="{{ app['uuid'] }}"
+                                                        {{ "checked" if app['status']=='run' }}>
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </td>
+                                            <!-- Dropdown - Messages -->
+                                            <td>
+                                                <div class="dropdown no-arrow">
+                                                    <a class="dropdown-toggle" href="#" role="button"
+                                                        id="{{ app['uuid']}}_more" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                        <!-- <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-500"></i> -->
+                                                        <span class="material-symbols-outlined custom">more_horiz</span>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                                        aria-labelledby="{{ app['uuid']}}_more">
+                                                        <!-- <div class="dropdown-header">Option</div> -->
+                                                        <a id="{{ app['uuid'] }}" value="{{ app['uuid'] }}"
+                                                            class="dropdown-item" href="#" data-toggle="modal"
+                                                            data-target="#addModal" onclick="editModal(this);">edit</a>
+                                                        <a id="{{ app['uuid'] }}" class="dropdown-item" href="#"
+                                                            onclick="del_event(this);">delete</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% for app in failed %}
+                                        <tr>
+                                            <!-- Application Name -->
+                                            <td>
+                                                <div>
+                                                    <a id="{{ app['uuid'] }}_name">{{ app['app_name'] }}</a>
+                                                    <br>
+                                                    <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a>
+                                                </div>
+                                            </td>
+                                            <!-- framework -->
+                                            <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">{{ app['framework'] }}</td>
+                                            <!-- Category -->
+                                            <td id="{{ app['uuid'] }}_category">{{ app['category'] }}</td>
+                                            <!-- Application -->
+                                            <td id="{{ app['uuid'] }}_application">{{ app['application'] }}</td>
+                                            <!-- Status -->
+                                            <td>
+                                                <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom"  data-toggle="modal" data-target="#errModal" onclick="err_modal_event(this);">
+                                                    <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span>
+                                                </span>
+                                            </td>
+                                            <!-- Rounded switch -->
+                                            <td>    
+                                                <label class="switch">
+                                                    <input type="checkbox" name="checkbox" value="{{ app['uuid'] }}"
+                                                        {{ "checked" if app['status']=='run' }} disabled>
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </td>
+                                            <!-- Dropdown - Messages -->
+                                            <td>
+                                                <div class="dropdown no-arrow">
+                                                    <a class="dropdown-toggle" href="#" role="button"
+                                                        id="dropdownMenuLink" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                        <!-- <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-500"></i> -->
+                                                        <span class="material-symbols-outlined custom">more_horiz</span>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                                        aria-labelledby="dropdownMenuLink">
+                                                        <!-- <div class="dropdown-header">Option</div> -->
+                                                        <a id="{{ app['uuid'] }}" value="{{ app['uuid'] }}"
+                                                            class="dropdown-item" href="#" data-toggle="modal"
+                                                            data-target="#addModal" onclick="editModal(this);"
+                                                            disabled>edit</a>
+                                                        <a id="{{ app['uuid'] }}" class="dropdown-item" href="#"
+                                                            onclick="del_event(this);" disabled>delete</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- End of Main Content -->
+        </div>
+        <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Footer -->
+    <footer class="bg-white custom">
+        <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+                <span>Copyright &copy; Innodisk Corporation</span>
+            </div>
+        </div>
+    </footer>
+    <!-- End of Footer -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Add Dialog-->
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog full" role="document">
+
+            <div class="modal-content full">
+
+                <!-- Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add an application</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+
+                    <!-- Name -->
+                    <div class="row">
+                        <div class="col">
+
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Name</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <input id="app_name" type="text" class="bg-light border-0 "
+                                        placeholder="--- please enter ---">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Category and Application -->
+                    <div class="row">
+
+                        <!-- Category -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Category</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="categoryMenu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            --- please select ---
+                                        </button>
+                                        <div id="categoryList" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="categoryMenu">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Application -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Application</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="categoryAppMenu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            --- please select ---
+                                        </button>
+                                        <div id="categoryAppList" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="categoryAppMenu">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input type and source -->
+                    <div class="row">
+
+                        <!-- Type -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Input Type</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="inputTypeMenu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            --- please select ---
+                                        </button>
+                                        <div id="inputTypeList" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="inputType">
+                                            <a class="dropdown-item" href="#" id="inputType"
+                                                onclick="selected_item(this);  return false;">V4L2</a>
+                                            <a class="dropdown-item" href="#" id="inputType"
+                                                onclick="selected_item(this);  return false;">Video</a>
+                                            <a class="dropdown-item" href="#" id="inputType"
+                                                onclick="selected_item(this);  return false;">RTSP</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Source -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Input Source</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <input id="source" type="text" class="bg-light border-0"
+                                        placeholder="-- please enter ---" aria-label="source">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Device and Thres -->
+                    <div class="row">
+
+                        <!-- Device -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Device</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="deviceMenu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            --- please select ---
+                                        </button>
+                                        <div id="deviceList" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="deviceMenu">
+                                            <!-- <a class="dropdown-item" href="#" onclick="selected_item();">GTX 1050 Ti</a>
+                                                <a class="dropdown-item" href="#" onclick="selected_item();">GTX 2070 Super</a> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thres -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Thres</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <input id="thres" type="text" class="bg-light border-0"
+                                        placeholder="-- please enter ---" aria-label="thres">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"
+                        onclick="modal_default_content(); return false;">Cancel</button>
+                    <a id="modal_add_submit" class="btn btn-primary" href="#" data-dismiss="modal"
+                        onclick="add_submit(); return false;" style="display:none;">Add</a>
+                    <a id="modal_edit_submit" class="btn btn-primary" href="#" data-dismiss="modal"
+                        onclick="edit_submit(this); return false;" style="display:none;">Edit</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Err Dialog-->
+    <div class="modal fade" id="errModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog full" role="document">
+
+            <div class="modal-content full">
+
+                <!-- Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Error messages</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+                    <div id="errMsg"></div>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Socket.IO 的 CDN 連結 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"
+        integrity="sha512-WL6WGKMPBiM9PnHRYIn5YEtq0Z8XP4fkVb4qy7PP4vhmYQErJ/dySyXuFIMDf1eEYCXCrQrMJfkNwKc9gsjTjA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Bootstrap core JavaScript-->
+    <script type="text/javascript" src="static/vendor/jquery/jquery.js"></script>
+    <script type="text/javascript" src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script type="text/javascript" src="static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script type="text/javascript" src="static/js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script type="text/javascript" src="static/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Custom JS -->
+    <script type="text/javascript" src="static/js/dashboard.js"></script>
+</body>
