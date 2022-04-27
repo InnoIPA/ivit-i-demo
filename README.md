@@ -13,15 +13,32 @@ $ ./demo.sh
 
 ```
 
-# Feature
-* applications
+# Features
+1. Entrance
+   1. Capture the application list when loading the page
+   2. Add an application
+   3. Edit the application
+   4. Delete the application
+   5. Enter the stream page
+2. Stream
+   1. Capture GPU temperature every 5 seconds
+   2. Receive image and result from backend via socketio
+3. Add / Edit
+   1. Enter `Application Name`
+   2. Select `Category` and `Application` ( only in Add mode )
+   3. Select `Input Type` and Enter `Input Source`
+   4. Select `Device` ( only in Add mode )
+   5. Choose the threshold
+
+# Figures
+* Entrance
     ![img](./assests/dashboard.png)
 
-* stream
+* Stream
     ![img](./assests/stream.png)
 
-* add 
+* Add 
     ![img](./assests/add.png)
 
-* edit
+* Edit
     ![img](./assests/edit.png)
