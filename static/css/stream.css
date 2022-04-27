@@ -1,0 +1,30 @@
+.card.custom {
+    height: 400px;
+    font-size: 14px;
+}
+
+.card-header.custom,
+.card-body.custom {
+    padding: 0.5rem 0.5rem;
+}
+
+.card-body.custom {
+    height: 100%;
+    font-size: 18px;
+}
+
+.card-body.scroll {
+    /* max-height: 300px; */
+    margin: 10px;
+    overflow: auto;
+}
+
+.card-body.image {
+    text-align: center;
+}
+
+.image {
+    max-height:100%;
+    padding: 5px;
+}
+
