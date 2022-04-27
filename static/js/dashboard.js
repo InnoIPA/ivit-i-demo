@@ -1,6 +1,10 @@
 // 先 寫死路徑，方便產出 DEMO 版本
-var SCRIPT_ROOT = "http://172.16.92.130:5000/trt";
+const DOMAIN = '172.16.92.130';
+const PORT = '5000';
+const FRAMEWORK = 'trt';
+const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}/${FRAMEWORK}`;
 let edit_mode = false;
+
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 當按下 Switch 的時候開啟串流
 function stream_start(uuid){
@@ -69,7 +73,7 @@ $(document).ready(function () {
                 if(stats==='run'){
                     document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-green custom")
                     // status_ele.css("color", "Green");
-                    document.getElementById(`${uuid}_name`).href = `http://172.16.92.130:4999/app/${uuid}/stream`;
+                    document.getElementById(`${uuid}_name`).href = `http://${document.domain}/app/${uuid}/stream`;
                     document.getElementById(`${uuid}_name`).setAttribute("onclick", `stream_start("${uuid}");`);
                     //   document.getElementById(`${uuid}_name`).onclick = stream_start(uuid);
 

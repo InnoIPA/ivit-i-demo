@@ -1,19 +1,27 @@
 // 取得本地端的網址
 const TRG_URL = document.URL;
-
+// ---------------------------------------------------------------------------------------------------------------------------------------
+const DOMAIN = '172.16.92.130';
+const PORT = '5000';
+const FRAMEWORK = 'trt';
+const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}/${FRAMEWORK}`;
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 設定 對應 Socket 路徑
-const PATH = location.pathname;
-const PATH_ELE = PATH.split("/");
 let uuid = "";
 let port = "5001";
 let gpu = 0;
+
+// Get uuid
+const PATH = location.pathname;
+const PATH_ELE = PATH.split("/");
 for(let i=0; i<PATH_ELE.length; i++){
     if(PATH_ELE[i]=="app"){ uuid = PATH_ELE[i+1]; };
 };
+// Set up the socketio address
 const URL = `http://${document.domain}:${port}/app/${uuid}/stream`;
 const stream_socket = io.connect(URL);
 
+// ---------------------------------------------------------------------------------------------------------------------------------------
 // 換算時間
 function cal_time(total_sec){
     // t -> sec
@@ -38,7 +46,7 @@ function cal_time(total_sec){
     
     return `${parseInt(trg_d)} d ${parseInt(trg_h)} h ${parseInt(trg_m)} m ${parseInt(trg_c)} s`
 }
-// 
+// ---------------------------------------------------------------------------------------------------------------------------------------
 function get_src_type(src){
     let ret;
     if (src.includes('video')){ 
@@ -55,7 +63,6 @@ function get_src_type(src){
 
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // setup the default infromation
-const SCRIPT_ROOT = "http://172.16.92.130:5000/trt";
 $(document).ready(function(){
     // Get the default
     $.ajax({  
