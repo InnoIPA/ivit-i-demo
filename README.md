@@ -3,6 +3,7 @@ a web demo for iVINNO web api
 
 # Run
 ```shell
+$ unzip static.zip
 $ ./demo.sh 
 
 [2022-04-26 15:07:44 +0800] [7300] [INFO] Starting gunicorn 20.1.0
