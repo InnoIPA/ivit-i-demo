@@ -1,6 +1,11 @@
 # ivinno-web-demo
 a web demo for iVINNO web api
 
+# Requirements
+```shell
+pip3 install -r requirements.txt
+```
+
 # Run
 ```shell
 $ unzip static/vendor.zip
