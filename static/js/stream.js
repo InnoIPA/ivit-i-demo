@@ -36,6 +36,8 @@ function cal_time(total_sec){
             if (temp_h>=24){
                 trg_h = temp_h%24;
                 trg_d = temp_h/24;
+            } else{
+                trg_h = temp_h;
             }
         } else{
             trg_m = temp_m;
