@@ -117,14 +117,7 @@
                                             <!-- Application Name -->
                                             <td>
                                                 <div>
-                                                    {% if app['status']=='run' %}
-                                                    <a id="{{ app['uuid'] }}_name"
-                                                        href="http://172.16.92.130:4999/app/{{ app['uuid'] }}/stream"
-                                                        onclick={{ "strean_start( app['uuid'] );" }}>{{ app['app_name']
-                                                        }}</a>
-                                                    {% else %}
                                                     <a id="{{ app['uuid'] }}_name">{{ app['app_name'] }}</a>
-                                                    {% endif %}
                                                     <br>
                                                     <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a>
                                                 </div>
@@ -161,8 +154,8 @@
                                                 
                                                 <label class="switch">
 
-                                                    <input type="checkbox" name="checkbox" value="{{ app['uuid'] }}"
-                                                        {{ "checked" if app['status']=='run' }}>
+                                                    <input id="{{ app['uuid'] }}_switch" type="checkbox" name="checkbox" value="{{ app['uuid'] }}">
+                                                        <!-- {{ "checked" if app['status']=='run' }}> -->
                                                     <span class="slider round"></span>
                                                 </label>
                                             </td>
