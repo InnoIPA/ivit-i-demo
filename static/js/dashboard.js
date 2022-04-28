@@ -73,7 +73,7 @@ $(document).ready(function () {
                 if(stats==='run'){
                     document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-green custom")
                     // status_ele.css("color", "Green");
-                    document.getElementById(`${uuid}_name`).href = `http://${document.domain}/app/${uuid}/stream`;
+                    document.getElementById(`${uuid}_name`).href = `http://${document.domain}:4999/app/${uuid}/stream`;
                     document.getElementById(`${uuid}_name`).setAttribute("onclick", `stream_start("${uuid}");`);
                     //   document.getElementById(`${uuid}_name`).onclick = stream_start(uuid);
 
