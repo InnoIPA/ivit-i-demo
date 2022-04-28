@@ -46,19 +46,70 @@ function stop_app(uuid){
         },
     });
 }
+
+function change_status_behavior(uuid, stats, firstTime=false){
+    // run app or stop app
+    const status_ele = $(`#${uuid}_status`);
+
+    if(stats==='run'){
+        document.getElementById( `${uuid}_status_btn`).innerText = 'run';
+        document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-green custom")
+        // status_ele.css("color", "Green");
+        document.getElementById(`${uuid}_name`).href = `http://${DOMAIN}:4999/app/${uuid}/stream`;
+        document.getElementById(`${uuid}_name`).setAttribute("onclick", `stream_start("${uuid}");`);
+        //   document.getElementById(`${uuid}_name`).onclick = stream_start(uuid);
+    }else{
+        // status_ele.css("color", "Gray");
+        document.getElementById( `${uuid}_status_btn`).innerText = 'stop';
+        document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-gray custom")
+        document.getElementById(`${uuid}_name`).removeAttribute("href");
+        if(firstTime===false){
+            stop_app(uuid);
+        };
+    };
+}
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 當連線的時候 判斷 switch 的狀態，並做對應的動作
 $(document).ready(function () {
 
-    var stats = false
+    let ele = document.querySelectorAll('input[type=checkbox]');
+    for(let i=0; i<ele.length; i++){
+        // let stats = ( ele[i].checked ? 'run' : 'stop' );
+        const uuid = ele[i].value;
+        $.ajax({
+            url: SCRIPT_ROOT + `/app/${uuid}`,
+            type: "GET",
+            dataType: "json",
+            success: function (data, textStatus, xhr) {
+                // 如果 ready == false 的話就沒有 status
+                let stats = 'err';
+                if ('status' in data){
+                    stats = data['status'];
+                    if ( stats==='run'){
+                        ele[i].checked=true;
+                    } else{
+                        ele[i].checked=false;
+                    };
+                    change_status_behavior(uuid, stats, true);
+                };  
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log("Error in categoryMap");
+            },
+        });
+    }
+    
     $('.switch :checkbox').change(function(){
-        stats = ( this.checked ? 'run' : 'stop' )
+        
+        let stats = ( this.checked ? 'run' : 'stop' )
         const uuid = this.value
         const af = document.getElementById(`${uuid}_framework`).textContent;
-        const status_ele = $(`#${uuid}_status`);
+        // Loading
+        document.getElementById( `${uuid}_status_btn`).innerText = 'loading';
+        document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-gray custom");
+        document.getElementById(`${uuid}_name`).removeAttribute("href");
+        
 
-        status_ele.text("loading");
-        // status_ele.css("color", "Gray");
         alert(`${stats} application (${uuid}), please wait a seconds. `);
         // run app or stop app
         $.ajax({  
@@ -67,23 +118,7 @@ $(document).ready(function () {
             // url: `http://0.0.0.0:4999/${stats}`,
             dataType: "json",
             success: function (data, textStatus, xhr) {
-
-                status_ele.text(`${stats}`);
-
-                if(stats==='run'){
-                    document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-green custom")
-                    // status_ele.css("color", "Green");
-                    document.getElementById(`${uuid}_name`).href = `http://${document.domain}:4999/app/${uuid}/stream`;
-                    document.getElementById(`${uuid}_name`).setAttribute("onclick", `stream_start("${uuid}");`);
-                    //   document.getElementById(`${uuid}_name`).onclick = stream_start(uuid);
-
-                }else{
-                    // status_ele.css("color", "Gray");
-                    document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-gray custom")
-                    document.getElementById(`${uuid}_name`).removeAttribute("href");
-
-                    stop_app(uuid);
-                };
+                change_status_behavior(uuid, stats);
             },
             error: function (xhr, textStatus, errorThrown) {
                 // status_ele.css("color", "Gray");
@@ -92,8 +127,7 @@ $(document).ready(function () {
                 stop_app(uuid);
             },
         });
-        
-    })
+    });
 });
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // clear modal
