@@ -75,6 +75,7 @@ $(document).ready(function(){
             // const data = JSON.parse(data);
             
             document.getElementById("title").textContent = data['app_name'];
+            // document.getElementById("app_name").textContent = data['app_name'];
             document.getElementById("category").textContent = data['category'];
             document.getElementById("application").textContent = data['application'];
             document.getElementById("device").textContent = data['device'];
@@ -175,5 +176,4 @@ stream_socket.on('result', function(msg){
     if(info.length>10){ info.shift(); }
     result_element.innerHTML = info;
     result_element.scrollTop = result_element.scrollHeight;
- 
 });

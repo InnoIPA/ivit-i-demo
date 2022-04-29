@@ -25,6 +25,7 @@
 
 .image {
     max-height:100%;
+    max-width:100%;
     padding: 5px;
 }
 

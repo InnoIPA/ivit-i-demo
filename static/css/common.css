@@ -56,3 +56,6 @@ footer.custom {
     font-weight:bolder;
 }
 
+.dropdown-item.custom {
+    font-size: 13px;
+}

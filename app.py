@@ -4,6 +4,7 @@ import sys, requests, os, time, json
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_socketio import SocketIO
 import eventlet
+from werkzeug.utils import secure_filename
 eventlet.monkey_patch()  
 
 from logging.config import dictConfig
@@ -110,15 +111,51 @@ def index():
 def chart():
     return render_template('charts.html')
 
+def check_json(s):
+    import json
+    try:
+        json.JSONDecoder(s)
+        return True
+    except json.JSONDecodeError:
+        return False
+
 @app.route('/add', methods=["POST"])
 def test():
-    # data = request.form.to_dict()
-    data = request.get_json()
-    print(data)
-    if 'framework' not in data.keys():
-        data['framework']= app.config['AF']
-    return "success"
+    print('\n\n', bool(request.form))
+    if bool(request.form):
+        print('Is FORM format')
+        data = dict(request.form)
+        print(data)
+        if bool(request.files):
+            print('Have source file ...')
+            
+            file = request.files['source']
+            from werkzeug.utils import secure_filename
+            file_name = secure_filename(file.filename)
 
+            # Info
+                # file.name           # Gives name
+                # file.content_type   # Gives Content type text/html etc
+                # file.size           # Gives file's size in byte
+                # file.read()         # Reads file ( byte )
+            temp_root = './temp'
+            if not os.path.exists(temp_root):
+                os.makedirs(temp_root)
+            file_path = os.path.join(temp_root, file_name)
+            file.save(file_path)
+            data['source'] = file_path
+        print('Final way')
+        print(data)
+
+    else:
+        print('Is JSON format')
+        print(request.get_json())
+    # data = request.get_json()
+    # print(data)
+    # if 'framework' not in data.keys():
+    #     data['framework']= app.config['AF']
+    return "success"
+    
 @app.route('/remove', methods=["POST"])
 def remove():
     # data = request.form.to_dict()

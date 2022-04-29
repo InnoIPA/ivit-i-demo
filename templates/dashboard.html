@@ -380,8 +380,13 @@
                                     <h6 class="m-0 font-weight-bold">Input Source</h6>
                                 </div>
                                 <div class="card-body custom">
-                                    <input id="source" type="text" class="bg-light border-0"
-                                        placeholder="-- please enter ---" aria-label="source">
+                                    <div id="source_text">
+                                        <input id="source" type="text" class="bg-light border-0" placeholder="-- please enter ---" aria-label="source">
+                                    </div>
+                                    <div id="source_file" class="custom-file" style="height:100%">
+                                        <input type="file" style="height:100%" class="custom-file-input" data-target="file-uploader" id="file-uploader">
+                                        <label id="custom-file-label" class="custom-file-label" style="height:100%">Choose file</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -394,7 +399,7 @@
                         <div class="col-lg-6">
                             <div class="card mb-4">
                                 <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Device</h6>
+                                    <h6 class="m-0 font-weight-bold">Accelerator</h6>
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
@@ -416,7 +421,7 @@
                         <div class="col-lg-6">
                             <div class="card mb-4">
                                 <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Thres</h6>
+                                    <h6 class="m-0 font-weight-bold">Threshold</h6>
                                 </div>
                                 <div class="card-body custom">
                                     <input id="thres" type="text" class="bg-light border-0"
@@ -433,9 +438,13 @@
                     <button class="btn btn-secondary" type="button" data-dismiss="modal"
                         onclick="modal_default_content(); return false;">Cancel</button>
                     <a id="modal_add_submit" class="btn btn-primary" href="#" data-dismiss="modal"
-                        onclick="add_submit(); return false;" style="display:none;">Add</a>
+                        onclick="add_submit_form(); return false;" style="display:none;">Add</a>
+                    <!-- <a id="modal_add_submit" class="btn btn-primary" href="#" data-dismiss="modal"
+                        onclick="add_submit(); return false;" style="display:none;">Add</a> -->
+                    <!-- <a id="modal_edit_submit" class="btn btn-primary" href="#" data-dismiss="modal"
+                        onclick="edit_submit(this); return false;" style="display:none;">Edit</a> -->
                     <a id="modal_edit_submit" class="btn btn-primary" href="#" data-dismiss="modal"
-                        onclick="edit_submit(this); return false;" style="display:none;">Edit</a>
+                        onclick="edit_submit_form(this); return false;" style="display:none;">Edit</a>
                 </div>
             </div>
         </div>
@@ -490,4 +499,6 @@
 
     <!-- Custom JS -->
     <script type="text/javascript" src="static/js/dashboard.js"></script>
+    <script type="text/javascript" src="static/js/upload_file.js"></script>
+    
 </body>

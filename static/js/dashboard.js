@@ -143,7 +143,12 @@ function modal_default_content(){
     // Set default value
     document.getElementById("app_name").value = "";
     document.getElementById("thres").value = "";
+
+    document.getElementById("source_text").style.display = "block";
+    document.getElementById("source_file").style.display = "none";
+    document.getElementById("custom-file-label").textContent = "Choose file";
     document.getElementById("source").value = "";
+
     document.getElementById("categoryMenu").textContent = "--- please select ---";
     document.getElementById("categoryAppMenu").textContent = "--- please select ---";
     document.getElementById("inputTypeMenu").textContent = "--- please select ---";
@@ -161,7 +166,7 @@ function update_category(){
             let el = document.getElementById("categoryList");
             map = data;
             for (const key of Object.keys(data)) {
-                el.innerHTML += `<a class="dropdown-item" href="#" onclick="selected_item(this); return false;" id="category" name="${key}">${key}</a>`;
+                el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="selected_item(this); return false;" id="category" name="${key}">${key}</a>`;
             };
         },
         error: function (xhr, textStatus, errorThrown) {
@@ -177,6 +182,15 @@ function selected_item(obj) {
     // 如果是類別的話要更新 APP 清單
     if (obj.id === 'category'){    
         update_category_app(obj.id, obj.innerHTML);
+    };
+    if (obj.id === 'inputType'){
+        if (obj.innerText==='V4L2' || obj.innerText==='RTSP'){
+            document.getElementById("source_text").style.display = "block";
+            document.getElementById("source_file").style.display = "none";
+        } else if (obj.innerText==='Video' || obj.innerText==='Image'){
+            document.getElementById("source_text").style.display = "none";
+            document.getElementById("source_file").style.display = "block";
+        }
     };
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
@@ -194,7 +208,7 @@ function update_category_app(eleName, trgKey){
     appMenu.textContent = "--- please select ---";
     // Update content
     for (const key of Object.keys(map[trgKey])) {
-        appList.innerHTML += `<a class="dropdown-item" href="#" onclick="selected_item(this); return false;" id="${appName}" name="${key}">${key}</a>`;
+        appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="selected_item(this); return false;" id="${appName}" name="${key}">${key}</a>`;
     };    
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
@@ -202,10 +216,10 @@ function update_category_app(eleName, trgKey){
 function update_input_type(){
 
     var el = document.getElementById("inputTypeList");
-    el.innerHTML += `<a class="dropdown-item" href="#" onclick="selected_item(this);" id="inputType" name="V4L2" >V4L2</a>`;  
-    el.innerHTML += `<a class="dropdown-item" href="#" onclick="selected_item(this);" id="inputType" name="video"  >Video</a>`;
-    el.innerHTML += `<a class="dropdown-item" href="#" onclick="selected_item(this);" id="inputType" name="image" disabled>Image</a>`;
-    el.innerHTML += `<a class="dropdown-item" href="#" onclick="selected_item(this);" id="inputType" name="rtsp" disabled>RTSP</a>`;
+    el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="selected_item(this);" id="inputType" name="V4L2" >V4L2</a>`;  
+    el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="selected_item(this);" id="inputType" name="video">Video</a>`;
+    el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="selected_item(this);" id="inputType" name="image">Image</a>`;
+    el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="selected_item(this);" id="inputType" name="rtsp">RTSP</a>`;
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // Old Ver - 更新 modal 的 Category 選項
@@ -263,7 +277,7 @@ function update_gpu(){
             if (Array.isArray(data)) {
                 var el = document.getElementById("deviceList");
                 data.forEach((v, i) => {
-                    el.innerHTML += `<a class="dropdown-item" href="#" onclick="selected_item(this);" id="device" value="gpu_${v.id}">${v.name}</a>`;
+                    el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="selected_item(this);" id="device" value="gpu_${v.id}">${v.name}</a>`;
                     document.getElementById("deviceMenu").value = `gpu_${v.id}`;
                     console.log(v.name);
                 });
@@ -275,55 +289,155 @@ function update_gpu(){
     });
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
-// 加入 APP
+// 加入 APP JSON 版本，無法傳檔案，已棄用
 function add_submit() {
 
-    var data = {
+    // var data = {
+    //     app_name: document.getElementById("app_name").value,
+    //     source: document.getElementById("source").value,
+    //     thres: document.getElementById("thres").value,
+    //     category: document.getElementById("categoryMenu").innerText,
+    //     application: document.getElementById("categoryAppMenu").innerText,
+    //     input_type: document.getElementById("inputTypeMenu").innerText,
+    //     device: document.getElementById("deviceMenu").innerText,
+    // };
+    
+    // console.log(data);
+
+    // $.ajax({
+    //     url: SCRIPT_ROOT + '/add',
+    //     // url: 'http://172.16.92.130:4999' + '/add',
+    //     type: "POST",
+    //     data: JSON.stringify(data),
+    //     processData: false,
+    //     contentType: "application/json; charset=UTF-8",
+    //     success: function (data, textStatus, xhr) {
+    //         modal_default_content();
+    //         location.reload();
+    //     },
+    //     error: function (xhr, textStatus, errorThrown) {
+    //         console.log("Error in add application");
+    //     },
+    // });
+}
+// ---------------------------------------------------------------------------------------------------------------------------------------
+// 加入 APP
+function add_submit_form() {
+
+    let data = {
         app_name: document.getElementById("app_name").value,
-        source: document.getElementById("source").value,
         thres: document.getElementById("thres").value,
         category: document.getElementById("categoryMenu").innerText,
         application: document.getElementById("categoryAppMenu").innerText,
         input_type: document.getElementById("inputTypeMenu").innerText,
         device: document.getElementById("deviceMenu").innerText,
     };
-    
-    console.log(data);
+
+    let form_data = new FormData();
+
+    for ( let key in data ) {
+        console.log(key);
+        console.log(data[key]);
+        form_data.append(key, data[key]);
+    };
+
+    if (data['input_type']=='V4L2' || data['input_type']=='RTSP' ){
+        form_data.append( "source", document.getElementById("source").value);
+    } else {
+        const ele = document.querySelector('[data-target="file-uploader"]');
+        form_data.append( "source", ele.files[0])
+    };
+
+    console.log(form_data);
 
     $.ajax({
         url: SCRIPT_ROOT + '/add',
-        type: "POST",
-        data: JSON.stringify(data),
+        // url: 'http://172.16.92.130:4999' + '/add',
+        data: form_data,
         processData: false,
-        contentType: "application/json; charset=UTF-8",
+        contentType: false,
+        type: 'POST',
+        success: function (data, textStatus, xhr) {
+            console.log(data);
+            modal_default_content();
+            location.reload();
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log("Add error");
+        },
     });
-    modal_default_content();
-    location.reload();
+
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 編輯 APP
 function edit_submit(obj) {
-    var data = {
+    // var data = {
+    //     app_name: document.getElementById("app_name").value,
+    //     source: document.getElementById("source").value,
+    //     thres: document.getElementById("thres").value,
+    //     category: document.getElementById("categoryMenu").innerText,
+    //     application: document.getElementById("categoryAppMenu").innerText,
+    //     input_type: document.getElementById("inputTypeMenu").innerText,
+    //     device: document.getElementById("deviceMenu").innerText,
+    // };
+    
+    // console.log(data);
+
+    // $.ajax({
+    //     url: SCRIPT_ROOT + `/edit/${obj.value}`,
+    //     type: "POST",
+    //     data: JSON.stringify(data),
+    //     processData: false,
+    //     contentType: "application/json; charset=UTF-8",
+    // });
+    // modal_default_content();
+    // location.reload();
+}
+// ---------------------------------------------------------------------------------------------------------------------------------------
+// 編輯 APP
+function edit_submit_form(obj) {
+    let data = {
         app_name: document.getElementById("app_name").value,
-        source: document.getElementById("source").value,
         thres: document.getElementById("thres").value,
         category: document.getElementById("categoryMenu").innerText,
         application: document.getElementById("categoryAppMenu").innerText,
         input_type: document.getElementById("inputTypeMenu").innerText,
         device: document.getElementById("deviceMenu").innerText,
     };
-    
-    console.log(data);
+
+    let form_data = new FormData();
+
+    for ( let key in data ) {
+        console.log(key);
+        console.log(data[key]);
+        form_data.append(key, data[key]);
+    };
+
+    if (data['input_type']=='V4L2' || data['input_type']=='RTSP' ){
+        form_data.append( "source", document.getElementById("source").value);
+    } else {
+        const ele = document.querySelector('[data-target="file-uploader"]');
+        form_data.append( "source", ele.files[0])
+    };
+
+    console.log(form_data);
 
     $.ajax({
         url: SCRIPT_ROOT + `/edit/${obj.value}`,
-        type: "POST",
-        data: JSON.stringify(data),
+        // url: 'http://172.16.92.130:4999' + '/add',
+        data: form_data,
         processData: false,
-        contentType: "application/json; charset=UTF-8",
+        contentType: false,
+        type: 'POST',
+        success: function (data, textStatus, xhr) {
+            console.log(data);
+            modal_default_content();
+            location.reload();
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log("Add error");
+        },
     });
-    modal_default_content();
-    location.reload();
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 刪除 APP
@@ -351,10 +465,14 @@ function add_modal_event() {
     update_gpu();
     update_input_type();
     update_category();
+    document.getElementById("categoryMenu").disabled = false;
+    document.getElementById("categoryAppMenu").disabled = false;
+    document.getElementById("deviceMenu").disabled = false;
     // update_category_app();
     
     document.getElementById("categoryAppMenu").disabled = false;
     document.getElementById("deviceMenu").disabled = false;
+    modal_default_content();
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 加入 Modal 應有的資訊
@@ -397,10 +515,11 @@ function editModal(obj) {
             const af = data["framework"];
 
             document.getElementById("app_name").value = data["app_name"];
-            document.getElementById("source").value = data["source"];
+            
             
             if (data["source"].includes('video')){ 
                 document.getElementById("inputTypeMenu").textContent='V4L2';
+
             } else if (data["source"].includes('mp4')) {
                 document.getElementById("inputTypeMenu").textContent='Video';
             } else if (data["source"].includes('rtsp')) {
@@ -409,6 +528,19 @@ function editModal(obj) {
                 document.getElementById("inputTypeMenu").textContent='Image';
             };
 
+            const inTypeEle = document.getElementById("inputTypeMenu");
+            
+            if (inTypeEle.innerText==='V4L2' || inTypeEle.innerText==='RTSP'){
+                document.getElementById("source_text").style.display = "block";
+                document.getElementById("source_file").style.display = "none";
+                document.getElementById("source").value = data["source"];
+            } else if (inTypeEle.innerText==='Video' || inTypeEle.innerText==='Image'){
+                document.getElementById("source_text").style.display = "none";
+                document.getElementById("source_file").style.display = "block";
+                let src_data = data["source"].split('/')
+                document.getElementById("custom-file-label").textContent = src_data[src_data.length-1];
+            }
+        
             document.getElementById("categoryMenu").textContent = data["category"];
             document.getElementById("categoryAppMenu").textContent = data["application"];
 
@@ -417,60 +549,9 @@ function editModal(obj) {
 
             document.getElementById("modal_edit_submit").value = obj.id;
 
+            document.getElementById("categoryMenu").disabled = true;
             document.getElementById("categoryAppMenu").disabled = true;
             document.getElementById("deviceMenu").disabled = true;
         }
     });
-    // 包在 GPU 裡面是因為我抓不到 GPU 的名稱
-    // $.ajax({
-    //     url: SCRIPT_ROOT + `/gpu`,
-    //     type: "GET",
-    //     dataType: "json",
-    //     success: function (data, textStatus, xhr) {
-    //         var gpus = {};
-    //         if (Array.isArray(data)) {
-    //             data.forEach((v, i) => {
-    //                 gpus[`gpu_${v.id}`]=`${v.name}`;
-    //             });
-    //         }
-    //         $.ajax({
-    //             url: SCRIPT_ROOT + `/app/${obj.id}/info`,
-    //             type: "GET",
-    //             dataType: "json",
-    //             success: function (data, textStatus, xhr) {
-    //                 // framework, app_name, source, input_type, device, thres, category, application, thres
-    //                 document.getElementById("modal_add_submit").style.display = 'none';
-    //                 document.getElementById("modal_edit_submit").style.display = 'block';
-                    
-    //                 const af = data["framework"];
-
-    //                 document.getElementById("app_name").value = data["app_name"];
-    //                 document.getElementById("source").value = data["source"];
-                    
-    //                 if (data["source"].includes('video')){ 
-    //                     document.getElementById("inputTypeMenu").textContent='V4L2';
-    //                 } else if (data["source"].includes('mp4')) {
-    //                     document.getElementById("inputTypeMenu").textContent='Video';
-    //                 } else {
-    //                     document.getElementById("inputTypeMenu").textContent='Image';
-    //                 };
-
-    //                 document.getElementById("categoryMenu").textContent = data["category"];
-    //                 document.getElementById("categoryAppMenu").textContent = data["application"];
-
-    //                 document.getElementById("deviceMenu").textContent = gpus[data['device']];
-    //                 document.getElementById("thres").value = data['thres'];
-
-    //                 document.getElementById("modal_edit_submit").value = obj.id;
-
-    //                 document.getElementById("categoryAppMenu").disabled = true;
-    //                 document.getElementById("deviceMenu").disabled = true;
-    //             }
-    //         });
-    //     },
-    //     error: function (xhr, textStatus, errorThrown) {
-    //         console.log("Error in Database");
-    //     },
-    // });
-
 }
