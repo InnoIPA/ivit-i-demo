@@ -135,7 +135,9 @@ function clear_modal_dropdown(){
     document.getElementById("categoryList").innerHTML = "";
     document.getElementById("categoryAppList").innerHTML = "";
     document.getElementById("inputTypeList").innerHTML = "";
+    document.getElementById("inputSourceList").innerHTML = "";
     document.getElementById("deviceList").innerHTML = "";
+
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // modal 的預設
@@ -146,6 +148,8 @@ function modal_default_content(){
 
     document.getElementById("source_text").style.display = "block";
     document.getElementById("source_file").style.display = "none";
+    document.getElementById("source_dropdown").style.display = "none";
+
     document.getElementById("custom-file-label").textContent = "Choose file";
     document.getElementById("source").value = "";
 
@@ -184,12 +188,18 @@ function selected_item(obj) {
         update_category_app(obj.id, obj.innerHTML);
     };
     if (obj.id === 'inputType'){
-        if (obj.innerText==='V4L2' || obj.innerText==='RTSP'){
+        if (obj.innerText==='RTSP'){
             document.getElementById("source_text").style.display = "block";
             document.getElementById("source_file").style.display = "none";
+            document.getElementById("source_dropdown").style.display = "none";
         } else if (obj.innerText==='Video' || obj.innerText==='Image'){
             document.getElementById("source_text").style.display = "none";
             document.getElementById("source_file").style.display = "block";
+            document.getElementById("source_dropdown").style.display = "none";
+        } else {
+            document.getElementById("source_text").style.display = "none";
+            document.getElementById("source_file").style.display = "none";
+            document.getElementById("source_dropdown").style.display = "block";
         }
     };
 }
@@ -220,6 +230,31 @@ function update_input_type(){
     el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="selected_item(this);" id="inputType" name="video">Video</a>`;
     el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="selected_item(this);" id="inputType" name="image">Image</a>`;
     el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="selected_item(this);" id="inputType" name="rtsp">RTSP</a>`;
+}
+// ---------------------------------------------------------------------------------------------------------------------------------------
+// Update input source
+function update_input_source(){
+
+    var el = document.getElementById("inputSourceList");
+
+    // Update device list
+    $.ajax({
+        url: SCRIPT_ROOT + `/v4l2`,
+        type: "GET",
+        dataType: "json",
+        success: function (data, textStatus, xhr) {
+            if (Array.isArray(data)) {
+                data.forEach((v, i) => {
+                    el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="selected_item(this);" id="inputSource" value="${v}">${v}</a>`;
+                    console.log(v);
+                });
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log("Error in Database");
+        },
+    });
+
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // Old Ver - 更新 modal 的 Category 選項
@@ -341,11 +376,13 @@ function add_submit_form() {
         form_data.append(key, data[key]);
     };
 
-    if (data['input_type']=='V4L2' || data['input_type']=='RTSP' ){
+    if (data['input_type']=='RTSP' ){
         form_data.append( "source", document.getElementById("source").value);
-    } else {
+    } else if (data['input_type']=='Video' || data['input_type']=='Image') {
         const ele = document.querySelector('[data-target="file-uploader"]');
         form_data.append( "source", ele.files[0])
+    } else {
+        form_data.append( "source", document.getElementById("inputSourceMenu").innerText.replace(/(\r\n|\n|\r)/gm, ""));
     };
 
     console.log(form_data);
@@ -413,11 +450,13 @@ function edit_submit_form(obj) {
         form_data.append(key, data[key]);
     };
 
-    if (data['input_type']=='V4L2' || data['input_type']=='RTSP' ){
+    if (data['input_type']=='RTSP' ){
         form_data.append( "source", document.getElementById("source").value);
-    } else {
+    } else if (data['input_type']=='Video' || data['input_type']=='Image') {
         const ele = document.querySelector('[data-target="file-uploader"]');
         form_data.append( "source", ele.files[0])
+    } else {
+        form_data.append( "source", document.getElementById("inputSourceMenu").innerText.replace(/(\r\n|\n|\r)/gm, ""));
     };
 
     console.log(form_data);
@@ -465,6 +504,7 @@ function add_modal_event() {
     update_gpu();
     update_input_type();
     update_category();
+    update_input_source();
     document.getElementById("categoryMenu").disabled = false;
     document.getElementById("categoryAppMenu").disabled = false;
     document.getElementById("deviceMenu").disabled = false;
@@ -502,6 +542,7 @@ function editModal(obj) {
     update_gpu();
     update_input_type();
     update_category();
+    update_input_source();
     // update_category_app();
     $.ajax({
         url: SCRIPT_ROOT + `/app/${obj.id}/info`,
@@ -530,15 +571,21 @@ function editModal(obj) {
 
             const inTypeEle = document.getElementById("inputTypeMenu");
             
-            if (inTypeEle.innerText==='V4L2' || inTypeEle.innerText==='RTSP'){
+            if (inTypeEle.innerText==='RTSP'){
                 document.getElementById("source_text").style.display = "block";
                 document.getElementById("source_file").style.display = "none";
+                document.getElementById("source_dropdown").style.display = "none";
                 document.getElementById("source").value = data["source"];
             } else if (inTypeEle.innerText==='Video' || inTypeEle.innerText==='Image'){
                 document.getElementById("source_text").style.display = "none";
                 document.getElementById("source_file").style.display = "block";
                 let src_data = data["source"].split('/')
                 document.getElementById("custom-file-label").textContent = src_data[src_data.length-1];
+            } else{
+                document.getElementById("source_text").style.display = "none";
+                document.getElementById("source_file").style.display = "none";
+                document.getElementById("source_dropdown").style.display = "block";
+                document.getElementById("inputSourceMenu").innerText = data["source"];
             }
         
             document.getElementById("categoryMenu").textContent = data["category"];

@@ -362,11 +362,11 @@
                                         <div id="inputTypeList" class="dropdown-menu animated--fade-in"
                                             aria-labelledby="inputType">
                                             <a class="dropdown-item" href="#" id="inputType"
-                                                onclick="selected_item(this);  return false;">V4L2</a>
+                                                onclick="selected_item(this); return false;">V4L2</a>
                                             <a class="dropdown-item" href="#" id="inputType"
-                                                onclick="selected_item(this);  return false;">Video</a>
+                                                onclick="selected_item(this); return false;">Video</a>
                                             <a class="dropdown-item" href="#" id="inputType"
-                                                onclick="selected_item(this);  return false;">RTSP</a>
+                                                onclick="selected_item(this); return false;">RTSP</a>
                                         </div>
                                     </div>
                                 </div>
@@ -380,12 +380,24 @@
                                     <h6 class="m-0 font-weight-bold">Input Source</h6>
                                 </div>
                                 <div class="card-body custom">
+                                    <!-- Input Text -->
                                     <div id="source_text">
                                         <input id="source" type="text" class="bg-light border-0" placeholder="-- please enter ---" aria-label="source">
                                     </div>
-                                    <div id="source_file" class="custom-file" style="height:100%">
+                                    <!-- Input File -->
+                                    <div id="source_file" class="custom-file" style="height:100%; display: none;">
                                         <input type="file" style="height:100%" class="custom-file-input" data-target="file-uploader" id="file-uploader">
                                         <label id="custom-file-label" class="custom-file-label" style="height:100%">Choose file</label>
+                                    </div>
+                                    <!-- Drop down -->
+                                    <div id="source_dropdown" class="dropdown m-0" style="display: none;">
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="inputSourceMenu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            --- please select ---
+                                        </button>
+                                        <div id="inputSourceList" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="inputSource">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
