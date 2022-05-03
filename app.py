@@ -9,6 +9,18 @@ eventlet.monkey_patch()
 
 from logging.config import dictConfig
 from flask_cors import CORS
+import socket
+
+def extract_ip():
+    st = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:       
+        st.connect(('10.255.255.255', 1))
+        IP = st.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        st.close()
+    return IP
 
 dictConfig({
     'version': 1,
@@ -33,7 +45,7 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 # gunicorn --worker-class eventlet -w 1 --threads ${THREAD} --bind ${BIND} ${MODULE}:app
 # ------------
 app.config['AF']='trt'
-app.config['HOST']='http://172.16.92.130'
+app.config['HOST']=extract_ip()
 app.config['PORT']='5000'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 # ------------
@@ -42,7 +54,7 @@ def logio(msg):
     socketio.emit(event='echo', content={'echo':msg}, broadcast=True)
 
 def webapi(cmds:list, method:str='GET', data=None):
-    url = "{}:{}/{}".format(app.config['HOST'], app.config['PORT'], app.config['AF'])
+    url = "http://{}:{}/{}".format(app.config['HOST'], app.config['PORT'], app.config['AF'])
     # url = "{}:{}".format(app.config['HOST'], app.config['PORT'])
     for cmd in cmds:
         url += "/{}".format(cmd)
@@ -64,39 +76,12 @@ def home():
     
     return render_template('dashboard.html', data=json.loads(app_list))
 
-# @app.route('/', methods=['GET', 'POST'])
-# def home():
-#     # Run container
-#     logio('Running container ...')
-#     webapi(['run'], 'GET')
-#     app_list = []
-#     # time.sleep(1)
-#     if 'app_data' in request.args.keys():    
-#         logging.info('GET DATA')
-#         app_list = request.args.get('app_data')
-#         logio(app_list)
-#         logio(type(app_list))
-#         app_list = json.loads(app_list)
-#         logio(app_list)
-#         logio(type(app_list))
-#         # app_list = json.loads(request.data)
-        
-#         # logging.info(type(app_list))
-#     # app_list = webapi(['app'], 'GET')
-#     # logio('Container status: {}'.format(webapi(['status'], 'GET')))
-#     # logging.info(type(app_list))
-#     # app_list = json.loads(app_list)
-#     # logging.info(type(app_list))
-#     return render_template('dashboard.html', data=app_list)
 
 @app.route('/temp', methods=['GET', 'POST'])
 def temp():
     logging.info('\n\n')
     logging.info(request.data)
     logging.info(type(request.data))
-    # data = json.loads(request.data) 
-    # logging.info(data)
-    # logging.info(type(data))
     return redirect( url_for('home', app_data=request.data))
 
 @app.route('/stream')
