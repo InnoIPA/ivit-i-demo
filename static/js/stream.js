@@ -66,33 +66,50 @@ function get_src_type(src){
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // setup the default infromation
 $(document).ready(function(){
-    // Get the default
-    $.ajax({  
+       // 更新 GPU 的溫度
+    $.ajax({
         type: 'GET',
-        url: SCRIPT_ROOT + `/app/${uuid}/info`,
+        url: SCRIPT_ROOT + '/gpu',
         dataType: "json",
-        success: function (data, textStatus, xhr) {
-            // const data = JSON.parse(data);
-            
-            document.getElementById("title").textContent = data['app_name'];
-            // document.getElementById("app_name").textContent = data['app_name'];
-            document.getElementById("category").textContent = data['category'];
-            document.getElementById("application").textContent = data['application'];
-            document.getElementById("device").textContent = data['device'];
-            
-            document.getElementById("source").textContent = data['source'];
-            document.getElementById("status").textContent = data['status'];
+        success: function (gpuData){
+            // Get the default
+            $.ajax({  
+                type: 'GET',
+                url: SCRIPT_ROOT + `/app/${uuid}/info`,
+                dataType: "json",
+                success: function (data, textStatus, xhr) {
+                    // const data = JSON.parse(data);
+                    
+                    document.getElementById("title").textContent = data['app_name'];
+                    // document.getElementById("app_name").textContent = data['app_name'];
+                    document.getElementById("category").textContent = data['category'];
+                    document.getElementById("application").textContent = data['application'];
+                    document.getElementById("device").textContent = data['device'];
+                    
+                    document.getElementById("source").textContent = data['source'];
+                    document.getElementById("status").textContent = data['status'];
 
-            document.getElementById("input_type").textContent = get_src_type(data['source']);
+                    document.getElementById("input_type").textContent = get_src_type(data['source']);
+
+                    for(let i=0;i<gpuData.length;i++){
+                        console.log(i)
+                        if (gpuData[i]['name']==data['device']){
+                            gpu=i;
+                        };
+                    };
+                    capture_gpu();
+                },
+                // error: function (xhr, textStatus, errorThrown) {
+                //     alert('err');
+                // }
+            });
         },
-        // error: function (xhr, textStatus, errorThrown) {
-        //     alert('err');
-        // }
     });
 });
 
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // Update GPU temperature every 5 seconds
+
 let intervalTime = 5000;
 let intervalGPU = window.setInterval(capture_gpu, intervalTime);
 function capture_gpu(){
