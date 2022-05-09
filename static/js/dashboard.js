@@ -269,8 +269,9 @@ function updateSourceType(srcType, srcData=""){
         } else if (srcType==='Video' || srcType==='Image'){
             sourceTypeEvent( ["source_text", "source_file", "source_dropdown"], ["none", "block", "none"] );
             if (srcData!==""){
-                let srcDataArr = srcData.split('/')
-                document.getElementById("custom_file_label").textContent = srcDataArr[src_data.length-1];
+                let srcDataArr = srcData.split('/');
+                console.log(srcDataArr);
+                document.getElementById("custom_file_label").textContent = srcDataArr[srcDataArr.length-1];
             }
         } else {
             sourceTypeEvent( ["source_text", "source_file", "source_dropdown"], ["none", "none", "block"] );
@@ -547,7 +548,7 @@ function editModal(obj) {
             document.getElementById("app_name").value = data["app_name"];
             
             // update source type
-            updateInputType(data["source"])
+            updateInputType(data["source"]);
             
             // change source
             const inTypeEle = document.getElementById("input_type_menu");

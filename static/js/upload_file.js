@@ -16,7 +16,7 @@ async function handleFileUpload(e) {
     
     // alert("File Uploaded Success");
     console.log(file);
-    document.getElementById('custom-file-label').textContent = file['name'];
+    document.getElementById('custom_file_label').textContent = file['name'];
     // showPreviewImage(file);
   } catch (error) {
     alert(error);
