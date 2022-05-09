@@ -63,7 +63,7 @@ function hrefEvent(behavior, uuid){
 function statusEvent(uuid, stats, firstTime=false){
     console.log(`capture the application: ${uuid}, status: ${stats}, first time: ${firstTime}`);
     // run app or stop app
-    const status_ele = $(`#${uuid}_status`);
+    // const status_ele = $(`#${uuid}_status`);
 
     if(stats==='run'){
         hrefEvent('add', uuid);
@@ -85,8 +85,23 @@ function statusEvent(uuid, stats, firstTime=false){
 function freezeCheckbox(status){
     let checkboxes = document.querySelectorAll('input[type=checkbox]');
     for (var i = 0; i < checkboxes.length; i++) {
-        checkboxes[i].disabled=status;
+        if(document.getElementById(`${checkboxes[i].value}_status_btn`).textContent!=='error'){
+            
+            checkboxes[i].disabled=status;
+        }
     }
+}
+
+function errNameEvent(uuid){
+    // class="err-name" data-toggle="modal" data-target="#errModal" onclick="errModalEvent(this);"
+    let ele = document.getElementById(`${uuid}_name`);
+    document.getElementById( `${uuid}_status_btn`).innerText = 'error';
+    document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-red custom")
+    ele.setAttribute("class", "err-name");
+    ele.setAttribute("data-toggle", "modal");
+    ele.setAttribute("data-target", "#errModal");
+    ele.setAttribute("onclick", "errModalEvent(this);");
+    
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 當連線的時候 判斷 switch 的狀態，並做對應的動作
@@ -115,7 +130,7 @@ $(document).ready(function () {
             },
             error: function (xhr, textStatus, errorThrown) {
                 console.log("Error in categoryMap");
-                console.log(xhr)
+                console.log(xhr);
             },
         });
     }
@@ -130,7 +145,7 @@ $(document).ready(function () {
         document.getElementById( `${uuid}_status_btn`).innerText = 'loading';
         document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-gray custom");
         
-        freezeCheckbox(true);
+        // freezeCheckbox(true);
         // run app or stop app
         $.ajax({  
             type: 'GET',
@@ -140,7 +155,7 @@ $(document).ready(function () {
             success: function (data, textStatus, xhr) {
                 console.log(`${data}`);
                 statusEvent(uuid, stats);
-                freezeCheckbox(false);
+                // freezeCheckbox(false);
             },
             error: function (xhr, textStatus, errorThrown) {
                 
@@ -152,7 +167,9 @@ $(document).ready(function () {
                 const err = xhr.responseJSON;
                 console.log(err);
                 stopApp(uuid);
-                alert(err);
+                
+                errNameEvent(uuid);
+                // alert(err);
             },
         });
     });

@@ -131,21 +131,23 @@
                                             {% if app['status']=='run' %}
                                                 <td >
                                                     <span id="{{ app['uuid'] }}_status_btn" class="btn btn-green custom">
-                                                        <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span>
+                                                        {{ app['status'] }}
+                                                        <!-- <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span> -->
                                                     </span>
-
                                                 </td>
                                             {% elif app['status']=='err' %}
                                                 <td >
                                                     <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom">
-                                                        <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span>
+                                                        {{ app['status'] }}
+                                                        <!-- <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span> -->
                                                     </span>
 
                                                 </td >
                                                 {% else %}
                                                 <td>
                                                     <span id="{{ app['uuid'] }}_status_btn" class="btn btn-gray custom">
-                                                        <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span>
+                                                        {{ app['status'] }}
+                                                        <!-- <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span> -->
                                                     </span>
                                                 </td>
                                             {% endif %}
@@ -196,14 +198,12 @@
                                             <td id="{{ app['uuid'] }}_application" >{{ app['application'] }}</td>
                                             <!-- Status -->
                                             <td >
-                                                <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom">
-                                                    <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span>
-                                                </span>
+                                                <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom">{{ app['status'] }}</span>
                                             </td>
                                             <!-- Rounded switch -->
                                             <td >    
                                                 <label class="switch">
-                                                    <input type="checkbox" name="checkbox" value="{{ app['uuid'] }}"
+                                                    <input type="checkbox" name="checkbox" value="{{ app['uuid'] }}" value="failed"
                                                         {{ "checked" if app['status']=='run' }} disabled>
                                                     <span class="slider round"></span>
                                                 </label>
