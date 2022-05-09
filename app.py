@@ -71,10 +71,9 @@ def home():
     else:
         logio('Container is started ...')
 
-    app_list = webapi(['app'], 'GET')
+    app_list = json.loads(webapi(['app'], 'GET'))
     logio('Container status: {}'.format(webapi(['status'], 'GET')))
-    
-    return render_template('dashboard.html', data=json.loads(app_list))
+    return render_template('dashboard.html', data=app_list)
 
 
 @app.route('/temp', methods=['GET', 'POST'])
