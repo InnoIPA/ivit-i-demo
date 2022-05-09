@@ -24,19 +24,33 @@
     margin: 0%;
 }
 
+.err-name {
+    color: #E74A3B;
+    
+}
+
+.err-name:hover {
+    color: #E74A3B;
+    cursor: pointer;
+    text-decoration:underline;
+}
+
 .btn.btn-red {
+    cursor: auto !important;
     color: black;
     background-color: #E74A3B3D;
     border-color: #E74A3B;
 }
 
 .btn.btn-green {
+    cursor: auto !important;
     color: black;
     background-color: #1DCC913D;
     border-color: #1DCC91;
 }
 
 .btn.btn-gray {
+    cursor: auto !important;
     color: black;
     background-color: #AAAAAA3D;
     border-color: #AAAAAA;

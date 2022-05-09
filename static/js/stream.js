@@ -7,8 +7,13 @@ const FRAMEWORK = 'trt';
 const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}/${FRAMEWORK}`;
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 設定 對應 Socket 路徑
+const AF_PORT = {
+    'trt': '5001',
+    'vino': '5002'
+}
 let uuid = "";
-let port = "5001";
+let port = AF_PORT[FRAMEWORK];
+console.log(port)
 let gpu = 0;
 
 // Get uuid
@@ -62,10 +67,28 @@ function get_src_type(src){
     };
     return ret
 }
-
+// ---------------------------------------------------------------------------------------------------------------------------------------
+// 當按下 Switch 的時候開啟串流
+function stream_start(uuid){
+    $.ajax({
+        url: SCRIPT_ROOT + `/app/${uuid}/stream/start`,
+        type: "GET",
+        dataType: "json",
+        success: function (data, textStatus, xhr) {
+            console.log(data);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log("Error in Database");
+        },
+    });
+}
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // setup the default infromation
 $(document).ready(function(){
+
+    stream_start(uuid);
+
+
        // 更新 GPU 的溫度
     $.ajax({
         type: 'GET',

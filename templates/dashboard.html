@@ -86,7 +86,7 @@
                         <!-- Table Title -->
                         <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
                             <h3 class=" h3 m-0 text-gray-600">Applications</h6>
-                                <a href="#" onclick="add_modal_event(); return false;" class="btn btn-circle"
+                                <a href="#" onclick="addModalEvent(); return false;" class="btn btn-circle"
                                     data-toggle="modal" data-target="#addModal">
                                     <!-- <i class="fa fa-plus-circle text-gray-500 add-app"></i> -->
                                     <span class="material-symbols-outlined custom">add</span>
@@ -113,9 +113,9 @@
                                     </thead>
                                     <tbody>
                                         {% for app in ready %}
-                                        <tr>
+                                        <tr id="{{ app['uuid'] }}_block"  >
                                             <!-- Application Name -->
-                                            <td>
+                                            <td >
                                                 <div>
                                                     <a id="{{ app['uuid'] }}_name">{{ app['app_name'] }}</a>
                                                     <br>
@@ -124,24 +124,24 @@
                                             </td>
                                             <!-- Framework -->
                                             <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">{{ app['framework'] }}</td>
-                                            <td id="{{ app['uuid'] }}_category">{{ app['category'] }}</td>
+                                            <td id="{{ app['uuid'] }}_category" >{{ app['category'] }}</td>
                                             <!-- Application -->
-                                            <td id="{{ app['uuid'] }}_application">{{ app['application'] }}</td>
+                                            <td id="{{ app['uuid'] }}_application" >{{ app['application'] }}</td>
                                             <!-- Status -->
                                             {% if app['status']=='run' %}
-                                                <td>
+                                                <td >
                                                     <span id="{{ app['uuid'] }}_status_btn" class="btn btn-green custom">
                                                         <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span>
                                                     </span>
 
                                                 </td>
                                             {% elif app['status']=='err' %}
-                                                <td>
+                                                <td >
                                                     <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom">
                                                         <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span>
                                                     </span>
 
-                                                </td>
+                                                </td >
                                                 {% else %}
                                                 <td>
                                                     <span id="{{ app['uuid'] }}_status_btn" class="btn btn-gray custom">
@@ -150,7 +150,7 @@
                                                 </td>
                                             {% endif %}
                                             <!-- Rounded switch -->
-                                            <td>
+                                            <td >
                                                 
                                                 <label class="switch">
 
@@ -160,7 +160,7 @@
                                                 </label>
                                             </td>
                                             <!-- Dropdown - Messages -->
-                                            <td>
+                                            <td >
                                                 <div class="dropdown no-arrow">
                                                     <a class="dropdown-toggle" href="#" role="button"
                                                         id="{{ app['uuid']}}_more" data-toggle="dropdown"
@@ -171,22 +171,19 @@
                                                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                                                         aria-labelledby="{{ app['uuid']}}_more">
                                                         <!-- <div class="dropdown-header">Option</div> -->
-                                                        <a id="{{ app['uuid'] }}" value="{{ app['uuid'] }}"
-                                                            class="dropdown-item" href="#" data-toggle="modal"
-                                                            data-target="#addModal" onclick="editModal(this);">edit</a>
-                                                        <a id="{{ app['uuid'] }}" class="dropdown-item" href="#"
-                                                            onclick="del_event(this);">delete</a>
+                                                        <a id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#addModal" onclick="editModal(this);">edit</a>
+                                                        <a id="{{ app['uuid'] }}" value="{{ app['app_name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModal(this);">delete</a>
                                                     </div>
                                                 </div>
                                             </td>
                                         </tr>
                                         {% endfor %}
                                         {% for app in failed %}
-                                        <tr>
+                                        <tr id="{{ app['uuid'] }}_block"  >
                                             <!-- Application Name -->
-                                            <td>
+                                            <td >
                                                 <div>
-                                                    <a id="{{ app['uuid'] }}_name">{{ app['app_name'] }}</a>
+                                                    <a id="{{ app['uuid'] }}_name" class="err-name" data-toggle="modal" data-target="#errModal" onclick="errModalEvent(this);">{{ app['app_name'] }}</a>
                                                     <br>
                                                     <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a>
                                                 </div>
@@ -194,17 +191,17 @@
                                             <!-- framework -->
                                             <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">{{ app['framework'] }}</td>
                                             <!-- Category -->
-                                            <td id="{{ app['uuid'] }}_category">{{ app['category'] }}</td>
+                                            <td id="{{ app['uuid'] }}_category" >{{ app['category'] }}</td>
                                             <!-- Application -->
-                                            <td id="{{ app['uuid'] }}_application">{{ app['application'] }}</td>
+                                            <td id="{{ app['uuid'] }}_application" >{{ app['application'] }}</td>
                                             <!-- Status -->
-                                            <td>
-                                                <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom"  data-toggle="modal" data-target="#errModal" onclick="err_modal_event(this);">
+                                            <td >
+                                                <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom">
                                                     <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span>
                                                 </span>
                                             </td>
                                             <!-- Rounded switch -->
-                                            <td>    
+                                            <td >    
                                                 <label class="switch">
                                                     <input type="checkbox" name="checkbox" value="{{ app['uuid'] }}"
                                                         {{ "checked" if app['status']=='run' }} disabled>
@@ -212,23 +209,19 @@
                                                 </label>
                                             </td>
                                             <!-- Dropdown - Messages -->
-                                            <td>
+                                            <td >
                                                 <div class="dropdown no-arrow">
                                                     <a class="dropdown-toggle" href="#" role="button"
-                                                        id="dropdownMenuLink" data-toggle="dropdown"
+                                                        id="dropdown_menu_link" data-toggle="dropdown"
                                                         aria-haspopup="true" aria-expanded="false">
                                                         <!-- <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-500"></i> -->
                                                         <span class="material-symbols-outlined custom">more_horiz</span>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                        aria-labelledby="dropdownMenuLink">
+                                                        aria-labelledby="dropdown_menu_link">
                                                         <!-- <div class="dropdown-header">Option</div> -->
-                                                        <a id="{{ app['uuid'] }}" value="{{ app['uuid'] }}"
-                                                            class="dropdown-item" href="#" data-toggle="modal"
-                                                            data-target="#addModal" onclick="editModal(this);"
-                                                            disabled>edit</a>
-                                                        <a id="{{ app['uuid'] }}" class="dropdown-item" href="#"
-                                                            onclick="del_event(this);" disabled>delete</a>
+                                                        <a id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#addModal" onclick="editModal(this);return false;" disabled>edit</a>
+                                                        <a id="{{ app['uuid'] }}" value="{{ app['app_name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModal(this);return false;">delete</a>
                                                     </div>
                                                 </div>
                                             </td>
@@ -265,11 +258,8 @@
     </a>
 
     <!-- Add Dialog-->
-    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog full" role="document">
-
             <div class="modal-content full">
 
                 <!-- Header -->
@@ -293,7 +283,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <input id="app_name" type="text" class="bg-light border-0 "
-                                        placeholder="--- please enter ---">
+                                        placeholder="">
                                 </div>
                             </div>
 
@@ -311,12 +301,12 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="categoryMenu"
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="category_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            --- please select ---
+                                            Please select one
                                         </button>
-                                        <div id="categoryList" class="dropdown-menu animated--fade-in"
-                                            aria-labelledby="categoryMenu">
+                                        <div id="category_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="category_menu">
                                         </div>
                                     </div>
                                 </div>
@@ -331,12 +321,9 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="categoryAppMenu"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            --- please select ---
-                                        </button>
-                                        <div id="categoryAppList" class="dropdown-menu animated--fade-in"
-                                            aria-labelledby="categoryAppMenu">
+                                        <a class="btn btn-sm dropdown-toggle" type="a" id="category_app_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="display: none"> Please select one </a>
+                                        <a class="btn btn-sm dropdown-toggle" id="category_app_menu_def" style="cursor: auto;"></a>
+                                        <div id="category_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="category_app_menu">
                                         </div>
                                     </div>
                                 </div>
@@ -355,18 +342,18 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="inputTypeMenu"
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="input_type_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            --- please select ---
+                                            Please select one
                                         </button>
-                                        <div id="inputTypeList" class="dropdown-menu animated--fade-in"
-                                            aria-labelledby="inputType">
-                                            <a class="dropdown-item" href="#" id="inputType"
-                                                onclick="selected_item(this); return false;">V4L2</a>
-                                            <a class="dropdown-item" href="#" id="inputType"
-                                                onclick="selected_item(this); return false;">Video</a>
-                                            <a class="dropdown-item" href="#" id="inputType"
-                                                onclick="selected_item(this); return false;">RTSP</a>
+                                        <div id="input_type_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="input_type">
+                                            <a class="dropdown-item" href="#" id="input_type"
+                                                onclick="dropdownSelectEvent(this); return false;">V4L2</a>
+                                            <a class="dropdown-item" href="#" id="input_type"
+                                                onclick="dropdownSelectEvent(this); return false;">Video</a>
+                                            <a class="dropdown-item" href="#" id="input_type"
+                                                onclick="dropdownSelectEvent(this); return false;">RTSP</a>
                                         </div>
                                     </div>
                                 </div>
@@ -380,23 +367,25 @@
                                     <h6 class="m-0 font-weight-bold">Input Source</h6>
                                 </div>
                                 <div class="card-body custom">
+                                    <!-- Default -->
+                                    <a class="btn btn-sm dropdown-toggle" id="source_def" style="cursor: auto;"></a>
                                     <!-- Input Text -->
-                                    <div id="source_text">
-                                        <input id="source" type="text" class="bg-light border-0" placeholder="-- please enter ---" aria-label="source">
+                                    <div id="source_text" style="display: none">
+                                        <input id="source" type="text" class="bg-light border-0" placeholder="" aria-label="source">
                                     </div>
                                     <!-- Input File -->
                                     <div id="source_file" class="custom-file" style="height:100%; display: none;">
                                         <input type="file" style="height:100%" class="custom-file-input" data-target="file-uploader" id="file-uploader">
-                                        <label id="custom-file-label" class="custom-file-label" style="height:100%">Choose file</label>
+                                        <label id="custom_file_label" class="custom-file-label" style="height:100%">Choose file</label>
                                     </div>
                                     <!-- Drop down -->
                                     <div id="source_dropdown" class="dropdown m-0" style="display: none;">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="inputSourceMenu"
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="input_source_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            --- please select ---
+                                            Please select one
                                         </button>
-                                        <div id="inputSourceList" class="dropdown-menu animated--fade-in"
-                                            aria-labelledby="inputSource">
+                                        <div id="input_source_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="input_source">
                                         </div>
                                     </div>
                                 </div>
@@ -415,14 +404,14 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="deviceMenu"
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="device_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            --- please select ---
+                                            Please select one
                                         </button>
-                                        <div id="deviceList" class="dropdown-menu animated--fade-in"
-                                            aria-labelledby="deviceMenu">
-                                            <!-- <a class="dropdown-item" href="#" onclick="selected_item();">GTX 1050 Ti</a>
-                                                <a class="dropdown-item" href="#" onclick="selected_item();">GTX 2070 Super</a> -->
+                                        <div id="device_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="device_menu">
+                                            <!-- <a class="dropdown-item" href="#" onclick="dropdownSelectEvent();">GTX 1050 Ti</a>
+                                                <a class="dropdown-item" href="#" onclick="dropdownSelectEvent();">GTX 2070 Super</a> -->
                                         </div>
                                     </div>
                                 </div>
@@ -437,7 +426,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <input id="thres" type="text" class="bg-light border-0"
-                                        placeholder="-- please enter ---" aria-label="thres">
+                                        placeholder="" aria-label="thres">
                                 </div>
                             </div>
                         </div>
@@ -448,15 +437,15 @@
                 <!-- Footer -->
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal"
-                        onclick="modal_default_content(); return false;">Cancel</button>
+                        onclick="setDefaultModal(); return false;">Cancel</button>
                     <a id="modal_add_submit" class="btn btn-primary" href="#" data-dismiss="modal"
-                        onclick="add_submit_form(); return false;" style="display:none;">Add</a>
+                        onclick="addSubmit(); return false;" style="display:none;">Add</a>
                     <!-- <a id="modal_add_submit" class="btn btn-primary" href="#" data-dismiss="modal"
                         onclick="add_submit(); return false;" style="display:none;">Add</a> -->
                     <!-- <a id="modal_edit_submit" class="btn btn-primary" href="#" data-dismiss="modal"
                         onclick="edit_submit(this); return false;" style="display:none;">Edit</a> -->
                     <a id="modal_edit_submit" class="btn btn-primary" href="#" data-dismiss="modal"
-                        onclick="edit_submit_form(this); return false;" style="display:none;">Edit</a>
+                        onclick="editSubmit(this); return false;" style="display:none;">Edit</a>
                 </div>
             </div>
         </div>
@@ -490,6 +479,38 @@
             </div>
         </div>
     </div>
+
+    <!-- Del Dialog-->
+    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+
+        <div class="modal-dialog full" role="document">
+
+            <div class="modal-content full">
+
+                <!-- Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Delete?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+                    <div id="del_uuid" style="display: none;"></div>
+                    <div id="del_content"></div>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button id="modal_del_submit" class="btn btn-primary" type="button" data-dismiss="modal" onclick="delSubmit(this); return false;">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Socket.IO 的 CDN 連結 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"
