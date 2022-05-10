@@ -85,12 +85,16 @@
                     <div class="card shadow mb-4">
                         <!-- Table Title -->
                         <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h3 class=" h3 m-0 text-gray-600">Applications</h6>
-                                <a href="#" onclick="addModalEvent(); return false;" class="btn btn-circle"
-                                    data-toggle="modal" data-target="#addModal">
-                                    <!-- <i class="fa fa-plus-circle text-gray-500 add-app"></i> -->
-                                    <span class="material-symbols-outlined custom">add</span>
-                                </a>
+                            <div >
+                                <h3 style="float: left;" class=" h3 m-0 text-gray-600">Applications</h3>
+                                <h3 id="title_framework" style="float: right; margin-left: 20px;" class="h3 ml-3 text-gray-300">( OpenVINO )</h3>
+                            </div>
+                            
+                            <a href="#" onclick="addModalEvent(); return false;" class="btn btn-circle"
+                                data-toggle="modal" data-target="#addModal">
+                                <!-- <i class="fa fa-plus-circle text-gray-500 add-app"></i> -->
+                                <span class="material-symbols-outlined custom">add</span>
+                            </a>
                         </div>
                         <!-- Table body -->
                         <div class="card-body shadow custom">

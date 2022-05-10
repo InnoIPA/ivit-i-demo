@@ -106,6 +106,15 @@ function errNameEvent(uuid){
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 當連線的時候 判斷 switch 的狀態，並做對應的動作
 $(document).ready(function () {
+    let af_title;
+    if(FRAMEWORK==='vino'){
+        af_title = 'OpenVINO';
+    } else if(FRAMEWORK==='trt'){
+        af_title = 'TensorRT';
+    } else {
+        af_title = 'Unkwon';
+    }
+    document.getElementById("title_framework").textContent=`( ${af_title} )`;
 
     let ele = document.querySelectorAll('input[type=checkbox]');
     for(let i=0; i<ele.length; i++){
@@ -478,7 +487,7 @@ function editSubmit(obj) {
             location.reload();
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log("Add error");
+            console.log("edit error");
         },
     });
 }
