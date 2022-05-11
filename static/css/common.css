@@ -22,6 +22,7 @@ input {
 
 th {
     font-size: 20px;
+    font-weight:400;
 }
 a, td {
     font-size: 18px;
@@ -52,10 +53,22 @@ footer.custom {
 }
 
 .header {
-    color: red;
-    font-weight:bolder;
+    color: #E50012;
+    font-weight:450;
+    /* font-size: 3.0rem; */
+    font-size: 50px;
 }
 
+.h3.custom {
+    font-weight:400;
+    font-size: 28px;
+    /* font-size: 40px; */
+}
 .dropdown-item.custom {
     font-size: 13px;
+}
+
+.topbar.custom {
+    height: 76px;
+    /* padding: 5px 5px; */
 }
