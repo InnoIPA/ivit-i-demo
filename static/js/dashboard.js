@@ -516,13 +516,19 @@ function delSubmit(obj) {
     let data = { "uuid": uuid };
     console.log(`Remove application ${uuid}`);
     $.ajax({
-        url: SCRIPT_ROOT + `/remove`,
-        type: "POST",
+        url: SCRIPT_ROOT + "/remove/",
         data: JSON.stringify(data),
-        processData: false,
-        contentType: "application/json; charset=UTF-8",
+        type: "POST",
+        dataType: "json",
+        contentType: "application/json;charset=utf-8",
+        success: function (data, textStatus, xhr) {
+            console.log(data);
+            location.reload();
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log("edit error");
+        },
     });
-    location.reload();
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 刪除 APP
