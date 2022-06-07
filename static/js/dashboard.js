@@ -1,15 +1,15 @@
 // 先 寫死路徑，方便產出 DEMO 版本
 const DOMAIN = '172.16.92.130';
-const PORT = '5000';
+const PORT = '818';
 const FRAMEWORK = 'trt';
-const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}/${FRAMEWORK}`;
+const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
 let edit_mode = false;
 
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 當按下 Switch 的時候開啟串流
 function streamStart(uuid){
     $.ajax({
-        url: SCRIPT_ROOT + `/app/${uuid}/stream/start`,
+        url: SCRIPT_ROOT + `/task/${uuid}/stream/start`,
         type: "GET",
         dataType: "json",
         success: function (data, textStatus, xhr) {
@@ -24,7 +24,7 @@ function streamStart(uuid){
 // 當關閉 Switch 的時候關閉 APP
 function stopApp(uuid){
     $.ajax({
-        url: SCRIPT_ROOT + `/app/${uuid}/stream/stop`,
+        url: SCRIPT_ROOT + `/task/${uuid}/stream/stop`,
         type: "GET",
         dataType: "json",
         success: function (data, textStatus, xhr) {
@@ -35,7 +35,7 @@ function stopApp(uuid){
         },
     });
     $.ajax({
-        url: SCRIPT_ROOT + `/app/${uuid}/stop`,
+        url: SCRIPT_ROOT + `/task/${uuid}/stop`,
         type: "GET",
         dataType: "json",
         success: function (data, textStatus, xhr) {
@@ -51,7 +51,7 @@ function stopApp(uuid){
 function hrefEvent(behavior, uuid){
     // console.log(`href event: ${behavior} ${uuid}`);
     if (behavior==='add'){
-        document.getElementById(`${uuid}_name`).href=`http://${DOMAIN}:4999/app/${uuid}/stream`;
+        document.getElementById(`${uuid}_name`).href=`http://${DOMAIN}:4999/task/${uuid}/stream`;
         document.getElementById(`${uuid}_name`).setAttribute("onclick", `streamStart("${uuid}");`);
     } else {
         document.getElementById(`${uuid}_name`).removeAttribute("href");
@@ -70,14 +70,14 @@ function statusEvent(uuid, stats, firstTime=false){
         document.getElementById( `${uuid}_status_btn`).innerText = 'run';
         document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-green custom")
         document.getElementById(`${uuid}_more`).disabled=true;
-    }else{
+    }else if(stats==='stop'){
         hrefEvent('remove',uuid);
         document.getElementById( `${uuid}_status_btn`).innerText = 'stop';
         document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-gray custom")
         document.getElementById(`${uuid}_more`).disabled=false;
-        if(firstTime===false){
-            stopApp(uuid);
-        };
+        // if(firstTime===false){
+        //     stopApp(uuid);
+        // };
     };
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
@@ -106,39 +106,37 @@ function errNameEvent(uuid){
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 當連線的時候 判斷 switch 的狀態，並做對應的動作
 $(document).ready(function () {
+    // 更新子標題
     let af_title;
     if(FRAMEWORK==='vino'){
-        af_title = 'OpenVINO';
+        af_title = 'Intel';
     } else if(FRAMEWORK==='trt'){
-        af_title = 'TensorRT';
+        af_title = 'NVIDIA';
     } else {
         af_title = 'Unkwon';
     }
     document.getElementById("title_framework").textContent=`( ${af_title} )`;
-
+    // 
     let ele = document.querySelectorAll('input[type=checkbox]');
     for(let i=0; i<ele.length; i++){
         // let stats = ( ele[i].checked ? 'run' : 'stop' );
         const uuid = ele[i].value;
         $.ajax({
-            url: SCRIPT_ROOT + `/app/${uuid}`,
+            url: SCRIPT_ROOT + `/task/${uuid}/status`,
             type: "GET",
             dataType: "json",
             success: function (data, textStatus, xhr) {
                 // 如果 ready == false 的話就沒有 status
-                let stats = 'err';
-                if ('status' in data){
-                    stats = data['status'];
-                    if ( stats==='run'){
-                        ele[i].checked=true;
-                    } else{
-                        ele[i].checked=false;
-                    };
-                    statusEvent(uuid, stats, true);
-                };  
+                let stats = data;
+                if ( stats==='run'){
+                    ele[i].checked=true;
+                } else{
+                    ele[i].checked=false;
+                };
+                statusEvent(uuid, stats, true); 
             },
             error: function (xhr, textStatus, errorThrown) {
-                console.log("Error in categoryMap");
+                console.log("Error in capture status");
                 console.log(xhr);
             },
         });
@@ -158,7 +156,7 @@ $(document).ready(function () {
         // run app or stop app
         $.ajax({  
             type: 'GET',
-            url: SCRIPT_ROOT + `/app/${uuid}/${stats}`,
+            url: SCRIPT_ROOT + `/task/${uuid}/${stats}`,
             // url: `http://0.0.0.0:4999/${stats}`,
             dataType: "json",
             success: function (data, textStatus, xhr) {
@@ -187,8 +185,8 @@ $(document).ready(function () {
 // clear modal
 function clearModalDropdown(){
     console.log('clear modal drop down item ..');
-    document.getElementById("category_list").innerHTML = "";
-    document.getElementById("category_app_list").innerHTML = "";
+    document.getElementById("model_list").innerHTML = "";
+    document.getElementById("model_app_list").innerHTML = "";
     document.getElementById("input_type_list").innerHTML = "";
     document.getElementById("input_source_list").innerHTML = "";
     document.getElementById("device_list").innerHTML = "";
@@ -210,8 +208,8 @@ function sourceTypeEvent(typeList, typeStatus){
 function setDefaultModal(){
     console.log('set the default value of the modal item ...');
     // Set default value
-    document.getElementById("app_name").value = "";
-    document.getElementById("app_name").placeholder = "Ex. Defect detection";
+    // document.getElementById("name").value = "";
+    document.getElementById("name").placeholder = "Ex. Defect detection";
     
     document.getElementById("thres").value = 0.9;
 
@@ -220,35 +218,36 @@ function setDefaultModal(){
     sourceTypeEvent( ["source_text", "source_file", "source_dropdown"], ["none", "none", "none"] );
 
     // Application default is NULL
-    document.getElementById("category_app_menu").setAttribute("style", "display: none");
-    document.getElementById("category_app_menu_def").setAttribute("style", "cursor: auto");
+    document.getElementById("model_app_menu").setAttribute("style", "display: none");
+    document.getElementById("model_app_menu_def").setAttribute("style", "cursor: auto");
     
     document.getElementById("custom_file_label").textContent = "Choose file";
     // document.getElementById("source").value = "";
 
-    document.getElementById("category_menu").textContent = "Please select one";
+    document.getElementById("model_menu").textContent = "Please select one";
     
     document.getElementById("input_type_menu").textContent = "Please select one";
     document.getElementById("device_menu").textContent = "Please select one";
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
-// Update category
+// Update model
 let map;    
-function updateCategory(){
-    console.log('update category');
+function updateModel(){
+    console.log('update model');
     $.ajax({
-        url: SCRIPT_ROOT + `/categoryMap`,
+        url: SCRIPT_ROOT + `/model_app`,
         type: "GET",
         dataType: "json",
         success: function (data, textStatus, xhr) {
-            let el = document.getElementById("category_list");
+            let el = document.getElementById("model_list");
             map = data;
+            console.log(map);
             for (const key of Object.keys(data)) {
-                el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="category" name="${key}">${key}</a>`;
+                el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="model" name="${key}">${key}</a>`;
             };
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log("Error in categoryMap");
+            console.log("Error in modelMap");
         },
     });
 }
@@ -261,19 +260,19 @@ function dropdownSelectEvent(obj) {
     // 更新按鈕文字
     document.getElementById(`${obj.id}_menu`).textContent = obj.innerHTML;
     // 如果是類別的話要更新 APP 清單
-    if (obj.id === 'category'){    
-        updateCategoryApp(obj.id, obj.innerHTML);
-        document.getElementById("category_app_menu_def").style.display = "none";
-        document.getElementById("category_app_menu").removeAttribute("style");
+    if (obj.id === 'model'){    
+        updateModelApp(obj.id, obj.innerHTML);
+        document.getElementById("model_app_menu_def").style.display = "none";
+        document.getElementById("model_app_menu").removeAttribute("style");
     };
     if (obj.id === 'input_type'){
         updateSourceType(obj.innerText);
     };
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
-// Update category applications
-function updateCategoryApp(eleName, trgKey){
-    console.log('update category application');
+// Update model applications
+function updateModelApp(eleName, trgKey){
+    console.log('update model application');
     // Set name object
     const appName = `${eleName}_app`
     const appListName = `${appName}_list`;
@@ -285,9 +284,12 @@ function updateCategoryApp(eleName, trgKey){
     appList.innerHTML = "";
     appMenu.textContent = "Please select one";
     // Update content
-    for (const key of Object.keys(map[trgKey])) {
-        appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${key}">${key}</a>`;
-    };    
+    map[trgKey].forEach(function(item, i){
+        appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
+    });
+    // for (const key of Object.keys(map[trgKey])) {
+    //     appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${key}">${key}</a>`;
+    // };    
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // Update input source type
@@ -370,18 +372,26 @@ function updateGPU(){
     console.log('update device list');
     // Update device list
     $.ajax({
-        url: SCRIPT_ROOT + `/gpu`,
+        url: SCRIPT_ROOT + `/device`,
         type: "GET",
         dataType: "json",
         success: function (data, textStatus, xhr) {
-            if (Array.isArray(data)) {
+            // if (Array.isArray(data)) {
+            //     var el = document.getElementById("device_list");
+            //     data.forEach((v, i) => {
+            //         el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="device" value="gpu_${v.id}">${v.name}</a>`;
+            //         document.getElementById("device_menu").value = `gpu_${v.id}`;
+            //         // console.log(v.name);
+            //     });
+            // }
+            for (const key of Object.keys(data)) {
+                const deviceName = data[key]['name'];
                 var el = document.getElementById("device_list");
-                data.forEach((v, i) => {
-                    el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="device" value="gpu_${v.id}">${v.name}</a>`;
-                    document.getElementById("device_menu").value = `gpu_${v.id}`;
-                    // console.log(v.name);
-                });
-            }
+                el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="device" value="${deviceName}}">${deviceName}</a>`;
+                document.getElementById("device_menu").value = `${deviceName}}`;
+                // el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="device" value="gpu_${v.id}">${deviceName}</a>`;
+                // document.getElementById("device_menu").value = `gpu_${v.id}`;
+            };    
         },
         error: function (xhr, textStatus, errorThrown) {
             console.log("Error in Database");
@@ -391,13 +401,22 @@ function updateGPU(){
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 加入 APP
 function addSubmit() {
-    console.log('add an application');
+    console.log('add a task');
+    // {
+    //     "name": "test_from_added_task",
+    //     "application": [ "counting_number" ],
+    //     "model": "resnet50.engine",
+    //     "device": "NVIDIA GeForce GTX 1050 Ti",
+    //     "source": "/dev/video0",
+    //     "source_type": "V4L2",
+    //     "thres": 0.7
+    // }
     let data = {
-        app_name: document.getElementById("app_name").value,
+        name: document.getElementById("name").value,
         thres: document.getElementById("thres").value,
-        category: document.getElementById("category_menu").innerText,
-        application: document.getElementById("category_app_menu").innerText,
-        input_type: document.getElementById("input_type_menu").innerText,
+        model: document.getElementById("model_menu").innerText,
+        application: document.getElementById("model_app_menu").innerText,
+        source_type: document.getElementById("input_type_menu").innerText,
         device: document.getElementById("device_menu").innerText,
     };
 
@@ -409,9 +428,9 @@ function addSubmit() {
         form_data.append(key, data[key]);
     };
 
-    if (data['input_type']=='RTSP' ){
+    if (data['source_type']=='RTSP' ){
         form_data.append( "source", document.getElementById("source").value);
-    } else if (data['input_type']=='Video' || data['input_type']=='Image') {
+    } else if (data['source_type']=='Video' || data['source_type']=='Image') {
         const ele = document.querySelector('[data-target="file-uploader"]');
         form_data.append( "source", ele.files[0])
     } else {
@@ -446,25 +465,23 @@ function addSubmit() {
 function editSubmit(obj) {
     console.log(`edit an application`);
     let data = {
-        app_name: document.getElementById("app_name").value,
+        name: document.getElementById("name").value,
         thres: document.getElementById("thres").value,
-        category: document.getElementById("category_menu").innerText,
-        application: document.getElementById("category_app_menu").innerText,
-        input_type: document.getElementById("input_type_menu").innerText,
+        application: document.getElementById("model_app_menu").innerText,
+        source_type: document.getElementById("input_type_menu").innerText,
         device: document.getElementById("device_menu").innerText,
     };
 
     let form_data = new FormData();
 
     for ( let key in data ) {
-        console.log(key);
-        console.log(data[key]);
+        console.log(`${key}:${data[key]}`);
         form_data.append(key, data[key]);
     };
 
-    if (data['input_type']=='RTSP' ){
+    if (data['source_type']=='RTSP' ){
         form_data.append( "source", document.getElementById("source").value);
-    } else if (data['input_type']=='Video' || data['input_type']=='Image') {
+    } else if (data['source_type']=='Video' || data['source_type']=='Image') {
         const ele = document.querySelector('[data-target="file-uploader"]');
         form_data.append( "source", ele.files[0])
     } else {
@@ -511,10 +528,10 @@ function delSubmit(obj) {
 // 刪除 APP
 function delModal(obj) {
     const uuid = obj.id;
-    const app_name = document.getElementById(`${uuid}_name`).textContent;
+    const name = document.getElementById(`${uuid}_name`).textContent;
 
-    console.log(`User want to delete application ${app_name}, which uuid is ${uuid}`)
-    document.getElementById("del_content").textContent = `The application ( ${app_name} , ${uuid} ) will be delete`;
+    console.log(`User want to delete application ${name}, which uuid is ${uuid}`)
+    document.getElementById("del_content").textContent = `The application ( ${name} , ${uuid} ) will be delete`;
     document.getElementById("del_uuid").textContent = uuid;
 }
 
@@ -527,14 +544,14 @@ function addModalEvent() {
     clearModalDropdown();
     updateGPU();
     updateInputType();
-    updateCategory();
+    updateModel();
     updateInputSource();
-    document.getElementById("category_menu").disabled = false;
-    document.getElementById("category_app_menu").disabled = false;
+    document.getElementById("model_menu").disabled = false;
+    document.getElementById("model_app_menu").disabled = false;
     document.getElementById("device_menu").disabled = false;
-    // updateCategoryApp();
+    // updateModelApp();
     
-    document.getElementById("category_app_menu").disabled = false;
+    document.getElementById("model_app_menu").disabled = false;
     document.getElementById("device_menu").disabled = false;
     setDefaultModal();
 }
@@ -545,7 +562,7 @@ function errModalEvent(obj) {
     const id = obj.id;
     let uuid=id.split('_')[0];
     $.ajax({
-        url: SCRIPT_ROOT + `/app/${uuid}/error`,
+        url: SCRIPT_ROOT + `/task/${uuid}/error`,
         type: "GET",
         dataType: "json",
         success: function (data, textStatus, xhr) {
@@ -567,21 +584,21 @@ function editModal(obj) {
     clearModalDropdown();
     updateGPU();
     updateInputType();
-    updateCategory();
+    updateModel();
     updateInputSource();
-    // updateCategoryApp();
+    // updateModelApp();
     $.ajax({
-        url: SCRIPT_ROOT + `/app/${obj.id}/info`,
+        url: SCRIPT_ROOT + `/task/${obj.id}/info`,
         type: "GET",
         dataType: "json",
         success: function (data, textStatus, xhr) {
-            // framework, app_name, source, input_type, device, thres, category, application, thres
+            // framework, name, source, input_type, device, thres, model, application, thres
             document.getElementById("modal_add_submit").style.display = 'none';
             document.getElementById("modal_edit_submit").style.display = 'block';
             
             const af = data["framework"];
 
-            document.getElementById("app_name").value = data["app_name"];
+            document.getElementById("name").value = data["name"];
             
             // update source type
             updateInputType(data["source"]);
@@ -590,15 +607,15 @@ function editModal(obj) {
             const inTypeEle = document.getElementById("input_type_menu");
             updateSourceType( inTypeEle.innerText, data["source"] );
         
-            // category
-            document.getElementById("category_menu").textContent = data["category"];
-            document.getElementById("category_menu").disabled = true;
+            // model
+            document.getElementById("model_menu").textContent = data["model"];
+            document.getElementById("model_menu").disabled = true;
 
-            // category_app
-            document.getElementById("category_app_menu_def").style.display = 'none';
-            document.getElementById("category_app_menu").removeAttribute('style');
-            document.getElementById("category_app_menu").textContent = data["application"];
-            document.getElementById("category_app_menu").disabled = true;
+            // model_app
+            document.getElementById("model_app_menu_def").style.display = 'none';
+            document.getElementById("model_app_menu").removeAttribute('style');
+            document.getElementById("model_app_menu").textContent = data["application"];
+            document.getElementById("model_app_menu").disabled = true;
 
             document.getElementById("device_menu").textContent = data['device'];
             document.getElementById("thres").value = data['thres'];

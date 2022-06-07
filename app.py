@@ -46,15 +46,11 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 # ------------
 app.config['AF']='trt'
 app.config['HOST']=extract_ip()
-app.config['PORT']='5000'
+app.config['PORT']='818'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-# ------------
-def logio(msg):
-    app.logger.info(msg)
-    socketio.emit(event='echo', content={'echo':msg}, broadcast=True)
 
 def webapi(cmds:list, method:str='GET', data=None):
-    url = "http://{}:{}/{}".format(app.config['HOST'], app.config['PORT'], app.config['AF'])
+    url = "http://{}:{}/".format(app.config['HOST'], app.config['PORT'] )
     # url = "{}:{}".format(app.config['HOST'], app.config['PORT'])
     for cmd in cmds:
         url += "/{}".format(cmd)
@@ -63,16 +59,8 @@ def webapi(cmds:list, method:str='GET', data=None):
 @app.route('/', methods=['GET', 'POST'])
 def home():
     
-    if webapi(['status'], 'GET').rstrip() == 'false':
-        # Run container
-        logio('Running container ...')
-        webapi(['run'], 'GET')
-        time.sleep(1)
-    else:
-        logio('Container is started ...')
-
-    app_list = json.loads(webapi(['app'], 'GET'))
-    logio('Container status: {}'.format(webapi(['status'], 'GET')))
+    app_list = json.loads(webapi(['task'], 'GET'))
+    # logging.info('Container status: {}'.format(webapi(['status'], 'GET')))
     return render_template('dashboard.html', data=app_list)
 
 
@@ -155,7 +143,7 @@ def run():
 def stop():
     return jsonify('Done')
 
-@app.route('/app/<uuid>/stream')
+@app.route('/task/<uuid>/stream')
 def app_stream(uuid):
     return render_template('flask_stream.html')
 

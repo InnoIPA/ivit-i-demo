@@ -2,14 +2,14 @@
 const TRG_URL = document.URL;
 // ---------------------------------------------------------------------------------------------------------------------------------------
 const DOMAIN = '172.16.92.130';
-const PORT = '5000';
+const PORT = '818';
 const FRAMEWORK = 'trt';
-const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}/${FRAMEWORK}`;
+const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 設定 對應 Socket 路徑
 const AF_PORT = {
-    'trt': '5001',
-    'vino': '5002'
+    'trt': '818',
+    'vino': '819'
 }
 let uuid = "";
 let port = AF_PORT[FRAMEWORK];
@@ -20,10 +20,10 @@ let gpu = 0;
 const PATH = location.pathname;
 const PATH_ELE = PATH.split("/");
 for(let i=0; i<PATH_ELE.length; i++){
-    if(PATH_ELE[i]=="app"){ uuid = PATH_ELE[i+1]; };
+    if(PATH_ELE[i]=="task"){ uuid = PATH_ELE[i+1]; };
 };
 // Set up the socketio address
-const URL = `http://${document.domain}:${port}/app/${uuid}/stream`;
+const URL = `http://${document.domain}:${port}/task/${uuid}/stream`;
 const stream_socket = io.connect(URL);
 
 // ---------------------------------------------------------------------------------------------------------------------------------------
@@ -71,14 +71,14 @@ function get_src_type(src){
 // 當按下 Switch 的時候開啟串流
 function stream_start(uuid){
     $.ajax({
-        url: SCRIPT_ROOT + `/app/${uuid}/stream/start`,
+        url: SCRIPT_ROOT + `/task/${uuid}/stream/start`,
         type: "GET",
         dataType: "json",
         success: function (data, textStatus, xhr) {
             console.log(data);
         },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log("Error in Database");
+        error: function (err) {
+            console.log(err);
         },
     });
 }
@@ -88,24 +88,23 @@ $(document).ready(function(){
 
     stream_start(uuid);
 
-
-       // 更新 GPU 的溫度
+    // 更新 GPU 的溫度
     $.ajax({
         type: 'GET',
-        url: SCRIPT_ROOT + '/gpu',
+        url: SCRIPT_ROOT + '/device',
         dataType: "json",
         success: function (gpuData){
             // Get the default
             $.ajax({  
                 type: 'GET',
-                url: SCRIPT_ROOT + `/app/${uuid}/info`,
+                url: SCRIPT_ROOT + `/task/${uuid}/info`,
                 dataType: "json",
                 success: function (data, textStatus, xhr) {
                     // const data = JSON.parse(data);
                     
-                    document.getElementById("title").textContent = data['app_name'];
+                    document.getElementById("title").textContent = data['name'];
                     // document.getElementById("app_name").textContent = data['app_name'];
-                    document.getElementById("category").textContent = data['category'];
+                    document.getElementById("model").textContent = data['model'];
                     document.getElementById("application").textContent = data['application'];
                     document.getElementById("device").textContent = data['device'];
                     
@@ -114,12 +113,13 @@ $(document).ready(function(){
 
                     document.getElementById("input_type").textContent = get_src_type(data['source']);
 
-                    for(let i=0;i<gpuData.length;i++){
-                        console.log(i)
-                        if (gpuData[i]['name']==data['device']){
-                            gpu=i;
-                        };
-                    };
+                    gpu=data['device'];
+                    // for(let i=0;i<gpuData.length;i++){
+                    //     console.log(i)
+                    //     if (gpuData[i]['name']==data['device']){
+                    //         gpu=i;
+                    //     };
+                    // };
                     capture_gpu();
                 },
                 // error: function (xhr, textStatus, errorThrown) {
@@ -139,7 +139,7 @@ function capture_gpu(){
    // 更新 GPU 的溫度
     $.ajax({
         type: 'GET',
-        url: SCRIPT_ROOT + '/gpu',
+        url: SCRIPT_ROOT + '/device',
         dataType: "json",
         success: function (data){
 
@@ -167,7 +167,7 @@ function capture_gpu(){
 };
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 註冊 image 事件
-stream_socket.on('image', function(msg){  
+stream_socket.on('images', function(msg){  
     const image_element=document.getElementById('image');
     image_element.src="data:image/jpeg;base64,"+msg;
 });
@@ -177,7 +177,7 @@ stream_socket.on('image', function(msg){
 let detsList;
 let gpuInfoCount = 0;
 let info = new Array;
-stream_socket.on('result', function(msg){
+stream_socket.on('results', function(msg){
 
     // 解析資料
     const data = JSON.parse(msg);

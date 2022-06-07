@@ -89,7 +89,7 @@
                         <!-- Table Title -->
                         <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
                             <div >
-                                <h3 style="float: left;" class=" h3 custom m-0  text-gray-600">Applications</h3>
+                                <h3 style="float: left;" class=" h3 custom m-0  text-gray-600">Tasks</h3>
                                 <h3 id="title_framework" style="float: right; margin-left: 20px;" class="h3 custom ml-3 text-gray-300">( OpenVINO )</h3>
                             </div>
                             
@@ -111,7 +111,7 @@
                                         <tr>
                                             <th>Name</th>
                                             <th style="display:none;">Framework</th>
-                                            <th>Category</th>
+                                            <th>Model</th>
                                             <th>Application</th>
                                             <th>Status</th>
                                             <th>Launch</th>
@@ -124,14 +124,14 @@
                                             <!-- Application Name -->
                                             <td >
                                                 <div>
-                                                    <a id="{{ app['uuid'] }}_name">{{ app['app_name'] }}</a>
+                                                    <a id="{{ app['uuid'] }}_name">{{ app['name'] }}</a>
                                                     <br>
                                                     <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a>
                                                 </div>
                                             </td>
                                             <!-- Framework -->
                                             <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">{{ app['framework'] }}</td>
-                                            <td id="{{ app['uuid'] }}_category" >{{ app['category'] }}</td>
+                                            <td id="{{ app['uuid'] }}_model" >{{ app['model'] }}</td>
                                             <!-- Application -->
                                             <td id="{{ app['uuid'] }}_application" >{{ app['application'] }}</td>
                                             <!-- Status -->
@@ -142,13 +142,12 @@
                                                         <!-- <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span> -->
                                                     </span>
                                                 </td>
-                                            {% elif app['status']=='err' %}
+                                            {% elif app['status']=='error' %}
                                                 <td >
                                                     <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom">
                                                         {{ app['status'] }}
                                                         <!-- <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span> -->
                                                     </span>
-
                                                 </td >
                                                 {% else %}
                                                 <td>
@@ -181,7 +180,7 @@
                                                         aria-labelledby="{{ app['uuid']}}_more">
                                                         <!-- <div class="dropdown-header">Option</div> -->
                                                         <a id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#addModal" onclick="editModal(this);">edit</a>
-                                                        <a id="{{ app['uuid'] }}" value="{{ app['app_name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModal(this);">delete</a>
+                                                        <a id="{{ app['uuid'] }}" value="{{ app['name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModal(this);">delete</a>
                                                     </div>
                                                 </div>
                                             </td>
@@ -192,15 +191,15 @@
                                             <!-- Application Name -->
                                             <td >
                                                 <div>
-                                                    <a id="{{ app['uuid'] }}_name" class="err-name" data-toggle="modal" data-target="#errModal" onclick="errModalEvent(this);">{{ app['app_name'] }}</a>
+                                                    <a id="{{ app['uuid'] }}_name" class="err-name" data-toggle="modal" data-target="#errModal" onclick="errModalEvent(this);">{{ app['name'] }}</a>
                                                     <br>
                                                     <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a>
                                                 </div>
                                             </td>
                                             <!-- framework -->
                                             <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">{{ app['framework'] }}</td>
-                                            <!-- Category -->
-                                            <td id="{{ app['uuid'] }}_category" >{{ app['category'] }}</td>
+                                            <!-- model -->
+                                            <td id="{{ app['uuid'] }}_model" >{{ app['model'] }}</td>
                                             <!-- Application -->
                                             <td id="{{ app['uuid'] }}_application" >{{ app['application'] }}</td>
                                             <!-- Status -->
@@ -219,16 +218,16 @@
                                             <td >
                                                 <div class="dropdown no-arrow">
                                                     <a class="dropdown-toggle" href="#" role="button"
-                                                        id="dropdown_menu_link" data-toggle="dropdown"
+                                                        id="{{ app['uuid']}}_more" data-toggle="dropdown"
                                                         aria-haspopup="true" aria-expanded="false">
                                                         <!-- <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-500"></i> -->
                                                         <span class="material-symbols-outlined custom">more_horiz</span>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                        aria-labelledby="dropdown_menu_link">
+                                                        aria-labelledby="{{ app['uuid']}}_more">
                                                         <!-- <div class="dropdown-header">Option</div> -->
                                                         <a id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#addModal" onclick="editModal(this);return false;" disabled>edit</a>
-                                                        <a id="{{ app['uuid'] }}" value="{{ app['app_name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModal(this);return false;">delete</a>
+                                                        <a id="{{ app['uuid'] }}" value="{{ app['name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModal(this);return false;">delete</a>
                                                     </div>
                                                 </div>
                                             </td>
@@ -271,7 +270,7 @@
 
                 <!-- Header -->
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Add an application</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Add a Task</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -289,7 +288,7 @@
                                     <h6 class="m-0 font-weight-bold">Name</h6>
                                 </div>
                                 <div class="card-body custom">
-                                    <input id="app_name" type="text" class="bg-light border-0 "
+                                    <input id="name" type="text" class="bg-light border-0 "
                                         placeholder="">
                                 </div>
                             </div>
@@ -297,23 +296,23 @@
                         </div>
                     </div>
 
-                    <!-- Category and Application -->
+                    <!-- model and Application -->
                     <div class="row">
 
-                        <!-- Category -->
+                        <!-- model -->
                         <div class="col-lg-6">
                             <div class="card mb-4">
                                 <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Category</h6>
+                                    <h6 class="m-0 font-weight-bold">Model</h6>
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="category_menu"
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="model_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
-                                        <div id="category_list" class="dropdown-menu animated--fade-in"
-                                            aria-labelledby="category_menu">
+                                        <div id="model_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="model_menu">
                                         </div>
                                     </div>
                                 </div>
@@ -328,9 +327,9 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <a class="btn btn-sm dropdown-toggle" type="a" id="category_app_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="display: none"> Please select one </a>
-                                        <a class="btn btn-sm dropdown-toggle" id="category_app_menu_def" style="cursor: auto;"></a>
-                                        <div id="category_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="category_app_menu">
+                                        <a class="btn btn-sm dropdown-toggle" type="a" id="model_app_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="display: none"> Please select one </a>
+                                        <a class="btn btn-sm dropdown-toggle" id="model_app_menu_def" style="cursor: auto;"></a>
+                                        <div id="model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="model_app_menu">
                                         </div>
                                     </div>
                                 </div>
@@ -451,7 +450,7 @@
                         onclick="add_submit(); return false;" style="display:none;">Add</a> -->
                     <!-- <a id="modal_edit_submit" class="btn btn-primary" href="#" data-dismiss="modal"
                         onclick="edit_submit(this); return false;" style="display:none;">Edit</a> -->
-                    <a id="modal_edit_submit" class="btn btn-primary" href="#" data-dismiss="modal"
+                    <a id="modal_edit_submit" class="btn btn-primary" href="#" data-dismiss="modal" value=""
                         onclick="editSubmit(this); return false;" style="display:none;">Edit</a>
                 </div>
             </div>
