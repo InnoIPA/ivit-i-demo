@@ -1,5 +1,6 @@
 from email import contentmanager
 from os import replace
+import os
 import socket, argparse
 # -------------------------------------------------------------------------------------------
 parser = argparse.ArgumentParser()
@@ -7,10 +8,13 @@ parser.add_argument("-f", "--framework", help="select a framework")
 args = parser.parse_args()
 # -------------------------------------------------------------------------------------------
 framework = ""
+port = ""
 if args.framework.lower() in [ 'tensorrt', 'trt']:
     framework='trt'
+    port='818'
 elif args.framework.lower() in [ 'openvino', 'vino']:
     framework='vino'
+    port='819'
 else:
     print('[ERROR] Unexcepted framework')
     exit()
@@ -51,7 +55,13 @@ for file in JS_FILE:
             trg_cnt = "{} = '{}';\n".format(content.split(' = ')[0], framework )
             src[line] = trg_cnt
             print('Modify the FRAMEWORK: {}'.format(framework))
+
+        if 'const PORT' in content:
+            trg_cnt = "{} = '{}';\n".format(content.split(' = ')[0], port )
+            src[line] = trg_cnt
+            print('Modify the PORT: {}'.format(port))
         
+
     # Wrtie file
     with open('{}'.format(file), 'w') as my_file:
         new_file_contents = "".join(src)
@@ -59,15 +69,18 @@ for file in JS_FILE:
         my_file.close()
 # -------------------------------------------------------------------------------------------
 pyfile = 'app.py'
-key = "app.config['AF']"
-replace_cnt = framework
 with open(pyfile, 'r') as f:
     src = f.readlines()
 
 for line, content in enumerate(src):
+    key = "app.config['AF']"
     if key in content:
-        src[line]="{}='{}'\n".format( key, replace_cnt )
+        src[line]="{}='{}'\n".format( key, framework )
+    key = "app.config['PORT']"
+    if key in content:
+        src[line]="{}='{}'\n".format( key, port )
         break
+
 with open(pyfile, 'w') as f:
     new_cnt = "".join(src)
     f.write(new_cnt)
