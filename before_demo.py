@@ -9,10 +9,10 @@ args = parser.parse_args()
 # -------------------------------------------------------------------------------------------
 framework = ""
 port = ""
-if args.framework.lower() in [ 'tensorrt', 'trt']:
+if args.framework.lower() in [ 'nvidia', 'nv', 'tensorrt', 'trt']:
     framework='trt'
     port='818'
-elif args.framework.lower() in [ 'openvino', 'vino']:
+elif args.framework.lower() in [ 'intel', 'openvino', 'vino']:
     framework='vino'
     port='819'
 else:
