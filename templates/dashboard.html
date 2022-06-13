@@ -133,7 +133,7 @@
                                             <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">{{ app['framework'] }}</td>
                                             <td id="{{ app['uuid'] }}_model" >{{ app['model'] }}</td>
                                             <!-- Application -->
-                                            <td id="{{ app['uuid'] }}_application" >{{ app['application'] }}</td>
+                                            <td id="{{ app['uuid'] }}_application" >{{ app['application']['name'] }}</td>
                                             <!-- Status -->
                                             {% if app['status']=='run' %}
                                                 <td >
@@ -201,7 +201,7 @@
                                             <!-- model -->
                                             <td id="{{ app['uuid'] }}_model" >{{ app['model'] }}</td>
                                             <!-- Application -->
-                                            <td id="{{ app['uuid'] }}_application" >{{ app['application'] }}</td>
+                                            <td id="{{ app['uuid'] }}_application" >{{ app['application']['name'] }}</td>
                                             <!-- Status -->
                                             <td >
                                                 <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom">{{ app['status'] }}</span>
