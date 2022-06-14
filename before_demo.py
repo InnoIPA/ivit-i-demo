@@ -30,7 +30,7 @@ def extract_ip():
         st.close()
     return IP
 # -------------------------------------------------------------------------------------------
-JS_FILE=['./static/js/dashboard.js', './static/js/stream.js']
+JS_FILE=['./static/js/entry.js', './static/js/stream.js']
 
 cnts, lines, texts = [], [], []
 for file in JS_FILE:

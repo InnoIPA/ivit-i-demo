@@ -61,7 +61,7 @@ def home():
     
     app_list = json.loads(webapi(['task'], 'GET'))
     # logging.info('Container status: {}'.format(webapi(['status'], 'GET')))
-    return render_template('dashboard.html', data=app_list)
+    return render_template('entry.html', data=app_list)
 
 
 @app.route('/temp', methods=['GET', 'POST'])
