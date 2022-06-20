@@ -1,13 +1,13 @@
 
 // ---------------------------------------------------------------------------------------------------
-const modelFileUploader = document.querySelector('[data-target="model-file-uploader"]');
-modelFileUploader.addEventListener("change", modelFileUpload);
-// ---------------------------------------------------------------------------------------------------
-const labelFileUploader = document.querySelector('[data-target="label-file-uploader"]');
-labelFileUploader.addEventListener("change", labelFileUpload);
-// ---------------------------------------------------------------------------------------------------
-const configFileUploader = document.querySelector('[data-target="config-file-uploader"]');
-configFileUploader.addEventListener("change", configFileUpload);
+// const modelFileUploader = document.querySelector('[data-target="model-file-uploader"]');
+// modelFileUploader.addEventListener("change", modelFileUpload);
+// // ---------------------------------------------------------------------------------------------------
+// const labelFileUploader = document.querySelector('[data-target="label-file-uploader"]');
+// labelFileUploader.addEventListener("change", labelFileUpload);
+// // ---------------------------------------------------------------------------------------------------
+// const configFileUploader = document.querySelector('[data-target="config-file-uploader"]');
+// configFileUploader.addEventListener("change", configFileUpload);
 // ---------------------------------------------------------------------------------------------------
 const sourceUploader = document.querySelector('[data-target="file-uploader"]');
 sourceUploader.addEventListener("change", sourceFileUpload);
@@ -18,6 +18,124 @@ editSourceUploader.addEventListener("change", editSourceFileUpload);
 // ---------------------------------------------------------------------------------------------------
 const importSourceUploader = document.querySelector('[data-target="import-source-file-uploader"]');
 importSourceUploader.addEventListener("change", importSourceFileUpload);
+
+// ---------------------------------------------------------------------------------------------------
+const importZipUploader = document.querySelector('[data-target="import-zip-file-uploader"]');
+importZipUploader.addEventListener("change", importZipFileUpload);
+
+
+// update application with AI tag 
+function updateTagApp(eleKey, tagKey){
+  console.log('Update tag application');
+  
+  const appName = `${eleKey}_app`
+  const appListName = `${appName}_list`;
+  const appMenuName = `${appName}_menu`;
+  const appDefNmae = `${appMenuName}_def`;
+  
+  let appList = document.getElementById(appListName);
+  let appMenu = document.getElementById(appMenuName);
+  
+  // Clear and set default
+  appList.innerHTML = "";
+  appMenu.textContent = "Please select one";
+  
+  // Update content
+  $.ajax({
+    url: SCRIPT_ROOT + `/tag_app`,
+    type: "GET",
+    dataType: "json",
+    success: function (data, textStatus, xhr) {
+        console.log(data);
+        data[tagKey].forEach(function(item, i){
+          console.log(`Found application ${item}`);
+          appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
+        });
+    },
+    error: function (xhr, textStatus, errorThrown) {
+        console.log("Error in tag_app");
+    },
+  });
+  
+  // Display
+  document.getElementById(appDefNmae).style.display = "none";
+  document.getElementById(appMenuName).removeAttribute("style");
+}
+
+let timer;
+async function importZipFileUpload(e) {
+  try {
+    const file = e.target.files[0];
+    // setUploading(true);
+    if (!file) return;
+
+    // const beforeUploadCheck = await beforeUpload(file);
+    // if (!beforeUploadCheck.isValid) throw beforeUploadCheck.errorMessages;
+
+    // const arrayBuffer = await getArrayBuffer(file);
+    // const response = await uploadFileAJAX(arrayBuffer);
+    
+    // alert("File Uploaded Success");
+    document.getElementById('import_zip_file_label').textContent = file['name'];
+
+    // showPreviewImage(file);
+    console.log('Extract a task');
+    const ele = document.querySelector('[data-target="import-zip-file-uploader"]');
+    
+    // Create and append information
+    let form_data = new FormData();
+
+    // Check and append source data
+    form_data.append( "source", ele.files[0])
+
+    // Sending data via web api ( /add )
+    $.ajax({
+        url: SCRIPT_ROOT + '/import_1',
+        data: form_data,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        success: function (data, textStatus, xhr) {
+            console.log(data);
+            
+            updateTagApp("import_model", data["tag"]);
+
+            let intervalTime = 5000;
+
+            timer = window.setInterval(function(){ getConvertStatus(data["name"]) }, intervalTime);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log("Extract error ( IMPORT )");
+            console.log(xhr);
+            console.log(xhr.responseJSON);
+        },
+    });
+    
+  } catch (error) {
+    alert(error);
+    console.log("Catch Error: ", error);
+  } finally {
+    // e.target.value = '';  // reset input file
+    // setUploading(false);
+  }
+}
+
+function getConvertStatus(task_name) {
+  $.ajax({
+    type: 'GET',
+    url: SCRIPT_ROOT + `/import_proc/${task_name}/status`,
+    dataType: "json",
+    success: function (data){
+      if (data === "done"){
+        alert("Convert finished !!!");
+        window.clearInterval(timer);
+        document.getElementById("modal_import_submit").disabled = false;
+      }else{
+        console.log("Converting model to tensorrt engine ... ");
+      }
+    }
+})
+}
 
 async function importSourceFileUpload(e) {
   try {
