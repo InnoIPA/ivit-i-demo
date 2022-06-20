@@ -105,7 +105,7 @@ $(document).ready(function(){
                     document.getElementById("title").textContent = data['name'];
                     // document.getElementById("app_name").textContent = data['app_name'];
                     document.getElementById("model").textContent = data['model'];
-                    document.getElementById("application").textContent = data['application'];
+                    document.getElementById("application").textContent = data['application']["name"];
                     document.getElementById("device").textContent = data['device'];
                     
                     document.getElementById("source").textContent = data['source'];
