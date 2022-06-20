@@ -1,4 +1,5 @@
-// 先 寫死路徑，方便產出 DEMO 版本
+// ==================================================================
+// Init
 const DOMAIN = '172.16.92.130';
 const PORT = '818';
 const FRAMEWORK = 'trt';
@@ -208,15 +209,25 @@ function setImportDefaultModal(){
     document.getElementById("import_name").placeholder = "Ex. Defect detection";
     document.getElementById("import_thres").value = 0.9;
     updateSource("default", "import_source", "");
-    document.getElementById("import_model_app_menu").setAttribute("style", "display: none");
-    document.getElementById("import_model_app_menu_def").setAttribute("style", "cursor: auto");
-    
-    document.getElementById("import_model_file_label").textContent = "Choose file";
-    document.getElementById("import_label_file_label").textContent = "Choose file";
-    document.getElementById("import_config_file_label").textContent = "Choose file";
+    // document.getElementById("import_model_app_menu").setAttribute("style", "display: none");
+    // document.getElementById("import_model_app_menu_def").setAttribute("style", "cursor: auto");
+    document.getElementById("import_model_app_menu").setAttribute("style", "cursor: auto");
+    document.getElementById("import_model_app_menu_def").setAttribute("style", "display: none");
+
+    // document.getElementById("import_model_file_label").textContent = "Choose file";
+    // document.getElementById("import_label_file_label").textContent = "Choose file";
+    // document.getElementById("import_config_file_label").textContent = "Choose file";
+    document.getElementById("import_zip_file_label").textContent = "Choose file";
+
+    // document.getElementById("import-model-file-uploader").value = null;
+    // document.getElementById("import-label-file-uploader").value = null;
+    // document.getElementById("import-config-file-uploader").value = null;
+    document.getElementById("import-zip-file-uploader").value = null;
+
     // document.getElementById("import_model_menu").textContent = "Please select one";
     document.getElementById("import_source_type_menu").textContent = "Please select one";
     document.getElementById("import_device_menu").textContent = "Please select one";
+    
 }
 
 // ==================================================================
@@ -257,7 +268,7 @@ function clearModalDropdown(key=""){
     if(key!==""){
         key=`${key}_`;
     }
-    let keyList = [ `${key}model_list`, `${key}model_app_list`, `${key}source_type_list`, `${key}input_source_list`, `${key}device_list` ];
+    let keyList = [ `${key}model_list`, `${key}model_app_list`, `${key}source_type_list`, `${key}source_list`, `${key}device_list` ];
     keyList.forEach( function(val, idx){
         const el = document.getElementById(val);
         if(el){
@@ -309,11 +320,11 @@ function updateModelApp(eleKey, appKey){
     map[appKey].forEach(function(item, i){
         appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
     });
-
+  
     // Display
     document.getElementById(appDefNmae).style.display = "none";
     document.getElementById(appMenuName).removeAttribute("style");
-}
+  }
 
 // Update Source
 function updateSource(srcType, key="source", srcData=""){
@@ -334,8 +345,10 @@ function updateSource(srcType, key="source", srcData=""){
     const el_def = document.getElementById(`${key}_def`);
     const el_menu = document.getElementById(`${key}_menu`);
     const el_text_name = `${key}_text`;
-    const el_file_name = `${key}_file`;
+    const el_file_name = `${key}_file`; 
+    const el_file_label_name = `${el_file_name}_label`;
     const el_drop_name = `${key}_dropdown`;
+    const el_drop_menu = `${key}`
 
     // reset and block text, file, dropdown element if name "default"
     if (srcType==='default'){
@@ -361,13 +374,14 @@ function updateSource(srcType, key="source", srcData=""){
             sourceTypeEvent( [el_text_name, el_file_name, el_drop_name], ["none", "block", "none"] );
             if (srcData!==""){
                 let srcDataArr = srcData.split('/');
-                console.log(srcDataArr);
-                document.getElementById(el_file_name).textContent = srcDataArr[srcDataArr.length-1];
+                document.getElementById(el_file_label_name).textContent = srcDataArr[srcDataArr.length-1];
+                document.getElementById(el_file_label_name).value = srcData;
             }
         
         // V4L2
         } else if (srcType==='V4L2') {
             sourceTypeEvent( [el_text_name, el_file_name, el_drop_name], ["none", "none", "block"] );
+            updateSourceV4L2(`${key}`);
             if (srcData!==""){
                 el_menu.innerText = srcData;
             }
@@ -382,12 +396,12 @@ function updateSourceType(key="source_type", data=""){
     let el_list = document.getElementById(`${key}_list`);
     let el_menu = document.getElementById(`${key}_menu`);
     
-    if (data===""){
-        console.log(`Add the source type (${srcTypeList})`);
-        for(let step=0; step<srcTypeList.length; step++){
-            el_list.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="${key}" name=${ srcTypeList[step] } >${ srcTypeList[step] }</a>`;
-        }
-    } else {
+    
+    console.log(`Add the source type (${srcTypeList})`);
+    for(let step=0; step<srcTypeList.length; step++){
+        el_list.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="${key}" name=${ srcTypeList[step] } >${ srcTypeList[step] }</a>`;
+    }
+    if (data!=="") {
         if (data.includes('Video')){ 
             el_menu.textContent='Video';
         } else if (data.includes('V4L2')) {
@@ -404,7 +418,7 @@ function updateSourceType(key="source_type", data=""){
 }
 
 // Update V4L2 list
-function updateSourceV4L2(key="input_source"){
+function updateSourceV4L2(key="source"){
     console.log(`Update v4l2, element:${key}`);
     
     let el_source_list = document.getElementById(`${key}_list`);
@@ -488,7 +502,7 @@ function addSubmit() {
         const ele = document.querySelector('[data-target="file-uploader"]');
         form_data.append( "source", ele.files[0])
     } else {
-        form_data.append( "source", document.getElementById("input_source_menu").innerText.replace(/(\r\n|\n|\r)/gm, ""));
+        form_data.append( "source", document.getElementById("source_menu").innerText.replace(/(\r\n|\n|\r)/gm, ""));
     };
 
     // Sending data via web api ( /add )
@@ -534,27 +548,32 @@ function editSubmit(obj) {
     };
 
     // Create and append information
-    let form_data = new FormData();
+    let formData = new FormData();
     for ( let key in data ) {
-        console.log(`${key}:${data[key]}`);
-        form_data.append(key, data[key]);
+        console.log(`${key}->${data[key]}`);
+        formData.append(key, data[key]);
     };
-    
     // Check and append source data
     if (data['source_type']=='RTSP' ){
-        form_data.append( "source", document.getElementById("source").value);
+        formData.append( "source", document.getElementById("edit_source").value);
     } else if (data['source_type']=='Video' || data['source_type']=='Image') {
-        const ele = document.querySelector('[data-target="file-uploader"]');
-        form_data.append( "source", ele.files[0])
+        const ele = document.querySelector('#edit-source-file-uploader');
+        if( ele.files.length==0){
+            formData.append( "source", document.getElementById("edit_source_file_label").value);
+        } else {
+            formData.append( "source", ele.files[0]);
+        }
     } else {
-        form_data.append( "source", document.getElementById("input_source_menu").innerText.replace(/(\r\n|\n|\r)/gm, ""));
+        formData.append( "source", document.getElementById("edit_source_menu").innerText.replace(/(\r\n|\n|\r)/gm, ""));
     };
 
-    // Sending data via web api ( /add )
-    console.log(`Sending data: ${form_data}`);
+    for (const value of formData.values()) {
+        console.log(value);
+    }
+      
     $.ajax({
         url: SCRIPT_ROOT + `/edit/${obj.value}`,
-        data: form_data,
+        data: formData,
         processData: false,
         contentType: false,
         type: 'POST',
@@ -568,6 +587,88 @@ function editSubmit(obj) {
         },
     });
 }
+
+// import task
+function importSubmit() {
+    console.log('Import a task');
+
+    // Collection the related data from Import modal
+    let data = {
+        name: document.getElementById("import_name").value,
+        thres: document.getElementById("import_thres").value,
+        application: document.getElementById("import_model_app_menu").innerText,
+        source_type: document.getElementById("import_source_type_menu").innerText,
+        device: document.getElementById("import_device_menu").innerText,
+    };
+
+    // Create and append information
+    let form_data = new FormData();
+    for ( let key in data ) {
+        form_data.append(key, data[key]);
+    };
+
+    // Check and append source data
+    if (data['source_type']=='RTSP' ){
+        form_data.append( "source", document.getElementById("import_source").value);
+    } else if (data['source_type']=='Video' || data['source_type']=='Image') {
+        const ele = document.querySelector('[data-target="import-source-file-uploader"]');
+        form_data.append( "source", ele.files[0])
+    } else {
+        form_data.append( "source", document.getElementById("import_source_menu").innerText.replace(/(\r\n|\n|\r)/gm, ""));
+    };
+
+    // Add other information: capture from /import_proc, it's the same with the return infor of /import_1 (web api)
+    const file_name = document.getElementById('import_zip_file_label').textContent.split(".")[0];
+
+    $.ajax({
+        url: SCRIPT_ROOT + '/import_proc',
+        data: form_data,
+        processData: false,
+        contentType: false,
+        type: 'GET',
+        success: function (data, textStatus, xhr) {
+            let trg_data = data[file_name]["info"];
+            form_data.append( "path", trg_data["path"] );
+            form_data.append( "model_path", trg_data["model_path"] );
+            form_data.append( "label_path", trg_data["label_path"] );
+            form_data.append( "config_path", trg_data["config_path"] );
+            form_data.append( "json_path", trg_data["json_path"] );
+            form_data.append( "tag", trg_data["tag"] );
+    
+            // Sending data via web api ( /import_2 )
+            console.log("/import_2 ");
+            console.log("-----------------------------------");
+            for(var pair of form_data.entries()) {
+                console.log(pair[0]+ ', '+ pair[1]); 
+            }
+
+            $.ajax({
+                url: SCRIPT_ROOT + '/import_2',
+                data: form_data,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function (data, textStatus, xhr) {
+                    console.log(data);
+                    setImportDefaultModal();
+                    location.reload();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Import error");
+                    console.log(xhr);
+                    console.log(xhr.responseJSON);
+                },
+            });
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log("Extract error ( IMPORT )");
+            console.log(xhr);
+            console.log(xhr.responseJSON);
+        },
+    });
+
+}
+
 
 // Delete Task
 function delSubmit(obj) {
@@ -619,7 +720,7 @@ function addModalEvent() {
     updateGPU("device");
     updateSourceType("source_type");
     updateModel("model_list");
-    updateSourceV4L2("input_source");
+    updateSourceV4L2("source");
     document.getElementById("model_menu").disabled = false;
     document.getElementById("model_app_menu").disabled = false;
     document.getElementById("device_menu").disabled = false;
@@ -632,8 +733,7 @@ function editModalEvent(obj) {
 
     clearModalDropdown("edit");
     updateGPU("edit_device");
-    updateSourceV4L2("edit_input_source");
-
+    
     $.ajax({
         url: SCRIPT_ROOT + `/task/${obj.id}/info`,
         type: "GET",
@@ -642,8 +742,10 @@ function editModalEvent(obj) {
             document.getElementById("edit_name").value = data["name"];
             // update source type and source
             updateSourceType("edit_source_type", data["source_type"]);
+
             // change source
-            document.getElementById("edit_source_def").textContent = data["source"];
+            updateSource(data["source_type"], "edit_source", data["source"]);
+
             // update model information and disable it
             document.getElementById("edit_model_menu").textContent = data["model"];
             document.getElementById("edit_model_menu").disabled = true;
@@ -672,8 +774,8 @@ function importModalEvent() {
     clearModalDropdown("import");
     updateGPU("import_device");
     updateSourceType("import_source_type");
-    updateSourceV4L2("import_input_source");
-    
+    updateSourceV4L2("import_source");
+
     document.getElementById("import_model_app_menu").disabled = false;
     document.getElementById("import_device_menu").disabled = false;
     

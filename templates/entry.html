@@ -393,12 +393,12 @@
                                     </div>
                                     <!-- Drop down -->
                                     <div id="source_dropdown" class="dropdown m-0" style="display: none;">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="input_source_menu"
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="source_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
-                                        <div id="input_source_list" class="dropdown-menu animated--fade-in"
-                                            aria-labelledby="input_source_menu">
+                                        <div id="source_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="source_menu">
                                         </div>
                                     </div>
                                 </div>
@@ -582,12 +582,12 @@
                                     </div>
                                     <!-- Drop down -->
                                     <div id="edit_source_dropdown" class="dropdown m-0" style="display: none;">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="edit_input_source_menu"
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="edit_source_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
-                                        <div id="edit_input_source_list" class="dropdown-menu animated--fade-in"
-                                            aria-labelledby="edit_input_source_menu">
+                                        <div id="edit_source_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="edit_source_menu">
                                         </div>
                                     </div>
                                 </div>
@@ -647,7 +647,6 @@
     </div>
 
     <!-- Import Dialog-->
-    <!-- Abbr imp -->
     <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog full" role="document">
             <div class="modal-content full">
@@ -683,55 +682,20 @@
                         </div>
                     </div>
 
-                    <!-- model and Label -->
-                    <div class="row">
-                        <!-- model -->
-                        <div class="col-lg-6">
-                            <div class="card mb-4">
-                                <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Model</h6>
-                                </div>
-                                <div class="card-body custom">
-                                    <!-- Input File -->
-                                    <div id="import_model_file" class="custom-file" style="height:100%;">
-                                        <input type="file" style="height:100%" class="custom-file-input" data-target="model-file-uploader" id="model-file-uploader">
-                                        <label id="import_model_file_label" class="custom-file-label" style="height:100%">Choose file</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Label -->
-                        <div class="col-lg-6">
-                            <div class="card mb-4">
-                                <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Label</h6>
-                                </div>
-                                <div class="card-body custom">
-                                    <!-- Input File -->
-                                    <div id="import_label_file" class="custom-file" style="height:100%;">
-                                        <input type="file" style="height:100%" class="custom-file-input" data-target="label-file-uploader" id="label-file-uploader">
-                                        <label id="import_label_file_label" class="custom-file-label" style="height:100%">Choose file</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Config type and application -->
+                    <!-- ZIP and application -->
                     <div class="row">
 
                         <!-- Configuration -->
                         <div class="col-lg-6">
                             <div class="card mb-4">
                                 <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Config</h6>
+                                    <h6 class="m-0 font-weight-bold">ZIP File</h6>
                                 </div>
                                 <div class="card-body custom">
                                     <!-- Input File -->
-                                    <div id="import_config_file" class="custom-file" style="height:100%;">
-                                        <input type="file" style="height:100%" class="custom-file-input" data-target="config-file-uploader" id="config-file-uploader">
-                                        <label id="import_config_file_label" class="custom-file-label" style="height:100%">Choose file</label>
+                                    <div id="import_zip_file" class="custom-file" style="height:100%;">
+                                        <input type="file" style="height:100%" class="custom-file-input" data-target="import-zip-file-uploader" id="import-zip-file-uploader">
+                                        <label id="import_zip_file_label" class="custom-file-label" style="height:100%">Choose file</label>
                                     </div>
                                 </div>
                             </div>
@@ -750,7 +714,7 @@
                                             style="display: none"> Please select one </a>
                                         <a class="btn btn-sm dropdown-toggle" id="import_model_app_menu_def" 
                                             style="cursor: auto;"></a>
-                                        <div id="import_model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="edit_model_app_menu">
+                                        <div id="import_model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="import_model_app_menu">
                                         </div>
                                     </div>
                                 </div>
@@ -774,13 +738,7 @@
                                             Please select one
                                         </button>
                                         <div id="import_source_type_list" class="dropdown-menu animated--fade-in"
-                                            aria-labelledby="import_source_type">
-                                            <!-- <a class="dropdown-item" href="#" id="import_source_type"
-                                                onclick="dropdownSelectEvent(this); return false;">V4L2</a>
-                                            <a class="dropdown-item" href="#" id="import_source_type"
-                                                onclick="dropdownSelectEvent(this); return false;">Video</a>
-                                            <a class="dropdown-item" href="#" id="import_source_type"
-                                                onclick="dropdownSelectEvent(this); return false;">RTSP</a> -->
+                                            aria-labelledby="import_source_type_menu">
                                         </div>
                                     </div>
                                 </div>
@@ -807,12 +765,12 @@
                                     </div>
                                     <!-- Drop down -->
                                     <div id="import_source_dropdown" class="dropdown m-0" style="display: none;">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="import_input_source_menu"
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="import_source_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
-                                        <div id="import_input_source_list" class="dropdown-menu animated--fade-in"
-                                            aria-labelledby="import_input_source_menu">
+                                        <div id="import_source_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="import_source_menu">
                                         </div>
                                     </div>
                                 </div>
@@ -862,8 +820,8 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal"
                         onclick="setImportDefaultModal(); return false;">Cancel</button>
-                    <a id="modal_import_submit" class="btn btn-primary" href="#" data-dismiss="modal"
-                        onclick="importSubmit(); return false;">Import</a>
+                    <button id="modal_import_submit" class="btn btn-primary" href="#" data-dismiss="modal"
+                        onclick="importSubmit(); return false;" disabled>Import</button>
                 </div>
             </div>
         </div>
