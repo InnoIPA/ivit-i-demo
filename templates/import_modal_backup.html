@@ -1,0 +1,223 @@
+    <!-- OLD -->
+    <!-- Import Dialog-->
+    
+    <div class="modal fade" id="importModal_old" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog full" role="document">
+            <div class="modal-content full">
+                <!-- Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Import a Task</h5>
+                    
+                    <button id="import_sub_title_add" class="modal-sub-title add" type="button" 
+                        data-dismiss="modal" data-target="#addModal" data-toggle="modal" onclick="addModalEvent()">Add</button>
+                    <a class="modal-sub-title divide">|</a>
+                    <button id="import_sub_title_import" class="modal-sub-title import" type="button" data-dismiss="modal" data-target="#importModal" data-toggle="modal" style="opacity: 1;" disabled>Import</button>
+
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="setImportDefaultModal(); return false;">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+
+                    <!-- Name -->
+                    <div class="row">
+                        <div class="col">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Name</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <input id="import_name" type="text" class="bg-light border-0 " placeholder="">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- model and Label -->
+                    <div class="row">
+                        <!-- model -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Model</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <!-- Input File -->
+                                    <div id="import_model_file" class="custom-file" style="height:100%;">
+                                        <input type="file" style="height:100%" class="custom-file-input" data-target="model-file-uploader" id="model-file-uploader">
+                                        <label id="import_model_file_label" class="custom-file-label" style="height:100%">Choose file</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Label -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Label</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <!-- Input File -->
+                                    <div id="import_label_file" class="custom-file" style="height:100%;">
+                                        <input type="file" style="height:100%" class="custom-file-input" data-target="label-file-uploader" id="label-file-uploader">
+                                        <label id="import_label_file_label" class="custom-file-label" style="height:100%">Choose file</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Config type and application -->
+                    <div class="row">
+
+                        <!-- Configuration -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Config</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <!-- Input File -->
+                                    <div id="import_config_file" class="custom-file" style="height:100%;">
+                                        <input type="file" style="height:100%" class="custom-file-input" data-target="config-file-uploader" id="config-file-uploader">
+                                        <label id="import_config_file_label" class="custom-file-label" style="height:100%">Choose file</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Application -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Application</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <a class="btn btn-sm dropdown-toggle" type="a" id="import_model_app_menu" 
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+                                            style="display: none"> Please select one </a>
+                                        <a class="btn btn-sm dropdown-toggle" id="import_model_app_menu_def" 
+                                            style="cursor: auto;"></a>
+                                        <div id="import_model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="edit_model_app_menu">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input type and source -->
+                    <div class="row">
+
+                        <!-- Type -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Input Type</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="import_source_type_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="import_source_type_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="import_source_type">
+                                            <!-- <a class="dropdown-item" href="#" id="import_source_type"
+                                                onclick="dropdownSelectEvent(this); return false;">V4L2</a>
+                                            <a class="dropdown-item" href="#" id="import_source_type"
+                                                onclick="dropdownSelectEvent(this); return false;">Video</a>
+                                            <a class="dropdown-item" href="#" id="import_source_type"
+                                                onclick="dropdownSelectEvent(this); return false;">RTSP</a> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Source -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Input Source</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <!-- Default -->
+                                    <a class="btn btn-sm dropdown-toggle" id="import_source_def" style="cursor: auto;"></a>
+                                    <!-- Input Text -->
+                                    <div id="import_source_text" style="display: none">
+                                        <input id="import_source" type="text" class="bg-light border-0" placeholder="" aria-label="source">
+                                    </div>
+                                    <!-- Input File -->
+                                    <div id="import_source_file" class="custom-file" style="height:100%; display: none;">
+                                        <input type="file" style="height:100%" class="custom-file-input" data-target="import-source-file-uploader" id="import-source-file-uploader">
+                                        <label id="import_source_file_label" class="custom-file-label" style="height:100%">Choose file</label>
+                                    </div>
+                                    <!-- Drop down -->
+                                    <div id="import_source_dropdown" class="dropdown m-0" style="display: none;">
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="import_source_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="import_source_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="import_source_menu">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Device and Thres -->
+                    <div class="row">
+
+                        <!-- Device -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Accelerator</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="import_device_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="import_device_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="import_device_menu">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thres -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Threshold</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <input id="import_thres" type="text" class="bg-light border-0"
+                                        placeholder="" aria-label="import_thres">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"
+                        onclick="setImportDefaultModal(); return false;">Cancel</button>
+                    <button id="modal_import_submit" class="btn btn-primary" href="#" data-dismiss="modal"
+                        onclick="importSubmit(); return false;">Import</button>
+                </div>
+            </div>
+        </div>
+    </div>
