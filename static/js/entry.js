@@ -1,8 +1,8 @@
 // ==================================================================
 // Init
 const DOMAIN = '172.16.92.130';
-const PORT = '818';
-const FRAMEWORK = 'trt';
+const PORT = '819';
+const FRAMEWORK = 'vino';
 const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
 let edit_mode = false;
 
