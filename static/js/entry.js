@@ -290,9 +290,11 @@ function updateModel(key="model_list"){
         success: function (data, textStatus, xhr) {
             let el = document.getElementById(`${key}`);
             map = data;
+
             for (const key of Object.keys(data)) {
                 el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="model" name="${key}">${key}</a>`;
             };
+
         },
         error: function (xhr, textStatus, errorThrown) {
             console.log("Error in modelMap");
@@ -317,9 +319,14 @@ function updateModelApp(eleKey, appKey){
     appMenu.textContent = "Please select one";
     
     // Update content
-    map[appKey].forEach(function(item, i){
-        appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
-    });
+
+    if(map[appKey].length===0){
+        appMenu.textContent = `No application`;
+    }else{
+        map[appKey].forEach(function(item, i){
+            appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
+        });
+    }
   
     // Display
     document.getElementById(appDefNmae).style.display = "none";
@@ -462,7 +469,7 @@ function updateGPU(el_key="device"){
     });
 }
 
-// ==================================================================
+// ===============================================s===================
 // Behavior
 
 // Add Task
