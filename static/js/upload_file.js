@@ -47,10 +47,15 @@ function updateTagApp(eleKey, tagKey){
     dataType: "json",
     success: function (data, textStatus, xhr) {
         console.log(data);
-        data[tagKey].forEach(function(item, i){
-          console.log(`Found application ${item}`);
-          appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
-        });
+        if (data[tagKey].length===0){
+          appMenu.textContent = "No applications"
+        }else{
+          data[tagKey].forEach(function(item, i){
+            console.log(`Found application ${item}`);
+            appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
+          });
+        }
+
     },
     error: function (xhr, textStatus, errorThrown) {
         console.log("Error in tag_app");
@@ -100,9 +105,11 @@ async function importZipFileUpload(e) {
             
             updateTagApp("import_model", data["tag"]);
 
-            let intervalTime = 5000;
-
-            timer = window.setInterval(function(){ getConvertStatus(data["name"]) }, intervalTime);
+            getConvertStatus(data["name"]);
+            if(convertStatus===false){
+              let intervalTime = 5000;
+              timer = window.setInterval(function(){ getConvertStatus(data["name"]) }, intervalTime);
+            }
         },
         error: function (xhr, textStatus, errorThrown) {
             console.log("Extract error ( IMPORT )");
@@ -120,6 +127,7 @@ async function importZipFileUpload(e) {
   }
 }
 
+let convertStatus = false;
 function getConvertStatus(task_name) {
   $.ajax({
     type: 'GET',
@@ -128,6 +136,7 @@ function getConvertStatus(task_name) {
     success: function (data){
       if (data === "done"){
         alert("Convert finished !!!");
+        convertStatus = true;
         window.clearInterval(timer);
         document.getElementById("modal_import_submit").disabled = false;
       }else{
