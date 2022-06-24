@@ -313,13 +313,17 @@ function updateModelApp(eleKey, appKey){
     
     let appList = document.getElementById(appListName);
     let appMenu = document.getElementById(appMenuName);
-    
+
+    // Display
+    document.getElementById(appDefNmae).style.display = "none";
+    document.getElementById(appMenuName).style.display = "block";
+    document.getElementById(appMenuName).removeAttribute("style");
+
     // Clear and set default
     appList.innerHTML = "";
     appMenu.textContent = "Please select one";
     
     // Update content
-
     if(map[appKey].length===0){
         appMenu.textContent = `No application`;
     }else{
@@ -328,9 +332,6 @@ function updateModelApp(eleKey, appKey){
         });
     }
   
-    // Display
-    document.getElementById(appDefNmae).style.display = "none";
-    document.getElementById(appMenuName).removeAttribute("style");
   }
 
 // Update Source
@@ -740,12 +741,16 @@ function editModalEvent(obj) {
 
     clearModalDropdown("edit");
     updateGPU("edit_device");
+    updateModel("edit_model_list");
     
     $.ajax({
         url: SCRIPT_ROOT + `/task/${obj.id}/info`,
         type: "GET",
         dataType: "json",
         success: function (data, textStatus, xhr) {
+
+            console.log(data);
+
             document.getElementById("edit_name").value = data["name"];
             // update source type and source
             updateSourceType("edit_source_type", data["source_type"]);
@@ -756,12 +761,12 @@ function editModalEvent(obj) {
             // update model information and disable it
             document.getElementById("edit_model_menu").textContent = data["model"];
             document.getElementById("edit_model_menu").disabled = true;
+            
             // model_app
             // NOTICE!!!!!!! must add application choice in here....
-            document.getElementById("edit_model_app_menu").disabled = true;
-            document.getElementById("edit_model_app_menu_def").style.display = 'none';
-            document.getElementById("edit_model_app_menu").removeAttribute('style');
+            updateModelApp("edit_model", data["model"]);
             document.getElementById("edit_model_app_menu").textContent = data["application"]["name"];
+            
             // update device information 
             document.getElementById("edit_device_menu").textContent = data['device'];
             document.getElementById("edit_device_menu").disabled = true;
@@ -769,7 +774,6 @@ function editModalEvent(obj) {
             document.getElementById("edit_thres").value = data['thres'];
             // set the value of the submit button to uuid
             document.getElementById("modal_edit_submit").value = obj.id;
-            
         }
     });
 }
