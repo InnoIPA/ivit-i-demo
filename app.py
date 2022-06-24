@@ -58,10 +58,14 @@ def webapi(cmds:list, method:str='GET', data=None):
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    task_info = json.loads(webapi(['task'], 'GET'))
+    # for status, task_list in task_info.items():
+    #     for idx, task in enumerate(task_list):
+    #         task_info[status][idx]["name"]=task["name"].replace("_", " ")
+        
     
-    app_list = json.loads(webapi(['task'], 'GET'))
     # logging.info('Container status: {}'.format(webapi(['status'], 'GET')))
-    return render_template('entry.html', data=app_list)
+    return render_template('entry.html', data=task_info)
 
 
 @app.route('/temp', methods=['GET', 'POST'])
