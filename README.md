@@ -1,5 +1,5 @@
-# init-i-demo
-The web demo site for init-i
+# ivit-i-demo
+The web demo site for ivit-i
 
 # Requirements
 * Install [docker](https://max-c.notion.site/Install-Docker-9a0927c9b8aa4455b66548843246152f)
@@ -8,7 +8,7 @@ The web demo site for init-i
 * Download the repository
     ```bash
     # Donwload repo and install python package
-    $ git clone https://github.com/InnoIPA/init-i-demo.git && cd init-i-demo
+    $ git clone https://github.com/InnoIPA/ivit-i-demo.git && cd ivit-i-demo
     # Extract the library
     $ unzip static/vendor.zip
     ```
