@@ -174,7 +174,7 @@ stream_socket.on('images', function(msg){
 
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 註冊 result 事件
-let detsList;
+let detsList="";
 let gpuInfoCount = 0;
 let info = new Array;
 stream_socket.on('results', function(msg){
@@ -193,24 +193,20 @@ stream_socket.on('results', function(msg){
     
     // 更新 LOG
     const result_element=document.getElementById('result');
-    detsList = `<p> Frame ID: ${frameID}</p>`;
-    if (Array.isArray(dets)) {
-        dets.forEach((v,i) => {
-            let val = v;
-            let val_ls = Object.keys(val);
-            // 只顯示一組資訊的方式
-                // detsList += `<p>Label: ${v.label}</p>`;
-                // detsList += `<p>Score: ${Number(v.score).toFixed(2)}</p>`;
-                // detsList += `<p>Bbox (x1, y1, x2, y2): (${v.xmin}, ${v.ymin}, ${v.xmax}, ${v.ymax})</p>`;
 
-            // 目前採用顯示多個的方式
-            detsInfo = "<p>";
-            for(i==0; i<val_ls.length; i++){
-                detsInfo += `${val[val_ls[i]]} \t`;    
-            }
-            detsInfo += '</p>';
-            detsList += detsInfo;
-        });
+    detsList += `<p> Frame ID: ${frameID} </p>`;
+    if (Array.isArray(dets)) {
+
+        for(let i=0; i<dets.length; i++){
+            detsList += `[ ${i} ] \t`;
+            
+            let detail = Object.keys(dets[i]);
+            detail.forEach(function(key, index){
+                detsList += `${key}: ${dets[i][key]} \t`;
+            })
+            detsList += "</p>";
+        }
+        detsList += "<hr>";
     }
     info.push(detsList);
     if(info.length>10){ info.shift(); }
