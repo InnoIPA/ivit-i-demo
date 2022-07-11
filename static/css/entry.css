@@ -86,3 +86,33 @@ button.modal-sub-title {
     background-color: transparent;
     border: 0;
 }
+
+.app-sel-all, 
+.app-opt {
+    height: 1rem;
+    width: 1rem;
+}
+.app-opt-text {
+    font-size: 0.85rem;
+    padding:0 1rem;
+    color: #858796;
+}
+
+.app-search:focus {
+    outline: none !important;
+
+}
+.label-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.image {
+    max-height:100%;
+    max-width:100%;
+    padding: 5px;
+}
+
+td.application {
+    font-size: 0.85rem;
+}

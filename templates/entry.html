@@ -51,13 +51,13 @@
         body {
             height: 100%;
         }
-        footer {
+        /* footer {
             position: absolute;
             width: 100%;
             height: 60px;
             padding: 0 !important;
             bottom: 0;
-        }
+        } */
     </style>
 </head>
 
@@ -91,7 +91,7 @@
                                 <h3 id="title_framework" style="float: right; margin-left: 20px;" class="h3 custom ml-3 text-gray-300">( OpenVINO )</h3>
                             </div>
                             
-                            <a href="#" onclick="addModalEvent(); return false;" class="btn btn-circle"
+                            <a href="#" onclick="addModalEvent(true); return false;" class="btn btn-circle"
                                 data-toggle="modal" data-target="#addModal">
                                 <!-- <i class="fa fa-plus-circle text-gray-500 add-app"></i> -->
                                 <span class="material-symbols-outlined custom">add</span>
@@ -177,8 +177,8 @@
                                                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                                                         aria-labelledby="{{ app['uuid']}}_more">
                                                         <!-- <div class="dropdown-header">Option</div> -->
-                                                        <a id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#editModal" onclick="editModalEvent(this);return false;" disabled>edit</a>
-                                                        <a id="{{ app['uuid'] }}" value="{{ app['name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModalEvent(this);">delete</a>
+                                                        <button id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#editModal" onclick="editModalEvent(this);return false;">edit</button>
+                                                        <button id="{{ app['uuid'] }}" value="{{ app['name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModalEvent(this);">delete</button>
                                                     </div>
                                                 </div>
                                             </td>
@@ -224,8 +224,8 @@
                                                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                                                         aria-labelledby="{{ app['uuid']}}_more">
                                                         <!-- <div class="dropdown-header">Option</div> -->
-                                                        <a id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#editModal" onclick="editModalEvent(this);return false;" disabled>edit</a>
-                                                        <a id="{{ app['uuid'] }}" value="{{ app['name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModalEvent(this);return false;">delete</a>
+                                                        <button id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#editModal" onclick="editModalEvent(this);return false;" disabled>edit</button>
+                                                        <button id="{{ app['uuid'] }}" value="{{ app['name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModalEvent(this);return false;">delete</button>
                                                     </div>
                                                 </div>
                                             </td>
@@ -254,6 +254,8 @@
             </div>
         </div>
     </footer>
+    <!-- End of Footer -->
+
     <!-- End of Footer -->
 
     <!-- Scroll to Top Button-->
@@ -292,8 +294,7 @@
                                     <h6 class="m-0 font-weight-bold">Name</h6>
                                 </div>
                                 <div class="card-body custom">
-                                    <input id="name" type="text" class="bg-light border-0 "
-                                        placeholder="">
+                                    <input id="name" type="text" class="bg-light border-0 " placeholder="">
                                 </div>
                             </div>
 
@@ -330,14 +331,16 @@
                                     <h6 class="m-0 font-weight-bold">Application</h6>
                                 </div>
                                 <div class="card-body custom">
-                                    <div class="dropdown m-0">
-                                        <a class="btn btn-sm dropdown-toggle" type="a" 
-                                            id="model_app_menu" data-toggle="dropdown" aria-haspopup="true" 
-                                            aria-expanded="false" style="display: none"> Please select one </a>
-                                        <a class="btn btn-sm dropdown-toggle" id="model_app_menu_def" 
-                                            style="cursor: auto;"></a>
-                                        <div id="model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="model_app_menu">
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
+                                        <div class="dropdown m-0">
+                                            <a class="btn btn-sm dropdown-toggle" type="a" 
+                                                id="model_app_menu" data-toggle="dropdown" aria-haspopup="true" 
+                                                aria-expanded="false" style="display: none"> Please select one </a>
+                                            <a class="btn btn-sm dropdown-toggle" id="model_app_menu_def" 
+                                                style="cursor: auto;"></a>
+                                            <div id="model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="model_app_menu"></div>
                                         </div>
+                                        <!-- <a id="bt_setup_app" class="btn" href="#" onclick="appModalEvent(); return false;" data-toggle="modal" data-target="#appModal" style="display: None;padding: 0%;">Setup</a> -->
                                     </div>
                                 </div>
                             </div>
@@ -451,8 +454,10 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal"
                         onclick="setDefaultModal(); return false;">Cancel</button>
-                    <a id="modal_add_submit" class="btn btn-primary" href="#" data-dismiss="modal"
-                        onclick="addSubmit(); return false;">Add</a>
+                    <button name="bt_modal_app" class="btn btn-primary" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
+                        onclick="appModalEvent(); return false;">Next</button>
+                    <!-- <a id="modal_add_submit" class="btn btn-primary" href="#" data-dismiss="modal"
+                        onclick="addSubmit(); return false;">Add</a> -->
                 </div>
             </div>
         </div>
@@ -520,11 +525,13 @@
                                     <h6 class="m-0 font-weight-bold">Application</h6>
                                 </div>
                                 <div class="card-body custom">
-                                    <div class="dropdown m-0">
-                                        <a class="btn btn-sm dropdown-toggle" type="a" id="edit_model_app_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="display: none"> Please select one </a>
-                                        <a class="btn btn-sm dropdown-toggle" id="edit_model_app_menu_def" style="cursor: auto;"></a>
-                                        <div id="edit_model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="edit_model_app_menu">
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
+                                        <div class="dropdown m-0">
+                                            <a class="btn btn-sm dropdown-toggle" type="a" id="edit_model_app_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="display: none"> Please select one </a>
+                                            <a class="btn btn-sm dropdown-toggle" id="edit_model_app_menu_def" style="cursor: auto;"></a>
+                                            <div id="edit_model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="edit_model_app_menu"></div>
                                         </div>
+                                        <!-- <a id="edit_bt_setup_app" class="btn" href="#" onclick="appModalEvent(); return false;" data-toggle="modal" data-target="#appModal" style="padding: 0%;">Setup</a> -->
                                     </div>
                                 </div>
                             </div>
@@ -630,9 +637,10 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal"
                         onclick="setEditDefaultModal(); return false;">Cancel</button>
-
-                    <a id="modal_edit_submit" class="btn btn-primary" href="#" data-dismiss="modal" value=""
-                        onclick="editSubmit(this); return false;">Edit</a>
+                        <button name="bt_modal_app" class="btn btn-primary" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
+                        onclick="appModalEvent(); return false;">Next</button>
+                    <!-- <a id="modal_edit_submit" class="btn btn-primary" href="#" data-dismiss="modal" value=""
+                        onclick="editSubmit(this); return false;">Edit</a> -->
                 </div>
             </div>
         </div>
@@ -700,15 +708,17 @@
                                     <h6 class="m-0 font-weight-bold">Application</h6>
                                 </div>
                                 <div class="card-body custom">
-                                    <div class="dropdown m-0">
-                                        <a class="btn btn-sm dropdown-toggle" type="a" id="import_model_app_menu" 
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
-                                            style="display: none"> Please select one </a>
-                                        <a class="btn btn-sm dropdown-toggle" id="import_model_app_menu_def" 
-                                            style="cursor: auto;"></a>
-                                        <div id="import_model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="import_model_app_menu">
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
+                                        <div class="dropdown m-0">
+                                            <a class="btn btn-sm dropdown-toggle" type="a" id="import_model_app_menu" 
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+                                                style="display: none"> Please select one </a>
+                                            <a class="btn btn-sm dropdown-toggle" id="import_model_app_menu_def" style="cursor: auto;"></a>
+                                            <div id="import_model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="import_model_app_menu"></div>
                                         </div>
+                                        <!-- <a id="import_bt_setup_app" class="btn" href="#" onclick="appModalEvent(); return false;" data-toggle="modal" data-target="#appModal" style="display: none;padding: 0%;">Setup</a> -->
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -801,7 +811,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <input id="import_thres" type="text" class="bg-light border-0"
-                                        placeholder="" aria-label="import_thres">
+                                        aria-label="import_thres">
                                 </div>
                             </div>
                         </div>
@@ -812,8 +822,10 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal"
                         onclick="setImportDefaultModal(); return false;">Cancel</button>
-                    <button id="modal_import_submit" class="btn btn-primary" href="#" data-dismiss="modal"
-                        onclick="importSubmit(); return false;" disabled>Import</button>
+                    <button name="bt_modal_app" class="btn btn-primary" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
+                        onclick="appModalEvent(); return false;">Next</button>
+                    <!-- <button id="modal_import_submit" class="btn btn-primary" href="#" data-dismiss="modal"
+                        onclick="importSubmit(); return false;" disabled>Import</button> -->
                 </div>
             </div>
         </div>
@@ -879,6 +891,115 @@
         </div>
     </div>
 
+    <!-- Application Dialog-->
+    <div class="modal fade" id="appModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+
+        <div class="modal-dialog full" role="document">
+
+            <div class="modal-content full">
+
+                <!-- Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Application Setting</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+
+                    <!-- Application -->
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Application Name</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <input id="app_name" type="text" class="bg-light border-0 " placeholder="" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Depend on -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Depend on</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <a class="btn btn-sm dropdown-toggle" type="a" id="label_list_menu" 
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Please select one </a>
+                                        <div id="label_list" class="dropdown-menu label-list" aria-labelledby="label_list_menu">
+                                            
+                                            <input class="dropdown-item app-search" type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()" >
+                                            
+                                            <div class="dropdown-item d-flex flex-row align-items-center">
+                                                <input class="app-sel-all" type="checkbox" id="sel_all_label" onclick="toggle(this)" checked>
+                                                <a class="app-opt-text" >Select All</a>
+                                            </div>
+                                            <!-- <div class="dropdown-item d-flex flex-row align-items-center">
+                                                <input class="app-opt" type="checkbox" >
+                                                <a class="app-opt-text">Test</a>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Frame -->
+                    <div id="area_div" class="row" style="display:none">
+                        <div class="col">
+                            <div class="card mb-4">
+                                <div class="card-header custom d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold">Frame</h6>
+                                    <a class="" onclick="clearCanvas()" style="cursor: pointer;">clear</a>
+                                </div>
+                                <div class="card-body custom">
+                                    <!-- <img id="app_frame" class="image"> -->
+                                    <canvas id="app_canvas" style="width: 100%; height:100%;background-size: 100% 100%; cursor: crosshair;"></canvas>
+                                    <!-- <canvas id="app_canvas" style="width: 500px"></canvas> -->
+                                    <div>
+                                        <table class="table application">
+                                            <tr>
+                                                <td class="application" >
+                                                    <label>Scale</label>
+                                                </td>
+                                                <td class="application">
+                                                    <label id="app_scale"></label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="application">
+                                                    <label>Info</label>
+                                                </td>
+                                                <td class="application">
+                                                    <label id="app_info"></label>
+                                                </td>
+                                            </tr>
+                                        </table>        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button id="modal_back_bt" class="btn btn-secondary" type="button" data-dismiss="modal">Back</button>
+                    <button id="modal_app_submit" class="btn btn-primary" type="button" data-dismiss="modal" onclick="delSubmit(this); return false;">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Socket.IO 的 CDN 連結 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"
         integrity="sha512-WL6WGKMPBiM9PnHRYIn5YEtq0Z8XP4fkVb4qy7PP4vhmYQErJ/dySyXuFIMDf1eEYCXCrQrMJfkNwKc9gsjTjA=="
@@ -900,6 +1021,7 @@
 
     <!-- Custom JS -->
     <script type="text/javascript" src="static/js/entry.js"></script>
+    <script type="text/javascript" src="static/js/app_setting.js"></script>
     <script type="text/javascript" src="static/js/upload_file.js"></script>
     
 </body>
