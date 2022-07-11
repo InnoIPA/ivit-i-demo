@@ -2,7 +2,7 @@
 source "$(dirname $(realpath $0))/utils.sh"
 
 # setup parameters
-docker_image="init-i-demo"
+docker_image="ivit-i-demo"
 docker_name=${docker_image}
 workspace="/workspace"
 web=false
@@ -12,7 +12,7 @@ command="bash"
 
 # Help information
 function help(){
-	echo "Run the iNIT-I-DEMO environment."
+	echo "Run the iVIT-I-DEMO environment."
 	echo
 	echo "Syntax: scriptTemplate [-f|wsh]"
 	echo "options:"

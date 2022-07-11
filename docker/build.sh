@@ -3,7 +3,7 @@ ROOT=$(dirname `realpath $0`)
 source "${ROOT}/utils.sh"
 
 # Concate name
-IMAGE_NAME="init-i-demo"
+IMAGE_NAME="ivit-i-demo"
 printd "Concatenate docker image name: ${IMAGE_NAME}" Cy
 
 # Build the docker image
