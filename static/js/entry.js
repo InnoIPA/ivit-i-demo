@@ -4,7 +4,14 @@ const DOMAIN = '172.16.92.130';
 const PORT = '819';
 const FRAMEWORK = 'vino';
 const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
-let edit_mode = false;
+
+
+// ==================================================================
+// Define global variable "model_app_map", it will updated by updateModel
+let model_app_map;   
+let model_task_map;  
+let trg_model_name;
+let trg_task_uuid;
 
 // ==================================================================
 // Start Up Function
@@ -97,10 +104,40 @@ function errNameEvent(uuid){
 }
 
 // ==================================================================
+// Testing
+function atLeastOneRadio() {
+    var radios = document.querySelectorAll('.app-opt:checked');
+    var value = radios.length>0 ? radios.length: 0;
+    document.getElementById("label_list_menu").textContent = `Select ${value} Labels`
+    console.log(checkLabelFunction());
+}
+
+// check function
+function checkLabelFunction() {
+
+    let a, i, depend_on=[], checkboxes;
+    
+    div = document.getElementById("label_list");
+    optDiv = div.getElementsByTagName("div");
+    a = div.getElementsByTagName("a");
+    checkboxes = div.getElementsByClassName("app-opt");
+    
+    for (i = 0; i < checkboxes.length; i++) {
+        if ( checkboxes[i].checked ){
+            if(a[i+1].innerText !== "Select All"){
+                depend_on.push( a[i+1].innerText );    
+    }}}
+
+    return depend_on;
+}
+
+// ==================================================================
 // Start Up
 
 // Setting up when start the web demo up
+let isCheckedAll = true;
 $(document).ready(function () {
+
     // 更新子標題
     let af_title;
     if(FRAMEWORK==='vino'){
@@ -116,27 +153,32 @@ $(document).ready(function () {
     for(let i=0; i<ele.length; i++){
         // let stats = ( ele[i].checked ? 'run' : 'stop' );
         const uuid = ele[i].value;
-        $.ajax({
-            url: SCRIPT_ROOT + `/task/${uuid}/status`,
-            type: "GET",
-            dataType: "json",
-            success: function (data, textStatus, xhr) {
-                // 如果 ready == false 的話就沒有 status
-                let stats = data;
-                if ( stats==='run'){
-                    ele[i].checked=true;
-                } else{
-                    ele[i].checked=false;
-                };
-                statusEvent(uuid, stats, true); 
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                console.log("Error in capture status");
-                console.log(xhr);
-            },
-        });
+        
+        if ( uuid !== "" && uuid.length>=6 ){
+            $.ajax({
+                url: SCRIPT_ROOT + `/task/${uuid}/status`,
+                type: "GET",
+                dataType: "json",
+                success: function (data, textStatus, xhr) {
+                    // 如果 ready == false 的話就沒有 status
+                    let stats = data;
+                    if ( stats==='run'){
+                        ele[i].checked=true;
+                    } else{
+                        ele[i].checked=false;
+                    };
+                    statusEvent(uuid, stats, true); 
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error in capture status");
+                    console.log(xhr);
+                },
+            });
+        }
+
     }
     
+    // When switch change
     $('.switch :checkbox').change(function(){
         
         let stats = ( this.checked ? 'run' : 'stop' )
@@ -173,6 +215,7 @@ $(document).ready(function () {
             },
         });
     });
+
 });
 
 // ==================================================================
@@ -191,7 +234,7 @@ function setDefaultModal(){
     document.getElementById("device_menu").textContent = "Please select one";
 }
 
-// Set default value on Edit Modal 
+// Set default value on Edit 
 function setEditDefaultModal(){
     document.getElementById("edit_name").placeholder = "Ex. Defect detection";
     document.getElementById("edit_thres").value = 0.9;
@@ -207,7 +250,7 @@ function setEditDefaultModal(){
 // Set default value on Import Modal 
 function setImportDefaultModal(){
     document.getElementById("import_name").placeholder = "Ex. Defect detection";
-    document.getElementById("import_thres").value = 0.9;
+    
     updateSource("default", "import_source", "");
     // document.getElementById("import_model_app_menu").setAttribute("style", "display: none");
     // document.getElementById("import_model_app_menu_def").setAttribute("style", "cursor: auto");
@@ -228,12 +271,11 @@ function setImportDefaultModal(){
     document.getElementById("import_source_type_menu").textContent = "Please select one";
     document.getElementById("import_device_menu").textContent = "Please select one";
     
+    document.getElementById("import_thres").value = 0.9;
 }
 
 // ==================================================================
 // Update & Control Dialog ( Modal )
-// Define global variable "map", it will updated by updateModel
-let map;    
 
 // Select dropdown object event
 function dropdownSelectEvent(obj) {
@@ -252,17 +294,17 @@ function dropdownSelectEvent(obj) {
     // 如果是類別的話要更新 APP 清單
     if (srcKey === 'model'){    
         updateModelApp(srcKey, srcType);
-    } 
+    }
     else if ( srcKey.includes("device") ) {
         document.getElementById(`${srcKey}_menu`).textContent = `${srcType}`;
         document.getElementById(`${srcKey}_menu`).value = `${srcType}`;
     }
-    else if ( srcKey.includes("source")) {
+    else if ( srcKey.includes("source_type")) {
         updateSource(srcType, trgKey, "");
     };
 }
 
-// Clear modal
+// Clear modal dropdown
 function clearModalDropdown(key=""){
     console.log(`Clear ${key} modal drop down item ...`);
     if(key!==""){
@@ -279,27 +321,49 @@ function clearModalDropdown(key=""){
     });
 }
 
-// Add Model arguments and update the "map" ( global variable )
-function updateModel(key="model_list"){
-    console.log(`Update model, element:${key}`);
-    
+function getModelApp(key){
     $.ajax({
         url: SCRIPT_ROOT + `/model_app`,
         type: "GET",
         dataType: "json",
         success: function (data, textStatus, xhr) {
             let el = document.getElementById(`${key}`);
-            map = data;
+            model_app_map = data;
+            console.log(model_app_map);
 
-            for (const key of Object.keys(data)) {
-                el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="model" name="${key}">${key}</a>`;
-            };
-
+            if(key!==""){
+                for (const key of Object.keys(data)) {
+                    el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="model" name="${key}">${key}</a>`;
+                };
+            }
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log("Error in modelMap");
+            console.log("Error in model_app");
         },
     });
+}
+
+function getTaskModel(key){
+    $.ajax({
+        url: SCRIPT_ROOT + `/model`,
+        type: "GET",
+        dataType: "json",
+        success: function (data, textStatus, xhr) {
+            let el = document.getElementById(`${key}`);
+            model_task_map = data;
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log("Error in model");
+        },
+    });
+}
+
+// Add Model arguments and update the "model_app_map" ( global variable )
+function updateModel(key=""){
+
+    console.log(`Update model, element:${key}`);
+    getModelApp(key);
+    getTaskModel(key);
 }
 
 // Update Model and Application
@@ -324,14 +388,15 @@ function updateModelApp(eleKey, appKey){
     appMenu.textContent = "Please select one";
     
     // Update content
-    if(map[appKey].length===0){
+    console.log(model_app_map);
+    if(model_app_map[appKey].length===0){
         appMenu.textContent = `No application`;
     }else{
-        map[appKey].forEach(function(item, i){
+        model_app_map[appKey].forEach(function(item, i){
             appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
         });
     }
-  
+
   }
 
 // Update Source
@@ -342,8 +407,7 @@ function updateSource(srcType, key="source", srcData=""){
         if (typeList.length !== typeStatus.length){
             console.log("error in control source type");
         } else {
-            let step;
-            for(step=0; step<typeList.length; step++){
+            for(let step=0; step<typeList.length; step++){
                 document.getElementById(typeList[step]).style.display = typeStatus[step];
             }
         }
@@ -430,7 +494,8 @@ function updateSourceV4L2(key="source"){
     console.log(`Update v4l2, element:${key}`);
     
     let el_source_list = document.getElementById(`${key}_list`);
-    
+    el_source_list.innerHTML = "";
+
     $.ajax({
         url: SCRIPT_ROOT + `/v4l2`,
         type: "GET",
@@ -487,14 +552,22 @@ function addSubmit() {
     // }
     
     // Collection the related data from ADD modal
+    console.log(document.getElementById("app_info").innerText);
     let data = {
         name: document.getElementById("name").value,
         thres: document.getElementById("thres").value,
         model: document.getElementById("model_menu").innerText,
-        application: document.getElementById("model_app_menu").innerText,
+        application: {},
         source_type: document.getElementById("source_type_menu").innerText,
         device: document.getElementById("device_menu").innerText,
     };
+
+    // Update application
+    data["application"] = JSON.stringify({
+        name: document.getElementById("model_app_menu").innerText,
+        area_points: `[ ${document.getElementById("app_info").innerText} ]`,
+        depend_on: JSON.stringify(checkLabelFunction()),
+    });
 
     // Create and append information
     let form_data = new FormData();
@@ -550,10 +623,17 @@ function editSubmit(obj) {
     let data = {
         name: document.getElementById("edit_name").value,
         thres: document.getElementById("edit_thres").value,
-        application: document.getElementById("edit_model_app_menu").innerText,
+        application: {},
         source_type: document.getElementById("edit_source_type_menu").innerText,
         device: document.getElementById("edit_device_menu").innerText,
     };
+
+    // Update application
+    data["application"] = JSON.stringify({
+        name: document.getElementById("edit_model_app_menu").innerText,
+        area_points: `[ ${document.getElementById("app_info").innerText} ]`,
+        depend_on: JSON.stringify(checkLabelFunction()),
+    });
 
     // Create and append information
     let formData = new FormData();
@@ -604,10 +684,17 @@ function importSubmit() {
     let data = {
         name: document.getElementById("import_name").value,
         thres: document.getElementById("import_thres").value,
-        application: document.getElementById("import_model_app_menu").innerText,
+        application: {},
         source_type: document.getElementById("import_source_type_menu").innerText,
         device: document.getElementById("import_device_menu").innerText,
     };
+
+    // Update application
+    data["application"] = JSON.stringify({
+        name: document.getElementById("import_model_app_menu").innerText,
+        area_points: `[ ${document.getElementById("app_info").innerText} ]`,
+        depend_on: JSON.stringify(checkLabelFunction()),
+    });
 
     // Create and append information
     let form_data = new FormData();
@@ -722,7 +809,7 @@ function errModalEvent(obj) {
 }
 
 // Add related information when open the ADD modal
-function addModalEvent() {
+function addModalEvent(init=false) {
     console.log(`Open "ADD" modal`);
     clearModalDropdown();
     updateGPU("device");
@@ -732,19 +819,27 @@ function addModalEvent() {
     document.getElementById("model_menu").disabled = false;
     document.getElementById("model_app_menu").disabled = false;
     document.getElementById("device_menu").disabled = false;
-    setDefaultModal();
+    if(init){
+        setDefaultModal();
+    }
+
+    document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
+        ele.value = "Add"
+    })
+    
 }
 
 // Add related information when open the EDIT modal
 function editModalEvent(obj) {
     console.log(`Open "EDIT" modal`);
-
+    updateModel();
     clearModalDropdown("edit");
     updateGPU("edit_device");
-    updateModel("edit_model_list");
     
+    let task_uuid = obj.value;
+
     $.ajax({
-        url: SCRIPT_ROOT + `/task/${obj.id}/info`,
+        url: SCRIPT_ROOT + `/task/${task_uuid}/info`,
         type: "GET",
         dataType: "json",
         success: function (data, textStatus, xhr) {
@@ -772,10 +867,20 @@ function editModalEvent(obj) {
             document.getElementById("edit_device_menu").disabled = true;
             // update threshold
             document.getElementById("edit_thres").value = data['thres'];
+            
             // set the value of the submit button to uuid
-            document.getElementById("modal_edit_submit").value = obj.id;
+            // document.getElementById("modal_edit_submit").value = obj.id;
+            document.getElementById("modal_app_submit").value = task_uuid;
+            
         }
     });
+
+    document.getElementById("modal_back_bt").setAttribute("onclick", `editModalEvent(this); return false;`);
+    document.getElementById("modal_back_bt").value = task_uuid;
+
+    document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
+        ele.value = "Edit"
+    })
 }
 
 // Add related information when open the IMPORT modal
@@ -784,13 +889,17 @@ function importModalEvent() {
 
     clearModalDropdown("import");
     updateGPU("import_device");
+    updateModel();
     updateSourceType("import_source_type");
     updateSourceV4L2("import_source");
 
     document.getElementById("import_model_app_menu").disabled = false;
     document.getElementById("import_device_menu").disabled = false;
     
-    setDefaultModal();
+    setImportDefaultModal();
+    document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
+        ele.value = "Import"
+    })
 }
 
 // Double check and show information modal when deleting the task
@@ -802,3 +911,203 @@ function delModalEvent(obj) {
     document.getElementById("del_content").textContent = `The application ( ${name} , ${uuid} ) will be delete`;
     document.getElementById("del_uuid").textContent = uuid;
 }
+
+function appModalEvent(mode='Add', needArea=false){
+    
+    console.log("Application Dialog", `Mode:${mode}`);
+    let trg_mode = "";
+    let app_menu_name = "model_app_menu";
+    let model_name = "model_menu"
+
+    // Check label
+    const el_app_name = document.getElementById("app_name");
+
+    // Update Button and related function : Add , Edit, Import
+    // src_bt value will be change when open the Add, Edit, Import dialog.
+    const src_bt = document.getElementsByName("bt_modal_app")[0];
+    const trg_bt = document.getElementById("modal_app_submit");
+    const back_bt = document.getElementById("modal_back_bt");
+
+
+    // Add
+    if (src_bt.value === "Add"){
+        console.log("Setting Add button");
+        trg_mode = "";
+        el_app_name.value = document.getElementById(`${trg_mode}${app_menu_name}`).textContent;
+        trg_model_name = document.getElementById(`${trg_mode}${model_name}`).textContent;
+        trg_bt.textContent = src_bt.value;
+        trg_bt.setAttribute("data-dismiss", "modal");
+        trg_bt.setAttribute("onclick", "addSubmit()");
+
+        back_bt.setAttribute("data-dismiss", "modal");
+        back_bt.setAttribute("data-toggle", "modal");
+        back_bt.setAttribute("data-target", "#addModal");
+        
+        back_bt.setAttribute("onclick", "addModalEvent(); return false;");
+
+    // Edit
+    }else if (src_bt.value === "Edit"){
+        
+        console.log("Setting Edit button");
+        trg_mode = "edit_";
+        el_app_name.value = document.getElementById(`${trg_mode}${app_menu_name}`).textContent;
+        trg_model_name = document.getElementById(`${trg_mode}${model_name}`).textContent;
+
+        trg_bt.textContent = src_bt.value;
+        trg_bt.setAttribute("data-dismiss", "modal");
+        trg_bt.setAttribute("onclick", "editSubmit(this)");
+
+        back_bt.setAttribute("data-dismiss", "modal");
+        back_bt.setAttribute("data-toggle", "modal");
+        back_bt.setAttribute("data-target", "#editModal");
+        
+        back_bt.setAttribute("onclick", "editModalEvent(this); return false;");
+    // Import
+    }else if (src_bt.value === "Import"){
+        console.log("Setting Import button");
+        trg_mode = "import_";
+        el_app_name.value = document.getElementById(`${trg_mode}${app_menu_name}`).textContent;
+
+        trg_bt.textContent = src_bt.value;
+        trg_bt.setAttribute("data-dismiss", "modal");
+        trg_bt.setAttribute("onclick", "importSubmit()");
+
+        back_bt.setAttribute("data-dismiss", "modal");
+        back_bt.setAttribute("data-toggle", "modal");
+        back_bt.setAttribute("data-target", "#importModal");
+        
+        back_bt.setAttribute("onclick", "importModalEvent(); return false;");
+    }
+
+
+    // Update label
+    if (src_bt.value !== "Import"){
+        // Update depend_on
+        const appOptList = document.getElementById("label_list");
+        
+        // Clear dropdown-div
+        document.querySelectorAll("#dropdown-div").forEach( function(ele, idx){
+            ele.remove();
+        })
+
+        $.ajax({
+            url: SCRIPT_ROOT + `/model`,
+            type: "GET",
+            dataType: "json",
+            success: function (data, textStatus, xhr) {
+                model_task_map = data;
+                trg_task_uuid = model_task_map[trg_model_name][0];
+                console.log(`Similar Task UUID: ${trg_task_uuid}`)
+                $.ajax({
+                    url: SCRIPT_ROOT + `/task/${trg_task_uuid}/label`,
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data, textStatus, xhr) {
+
+                        for(let i=0; i<data.length; i++){
+                            appOptList.innerHTML += '<div id="dropdown-div" class="dropdown-item d-flex flex-row align-items-center">'+
+                                '<input class="app-opt" type="checkbox" onchange="atLeastOneRadio(this)" checked>' +
+                                `<a class="app-opt-text">${data[i]}</a>` +
+                                '</div>'
+                            document.getElementById("label_list_menu").textContent = `Select ${i+1} Labels`;
+                        }
+                    }
+                });
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log("Error in model");
+            },
+        });
+    }
+
+    // Update Image if need
+    if (el_app_name.value.includes("area")){
+        needArea = true;
+    }
+    if (needArea){
+        console.log("Update Area Setting");
+
+        document.getElementById("area_div").style.display = "block";
+
+        let appCanvas = document.getElementById("app_canvas");
+        let appFrame = document.getElementById("app_frame");
+        let appCtx = appCanvas.getContext("2d");
+        let appScale = document.getElementById("app_scale");
+        let img = new Image();
+        let imgHeight;
+        let imgWidth;
+        let imgScale;
+        let imgRate;
+    
+        // Create and append information
+        
+        let data = { source_type: document.getElementById(`${trg_mode}source_type_menu`).innerText };
+        
+        // Update source uploader
+        let srcLoader = "file-uploader"
+        if (trg_mode.includes("edit")){
+            srcLoader = `edit-source-${srcLoader}`;
+        } else if (trg_mode.includes("import")){
+            srcLoader = `import-source-${srcLoader}`;
+        }
+
+        let form_data = new FormData();
+        for ( let key in data ) form_data.append(key, data[key]);
+    
+        // Check and append source data
+        if (data['source_type']=='RTSP' ){
+            form_data.append( "source", document.getElementById("source").value);
+        } else if (data['source_type']=='Video' || data['source_type']=='Image') {
+            
+            const ele = document.querySelector(`[data-target="${srcLoader}"]`);
+            if( ele.files.length==0){
+                form_data.append( "source", document.getElementById("edit_source_file_label").value);
+            } else {
+                form_data.append( "source", ele.files[0]);
+            }
+
+        } else {
+            form_data.append( "source", document.getElementById(`${trg_mode}source_menu`).innerText.replace(/(\r\n|\n|\r)/gm, ""));
+            console.log(document.getElementById(`${trg_mode}source_menu`).innerText);
+        };
+
+        // Display the key/value pairs
+        for (var pair of form_data.entries()) {
+            console.log(pair[0]+ ', ' + pair[1]); 
+        }
+        $.ajax({
+            url: SCRIPT_ROOT + '/update_src',
+            data: form_data,
+            processData: false,
+            contentType: false,
+            type: 'POST',
+            success: function (data, textStatus, xhr) {
+
+                imgHeight = data["height"];
+                imgWidth = data["width"];
+
+                // setup canvas width and height
+                imgRate = imgHeight/imgWidth;
+                appCanvas.height = appCanvas.width*imgRate;
+
+                // load image
+                img.src="data:image/jpeg;base64,"+data["image"];
+                appCanvas.style.backgroundImage = `url(${img.src})`;
+
+                // calculate scale
+                console.log(`Canvas width: ${appCanvas.style.width}`);
+                appScale.textContent = appCanvas.width/imgWidth;
+
+                console.log(`H:${imgHeight}, W:${imgWidth}, Ratio:${imgRate}`);
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log("Update source error");
+                console.log(xhr);
+                console.log(xhr.responseJSON);
+            },
+        });
+
+    }
+
+}
+
