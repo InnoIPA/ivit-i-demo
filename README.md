@@ -1,5 +1,5 @@
 # init-i-demo
-a web demo site for init-i
+The web demo site for init-i
 
 # Requirements
 * Install [docker](https://max-c.notion.site/Install-Docker-9a0927c9b8aa4455b66548843246152f)
