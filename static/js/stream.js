@@ -209,7 +209,12 @@ stream_socket.on('results', function(msg){
         detsList += "<hr>";
     }
     info.push(detsList);
-    if(info.length>10){ info.shift(); }
+    if(info.length>10){ 
+        console.log("Clear") 
+        detsList = "";
+        info.shift(); 
+        
+    }
     result_element.innerHTML = info;
     result_element.scrollTop = result_element.scrollHeight;
 });
