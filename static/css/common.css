@@ -13,6 +13,14 @@ footer {
     display: flex;
 }
 
+/* footer.custom {
+    position: absolute;
+    font-size: 18px;
+    height: 60px;
+    bottom: 0;
+    display: flex;
+} */
+
 img {
     max-height: 350px;
 }
@@ -28,10 +36,6 @@ a, td {
     font-size: 18px;
 }
 
-footer.custom {
-    font-size: 18px;
-    /* padding: 0%; */
-}
 
 .table.cnt {
     font-size: 1rem;
@@ -71,4 +75,8 @@ footer.custom {
 .topbar.custom {
     height: 76px;
     /* padding: 5px 5px; */
+}
+
+#page-top {
+    background-color:#f8f9fc;
 }
