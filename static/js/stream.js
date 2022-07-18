@@ -85,7 +85,16 @@ function stream_start(uuid){
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // setup the default infromation
 $(document).ready(function(){
+    const img=document.getElementById('image');
+    const fullPage = document.querySelector('#fullpage');
 
+    img.addEventListener('click', function() {
+        console.log("Click Image")
+        fullPage.style.backgroundImage = 'url(' + img.src + ')';
+        fullPage.style.display = 'block';
+    });
+
+    // Start the stream
     stream_start(uuid);
 
     // 更新 GPU 的溫度
@@ -168,8 +177,9 @@ function capture_gpu(){
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 註冊 image 事件
 stream_socket.on('images', function(msg){  
-    const image_element=document.getElementById('image');
-    image_element.src="data:image/jpeg;base64,"+msg;
+    const img=document.getElementById('image');
+    img.src="data:image/jpeg;base64,"+msg;
+    document.querySelector('#fullpage').style.backgroundImage = 'url(' + img.src + ')';
 });
 
 // ---------------------------------------------------------------------------------------------------------------------------------------
@@ -210,10 +220,8 @@ stream_socket.on('results', function(msg){
     }
     info.push(detsList);
     if(info.length>10){ 
-        console.log("Clear") 
         detsList = "";
         info.shift(); 
-        
     }
     result_element.innerHTML = info;
     result_element.scrollTop = result_element.scrollHeight;
