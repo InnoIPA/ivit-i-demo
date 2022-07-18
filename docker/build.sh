@@ -3,8 +3,8 @@ ROOT=$(dirname `realpath $0`)
 source "${ROOT}/utils.sh"
 
 # Concate name
-IMAGE_NAME="ivit-i-demo"
-printd "Concatenate docker image name: ${IMAGE_NAME}" Cy
+DOCKER_IMAGE=$(cat ${CONF} | jq -r '.client.docker_image')
+printd "Concatenate docker image name: ${DOCKER_IMAGE}" Cy
 
 # Unpack ZIP file
 if [[ -z `ls static/vendor 2>/dev/null` ]];then
@@ -14,5 +14,5 @@ fi
 
 # Build the docker image
 cd ${ROOT};
-printd "Build the docker image. (${IMAGE_NAME})" Cy;
-docker build -t ${IMAGE_NAME} .
+printd "Build the docker image. (${DOCKER_IMAGE})" Cy;
+docker build -t ${DOCKER_IMAGE} .
