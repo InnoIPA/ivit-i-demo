@@ -1,28 +1,19 @@
-function Help()
-{
-   # Display Help
-   echo "Run the docker container."
-   echo
-   echo "Syntax: scriptTemplate [-p|f|h]"
-   echo "options:"
-   echo "f		choose a framework"
-   echo "h		help."
-   echo
-}
+source ./docker/utils.sh
 
-while getopts ":f:h" option; do
-	case $option in
-		f )
-			framework=$OPTARG
-			;;
-		h )
-			Help
-			exit;;
-		\? )
-			exit;;
-	esac
-done
+# Show ivit-i configuration
+CONF="ivit-i.json"
 
-python3 before_demo.py -f ${framework}
+PORT=$(cat ${CONF} | jq -r '.client.port')
+IP=$(cat ${CONF} | jq -r '.client.ip')
 
-gunicorn --worker-class eventlet -w 1 --threads 10 --bind 0.0.0.0:4999 app:app
+# Update ip information
+python3 before_demo.py
+
+# Show the information about Demo Site 
+echo ""
+printd "\nOpen Browser and enter the IP Addres below, or just hold control and click it." Cy;
+TITLE="http://$(python3 -c "from before_demo import extract_ip; print(extract_ip())"):4999";
+echo -e "${TITLE}" | boxes -s 80x5 -a c;
+echo "";
+
+gunicorn --worker-class eventlet -w 1 --threads 10 --bind ${IP}:${PORT} app:app;

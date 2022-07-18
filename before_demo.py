@@ -1,24 +1,24 @@
-from email import contentmanager
-from os import replace
-import os
-import socket, argparse
-# -------------------------------------------------------------------------------------------
-parser = argparse.ArgumentParser()
-parser.add_argument("-f", "--framework", help="select a framework")
-args = parser.parse_args()
-# -------------------------------------------------------------------------------------------
-framework = ""
-port = ""
-if args.framework.lower() in [ 'nvidia', 'nv', 'tensorrt', 'trt']:
-    framework='trt'
-    port='818'
-elif args.framework.lower() in [ 'intel', 'openvino', 'vino']:
-    framework='vino'
-    port='819'
-else:
-    print('[ERROR] Unexcepted framework')
-    exit()
-# -------------------------------------------------------------------------------------------
+import os, socket, argparse, json
+
+CONF="/workspace/ivit-i.json"
+
+BASIC_NAME_MAP={
+    "nvidia": [
+        "nvidia", "nv", "tensorrt", "trt"
+    ],
+    "intel": [
+        "intel", "openvino", "vino"
+    ]
+}
+
+BASIC_PORT_MAP={
+    "nvidia": "818",
+    "intel": "819"
+}
+
+MODIFY_JS=['./static/js/entry.js', './static/js/stream.js']
+MODIFY_PY=['app.py']
+
 def extract_ip():
     st = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:       
@@ -29,59 +29,93 @@ def extract_ip():
     finally:
         st.close()
     return IP
-# -------------------------------------------------------------------------------------------
-JS_FILE=['./static/js/entry.js', './static/js/stream.js']
 
-cnts, lines, texts = [], [], []
-for file in JS_FILE:
-    
-    # Open and searching
-    with open(file, 'r') as f:
-        src = f.readlines()
-    
-    for line, content in enumerate(src):
-        
-        if 'const DOMAIN' in content:
-            print('-'*50, '\n')
-            print('Searching DOMAIN in {} ... '.format(file))
-            print('Found DOMAIN in line {}: {}'.format(line, content.rstrip()))
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--platform", default="", help="select a platform")
+    parser.add_argument("-i", "--ip", default="", help="the ivit-i-<platform> ip address")
+    parser.add_argument("-p", "--port", default="", help="the ivit-i-<platform> port number")
+    args = parser.parse_args()
+
+    data = None
+    ip, platform, port = "", "", ""
+
+    # Parse the argument first
+    for key, list in BASIC_NAME_MAP.items():
+        if args.platform.lower() in list:
+            platform = key
+            port = BASIC_PORT_MAP[platform]
             
-            trg_cnt = "{} = '{}';\n".format(content.split(' = ')[0], extract_ip() )
-            src[line] = trg_cnt
-            print('Modify the DOMAIN: {}'.format(extract_ip()))
-            continue
+    # Parse the configuration
+    with open(CONF, 'r') as f:
+        data = json.load(f)
+    
+    if args.platform=="":
+        print("Using configuration content -> {}: {}".format("platform", data['server']["platform"]))
+        platform = data['server']['platform']
+    if args.port=="":
+        print("Using configuration content -> {}:{}".format("port", data['server']["port"]))
+        port = data['server']['port']
+    if args.ip=="":
+        print("Using configuration content -> {}:{}".format("ip", data['server']["ip"]))
+        ip = data['server']['ip']
+        if ip=="":
+            print("User not setting IP Address, searching dynamically ... ")
+            ip = extract_ip()
+    
+    # Modify JavaScript File
+    cnts, lines, texts = [], [], []
+    for file in MODIFY_JS:
         
-        if 'const FRAMEWORK' in content:
-            trg_cnt = "{} = '{}';\n".format(content.split(' = ')[0], framework )
-            src[line] = trg_cnt
-            print('Modify the FRAMEWORK: {}'.format(framework))
-
-        if 'const PORT' in content:
-            trg_cnt = "{} = '{}';\n".format(content.split(' = ')[0], port )
-            src[line] = trg_cnt
-            print('Modify the PORT: {}'.format(port))
+        # Open and searching
+        with open(file, 'r') as f:
+            src = f.readlines()
         
+        for line, content in enumerate(src):
+            
+            if 'const DOMAIN' in content:
+                print('-'*50, '\n')
+                print('Searching DOMAIN in {} ... '.format(file))
+                print('Found DOMAIN in line {}: {}'.format(line, content.rstrip()))
+                
+                trg_cnt = "{} = '{}';\n".format(content.split(' = ')[0], ip )
+                src[line] = trg_cnt
+                print('Modify the DOMAIN: {}'.format(ip))
+                continue
+            
+            if 'const PLATFORM' in content:
+                trg_cnt = "{} = '{}';\n".format(content.split(' = ')[0], platform )
+                src[line] = trg_cnt
+                print('Modify the PLATFORM: {}'.format(platform))
 
-    # Wrtie file
-    with open('{}'.format(file), 'w') as my_file:
-        new_file_contents = "".join(src)
-        my_file.write(new_file_contents)
-        my_file.close()
-# -------------------------------------------------------------------------------------------
-pyfile = 'app.py'
-with open(pyfile, 'r') as f:
-    src = f.readlines()
+            if 'const PORT' in content:
+                trg_cnt = "{} = '{}';\n".format(content.split(' = ')[0], port )
+                src[line] = trg_cnt
+                print('Modify the PORT: {}'.format(port))
+            
 
-for line, content in enumerate(src):
-    key = "app.config['AF']"
-    if key in content:
-        src[line]="{}='{}'\n".format( key, framework )
-    key = "app.config['PORT']"
-    if key in content:
-        src[line]="{}='{}'\n".format( key, port )
-        break
+        # Wrtie file
+        with open('{}'.format(file), 'w') as my_file:
+            new_file_contents = "".join(src)
+            my_file.write(new_file_contents)
+            my_file.close()
+    # -------------------------------------------------------------------------------------------
+    for pyfile in MODIFY_PY:
+        print("Modify Python File ({})".format(pyfile))
+        with open(pyfile, 'r') as f:
+            src = f.readlines()
 
-with open(pyfile, 'w') as f:
-    new_cnt = "".join(src)
-    f.write(new_cnt)
-    f.close()
+        for line, content in enumerate(src):
+            key = "app.config['AF']"
+            if key in content:
+                src[line]="{}='{}'\n".format( key, platform )
+            key = "app.config['PORT']"
+            if key in content:
+                src[line]="{}='{}'\n".format( key, port )
+                break
+
+        with open(pyfile, 'w') as f:
+            new_cnt = "".join(src)
+            f.write(new_cnt)
+            f.close()
