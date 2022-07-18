@@ -3,7 +3,7 @@ const TRG_URL = document.URL;
 // ---------------------------------------------------------------------------------------------------------------------------------------
 const DOMAIN = '172.16.92.130';
 const PORT = '819';
-const FRAMEWORK = 'vino';
+const PLATFORM = 'intel';
 const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 設定 對應 Socket 路徑
@@ -12,8 +12,7 @@ const AF_PORT = {
     'vino': '819'
 }
 let uuid = "";
-let port = AF_PORT[FRAMEWORK];
-console.log(port)
+console.log(PORT);
 let gpu = 0;
 
 // Get uuid
@@ -23,7 +22,7 @@ for(let i=0; i<PATH_ELE.length; i++){
     if(PATH_ELE[i]=="task"){ uuid = PATH_ELE[i+1]; };
 };
 // Set up the socketio address
-const URL = `http://${document.domain}:${port}/task/${uuid}/stream`;
+const URL = `http://${document.domain}:${PORT}/task/${uuid}/stream`;
 const stream_socket = io.connect(URL);
 
 // ---------------------------------------------------------------------------------------------------------------------------------------

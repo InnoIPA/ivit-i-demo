@@ -2,7 +2,7 @@
 // Init
 const DOMAIN = '172.16.92.130';
 const PORT = '819';
-const FRAMEWORK = 'vino';
+const PLATFORM = 'intel';
 const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
 
 
@@ -140,9 +140,9 @@ $(document).ready(function () {
 
     // 更新子標題
     let af_title;
-    if(FRAMEWORK==='vino'){
+    if(PLATFORM==='vino'){
         af_title = 'Intel';
-    } else if(FRAMEWORK==='trt'){
+    } else if(PLATFORM==='trt'){
         af_title = 'NVIDIA';
     } else {
         af_title = 'Unkwon';
