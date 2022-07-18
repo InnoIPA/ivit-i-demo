@@ -8,6 +8,8 @@ USER root
 ENV DEBIAN_FRONTEND noninteractive  
 RUN apt-get update \
 && apt-get -y install python3-pip \
-&& pip3 install -r requirements.txt
+&& apt-get install boxes tree jq -yq
+
+RUN pip3 install -r requirements.txt
 
 ENTRYPOINT [ "/bin/bash", "-c" ]
