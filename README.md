@@ -46,6 +46,7 @@ The web demo site for ivit-i
     ![image](assests/ivit-i-demo-ip.png)
 
 # Demo
+> The image and video with high resolution in [my notion page](https://max-c.notion.site/iVIT-I-DEMO-v0-4-20592c5e3c11415e97540d0b72c5b706)
 <details>
     <summary>
         Entrance
