@@ -1,8 +1,8 @@
 // ==================================================================
 // Init
 const DOMAIN = '172.16.92.130';
-const PORT = '819';
-const PLATFORM = 'intel';
+const PORT = '818';
+const PLATFORM = 'nvidia';
 const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
 
 
@@ -140,9 +140,9 @@ $(document).ready(function () {
 
     // 更新子標題
     let af_title;
-    if(PLATFORM==='vino'){
+    if(PLATFORM==='intel'){
         af_title = 'Intel';
-    } else if(PLATFORM==='trt'){
+    } else if(PLATFORM==='nvidia'){
         af_title = 'NVIDIA';
     } else {
         af_title = 'Unkwon';
