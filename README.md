@@ -1,6 +1,10 @@
 # ivit-i-demo
 The web demo site for ivit-i
 
+* [Requirements](#requirements)
+* [How to work](#how-to-work)
+* [Demo](#demo)
+
 # Requirements
 * Install [docker](https://max-c.notion.site/Install-Docker-9a0927c9b8aa4455b66548843246152f)
 
@@ -41,32 +45,53 @@ The web demo site for ivit-i
     ```
     ![image](assests/ivit-i-demo-ip.png)
 
-# Features
-1. Entrance
-   1. Capture the application list when loading the page
-   2. Add an application
-   3. Edit the application
-   4. Delete the application
-   5. Enter the stream page
-2. Stream
-   1. Capture GPU temperature every 5 seconds
-   2. Receive image and result from backend via socketio
-3. Add / Edit
-   1. Enter `Application Name`
-   2. Select `Category` and `Application` ( only in Add mode )
-   3. Select `Input Type` and Enter `Input Source`
-   4. Select `Device` ( only in Add mode )
-   5. Choose the threshold
+# Demo
+<details>
+    <summary>
+        Entrance
+    </summary>
+    <img src="./assests/entrace.png">
+</details>
 
-# Figures
-* Entrance
-    ![img](./assests/dashboard.png)
-
-* Stream
-    ![img](./assests/stream.png)
-
-* Add 
-    ![img](./assests/add.png)
-
-* Edit
-    ![img](./assests/edit.png)
+<details>
+    <summary>
+        Add Event
+    </summary>
+    <img src="./assests/add-modal.gif">
+</details>
+<details>
+    <summary>
+        Edit and Delete Event
+    </summary>
+    <img src="./assests/edit-del-modal.gif">
+</details>
+<details>
+    <summary>
+        Import Event
+    </summary>
+    <img src="./assests/import-modal.gif">
+</details>
+<details>
+    <summary>
+        Run AI Task
+    </summary>
+    <img src="./assests/run-task.gif">
+</details>
+<details>
+    <summary>
+        Stream Page
+    </summary>
+    <img src="./assests/stream.gif">
+</details>
+<details>
+    <summary>
+        Application
+    </summary>
+    <img src="./assests/application.gif">
+</details>
+<details>
+    <summary>
+        Application Result
+    </summary>
+    <img src="./assests/application-result.gif">
+</details>
