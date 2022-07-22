@@ -110,6 +110,9 @@ if __name__ == '__main__':
             key = "app.config['AF']"
             if key in content:
                 src[line]="{}='{}'\n".format( key, platform )
+            key = "app.config['HOST']"
+            if key in content:
+                src[line]="{}='{}'\n".format( key, ip )
             key = "app.config['PORT']"
             if key in content:
                 src[line]="{}='{}'\n".format( key, port )
