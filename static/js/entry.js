@@ -1,8 +1,8 @@
 // ==================================================================
 // Init
-const DOMAIN = '172.16.92.130';
-const PORT = '818';
-const PLATFORM = 'nvidia';
+const DOMAIN = '10.204.16.101';
+const PORT = '819';
+const PLATFORM = 'intel';
 const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
 
 
@@ -61,7 +61,7 @@ function stopTask(uuid){
 function hrefEvent(behavior, uuid){
     // console.log(`href event: ${behavior} ${uuid}`);
     if (behavior==='add'){
-        document.getElementById(`${uuid}_name`).href=`http://${DOMAIN}:4999/task/${uuid}/stream`;
+        document.getElementById(`${uuid}_name`).href=`${document.URL}/task/${uuid}/stream`;
         document.getElementById(`${uuid}_name`).setAttribute("onclick", `streamStart("${uuid}");`);
     } else {
         document.getElementById(`${uuid}_name`).removeAttribute("href");
