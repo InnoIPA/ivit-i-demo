@@ -1,4 +1,5 @@
 #!/bin/bash
+CONF="ivit-i.json"
 ROOT=$(dirname `realpath $0`)
 source "${ROOT}/utils.sh"
 
