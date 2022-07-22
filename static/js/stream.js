@@ -1,9 +1,9 @@
 // 取得本地端的網址
 const TRG_URL = document.URL;
 // ---------------------------------------------------------------------------------------------------------------------------------------
-const DOMAIN = '172.16.92.130';
-const PORT = '818';
-const PLATFORM = 'nvidia';
+const DOMAIN = '10.204.16.101';
+const PORT = '819';
+const PLATFORM = 'intel';
 const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // 設定 對應 Socket 路徑
@@ -22,7 +22,7 @@ for(let i=0; i<PATH_ELE.length; i++){
     if(PATH_ELE[i]=="task"){ uuid = PATH_ELE[i+1]; };
 };
 // Set up the socketio address
-const URL = `http://${document.domain}:${PORT}/task/${uuid}/stream`;
+const URL = `http://${DOMAIN}:${PORT}/task/${uuid}/stream`;
 const stream_socket = io.connect(URL);
 
 // ---------------------------------------------------------------------------------------------------------------------------------------
@@ -86,6 +86,10 @@ function stream_start(uuid){
 $(document).ready(function(){
     const img=document.getElementById('image');
     const fullPage = document.querySelector('#fullpage');
+
+    socketio.on('connect', function() {
+        socket.send('message', 'User has connected!');
+    });
 
     img.addEventListener('click', function() {
         console.log("Click Image")
