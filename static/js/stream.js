@@ -87,19 +87,16 @@ $(document).ready(function(){
     const img=document.getElementById('image');
     const fullPage = document.querySelector('#fullpage');
 
-    socketio.on('connect', function() {
-        socket.send('message', 'User has connected!');
-    });
-
     img.addEventListener('click', function() {
         console.log("Click Image")
         fullPage.style.backgroundImage = 'url(' + img.src + ')';
         fullPage.style.display = 'block';
     });
-
+    console.log("Stream Start")
     // Start the stream
     stream_start(uuid);
-
+    
+    console.log("Update Device and Basic Information")
     // 更新 GPU 的溫度
     $.ajax({
         type: 'GET',
@@ -107,13 +104,14 @@ $(document).ready(function(){
         dataType: "json",
         success: function (gpuData){
             // Get the default
+            console.log("Get device")
             $.ajax({  
                 type: 'GET',
                 url: SCRIPT_ROOT + `/task/${uuid}/info`,
                 dataType: "json",
                 success: function (data, textStatus, xhr) {
                     // const data = JSON.parse(data);
-                    
+                    console.log(data);
                     document.getElementById("title").textContent = data['name'];
                     // document.getElementById("app_name").textContent = data['app_name'];
                     document.getElementById("model").textContent = data['model'];
