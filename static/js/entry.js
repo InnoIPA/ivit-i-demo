@@ -1,6 +1,6 @@
 // ==================================================================
 // Init
-const DOMAIN = '10.204.16.101';
+const DOMAIN = '172.16.92.130';
 const PORT = '819';
 const PLATFORM = 'intel';
 const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
@@ -59,10 +59,12 @@ function stopTask(uuid){
 
 // Add superlink when task is avaible
 function hrefEvent(behavior, uuid){
-    // console.log(`href event: ${behavior} ${uuid}`);
+    console.log(`href event: ${behavior} ${uuid}`);
     if (behavior==='add'){
-        document.getElementById(`${uuid}_name`).href=`${document.URL}/task/${uuid}/stream`;
+        const url = document.URL.replace('#', '');
+        document.getElementById(`${uuid}_name`).href=`${url}/task/${uuid}/stream`;
         document.getElementById(`${uuid}_name`).setAttribute("onclick", `streamStart("${uuid}");`);
+
     } else {
         document.getElementById(`${uuid}_name`).removeAttribute("href");
         document.getElementById(`${uuid}_name`).removeAttribute("onclick");
