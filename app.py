@@ -45,7 +45,7 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 # gunicorn --worker-class eventlet -w 1 --threads ${THREAD} --bind ${BIND} ${MODULE}:app
 # ------------
 app.config['AF']='intel'
-app.config['HOST']='10.204.16.101'
+app.config['HOST']='172.16.92.130'
 app.config['PORT']='819'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 

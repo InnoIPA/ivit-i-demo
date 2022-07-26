@@ -1,7 +1,7 @@
 // 取得本地端的網址
 const TRG_URL = document.URL;
 // ---------------------------------------------------------------------------------------------------------------------------------------
-const DOMAIN = '10.204.16.101';
+const DOMAIN = '172.16.92.130';
 const PORT = '819';
 const PLATFORM = 'intel';
 const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
