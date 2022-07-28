@@ -146,6 +146,8 @@ $(document).ready(function () {
         af_title = 'Intel';
     } else if(PLATFORM==='nvidia'){
         af_title = 'NVIDIA';
+    } else if(PLATFORM==='xilinx'){
+        af_title = 'Xilinx';
     } else {
         af_title = 'Unkwon';
     }
