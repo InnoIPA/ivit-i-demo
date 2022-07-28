@@ -1,33 +1,59 @@
-// 取得本地端的網址
-const TRG_URL = document.URL;
-// ---------------------------------------------------------------------------------------------------------------------------------------
+// Basic Information
 const DOMAIN = '172.16.92.130';
 const PORT = '819';
 const PLATFORM = 'intel';
 const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
-// ---------------------------------------------------------------------------------------------------------------------------------------
-// 設定 對應 Socket 路徑
-const AF_PORT = {
-    'trt': '818',
-    'vino': '819'
-}
-let uuid = "";
-console.log(PORT);
-let gpu = 0;
 
-// Get uuid
-const PATH = location.pathname;
-const PATH_ELE = PATH.split("/");
-for(let i=0; i<PATH_ELE.length; i++){
-    if(PATH_ELE[i]=="task"){ uuid = PATH_ELE[i+1]; };
+const IMG_EVENT = "images";
+const RES_EVENT = "results";
+
+// Global Variable 
+let uuid = "";
+let gpu = 0;
+let intervalTime = 5000;
+
+// Global Variable - results event
+let detsList="";
+let gpuInfoCount = 0;
+let info = new Array;
+
+// Get uuid from route
+const el_path = location.pathname.split("/");
+for(let i=0; i < el_path.length; i++){
+    if( el_path[i] == "task" ){ 
+        uuid = el_path[i+1]; 
+    };
 };
+
 // Set up the socketio address
 const URL = `http://${DOMAIN}:${PORT}/task/${uuid}/stream`;
-const stream_socket = io.connect(URL);
+const streamSocket = io.connect(URL);
 
-// ---------------------------------------------------------------------------------------------------------------------------------------
-// 換算時間
-function cal_time(total_sec){
+$(document).ready(function(){
+
+    // Setting Full Screen Event
+    setFullScreenEvent();
+
+    // Update Basic Information
+    updateBasicInfo();
+    
+    // Update first frame
+    getFirstFrame(uuid);
+
+    // Start the stream
+    streamStart(uuid);
+
+    // Seting Interval: Update GPU temperature every 5 seconds
+    window.setInterval(updateGPUTemperature, intervalTime);
+
+});
+
+function backEvent(){
+    location.href='/';
+    streamStop(uuid);
+}
+
+function convertTime(total_sec){
     // t -> sec
     let trg_d =0 , trg_h =0 , trg_m =0 , trg_c =0;
     let temp_m =0, temp_h =0;
@@ -52,8 +78,8 @@ function cal_time(total_sec){
     
     return `${parseInt(trg_d)} d ${parseInt(trg_h)} h ${parseInt(trg_m)} m ${parseInt(trg_c)} s`
 }
-// ---------------------------------------------------------------------------------------------------------------------------------------
-function get_src_type(src){
+
+function getSourceType(src){
     let ret;
     if (src.includes('video')){ 
         ret='V4L2';
@@ -66,9 +92,8 @@ function get_src_type(src){
     };
     return ret
 }
-// ---------------------------------------------------------------------------------------------------------------------------------------
-// 當按下 Switch 的時候開啟串流
-function stream_start(uuid){
+
+function streamStart(uuid){
     $.ajax({
         url: SCRIPT_ROOT + `/task/${uuid}/stream/start`,
         type: "GET",
@@ -81,23 +106,77 @@ function stream_start(uuid){
         },
     });
 }
-// ---------------------------------------------------------------------------------------------------------------------------------------
-// setup the default infromation
-$(document).ready(function(){
-    const img=document.getElementById('image');
-    const fullPage = document.querySelector('#fullpage');
+
+function streamStop(uuid){
+    $.ajax({
+        url: SCRIPT_ROOT + `/task/${uuid}/stream/stop`,
+        type: "GET",
+        dataType: "json",
+        success: function (data, textStatus, xhr) {
+            console.log(data);
+        },
+        error: function (err) {
+            console.log(err);
+        },
+    });
+}
+
+function setFullScreenEvent(){
+    
+    const img       = document.getElementById('image');
+    const fullPage  = document.querySelector('#fullpage');
 
     img.addEventListener('click', function() {
-        console.log("Click Image")
         fullPage.style.backgroundImage = 'url(' + img.src + ')';
         fullPage.style.display = 'block';
     });
-    console.log("Stream Start")
-    // Start the stream
-    stream_start(uuid);
-    
-    console.log("Update Device and Basic Information")
-    // 更新 GPU 的溫度
+}
+
+function getFirstFrame(uuid){
+    // Sending data via web api ( /add )
+    $.ajax({
+        url: SCRIPT_ROOT + `/task/${uuid}/get_frame`,
+        contentType: false,
+        type: 'GET',
+        success: function (data, textStatus, xhr) {
+            console.log("Get first frame");
+            const img=document.getElementById('image');
+            img.src="data:image/jpeg;base64,"+data["image"];
+        }
+    })
+}
+
+function updateBasicInfo(){
+
+    $.ajax({  
+        type: 'GET',
+        url: SCRIPT_ROOT + `/task/${uuid}/info`,
+        dataType: "json",
+        success: function (data, textStatus, xhr) {
+            // const data = JSON.parse(data);
+            console.log(data);
+            document.getElementById("title").textContent = data['name'];
+            // document.getElementById("app_name").textContent = data['app_name'];
+            document.getElementById("model").textContent = data['model'];
+            document.getElementById("application").textContent = data['application']["name"];
+            document.getElementById("device").textContent = data['device'];
+            
+            document.getElementById("source").textContent = data['source'];
+            document.getElementById("status").textContent = data['status'];
+
+            document.getElementById("input_type").textContent = getSourceType(data['source']);
+
+            gpu=data['device'];
+            updateGPUTemperature();
+        },
+        // error: function (xhr, textStatus, errorThrown) {
+        //     alert('err');
+        // }
+    });
+}
+
+function updateBasicInfoLegacy(){
+
     $.ajax({
         type: 'GET',
         url: SCRIPT_ROOT + '/device',
@@ -121,7 +200,7 @@ $(document).ready(function(){
                     document.getElementById("source").textContent = data['source'];
                     document.getElementById("status").textContent = data['status'];
 
-                    document.getElementById("input_type").textContent = get_src_type(data['source']);
+                    document.getElementById("input_type").textContent = getSourceType(data['source']);
 
                     gpu=data['device'];
                     // for(let i=0;i<gpuData.length;i++){
@@ -130,7 +209,7 @@ $(document).ready(function(){
                     //         gpu=i;
                     //     };
                     // };
-                    capture_gpu();
+                    updateGPUTemperature();
                 },
                 // error: function (xhr, textStatus, errorThrown) {
                 //     alert('err');
@@ -138,14 +217,9 @@ $(document).ready(function(){
             });
         },
     });
-});
+}
 
-// ---------------------------------------------------------------------------------------------------------------------------------------
-// Update GPU temperature every 5 seconds
-
-let intervalTime = 5000;
-let intervalGPU = window.setInterval(capture_gpu, intervalTime);
-function capture_gpu(){
+function updateGPUTemperature(){
    // 更新 GPU 的溫度
     $.ajax({
         type: 'GET',
@@ -175,20 +249,14 @@ function capture_gpu(){
         }
     })
 };
-// ---------------------------------------------------------------------------------------------------------------------------------------
-// 註冊 image 事件
-stream_socket.on('images', function(msg){  
+
+streamSocket.on(IMG_EVENT, function(msg){  
     const img=document.getElementById('image');
     img.src="data:image/jpeg;base64,"+msg;
     document.querySelector('#fullpage').style.backgroundImage = 'url(' + img.src + ')';
 });
 
-// ---------------------------------------------------------------------------------------------------------------------------------------
-// 註冊 result 事件
-let detsList="";
-let gpuInfoCount = 0;
-let info = new Array;
-stream_socket.on('results', function(msg){
+streamSocket.on(IMG_EVENT, function(msg){
 
     // 解析資料
     const data = JSON.parse(msg);
@@ -200,7 +268,7 @@ stream_socket.on('results', function(msg){
     
     // 更新 Information
     document.getElementById("fps").textContent = fps;
-    document.getElementById("live_time").textContent = `${cal_time(liveTime)}`;
+    document.getElementById("live_time").textContent = `${convertTime(liveTime)}`;
     
     // 更新 LOG
     const result_element=document.getElementById('result');
