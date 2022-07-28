@@ -18,24 +18,30 @@ The web demo site for ivit-i
     ```bash
     $ ./docker/build.sh
     ```
-3. Modify Configuration
-    ```JSON
-    {
-        "server":{
-            "ip": "172.16.92.130",
-            "platform": "intel",
-            "port": "819"
-        },
-        "client":{
-            "docker_image": "ivit-i-demo",
-            "ip": "0.0.0.0",
-            "port": "4999"
+3. Modify Configuration or use Quick Setup Script
+    * Modify Config
+        ```JSON
+        {
+            "server":{
+                "ip": "172.16.92.130",
+                "platform": "intel",
+                "port": "819"
+            },
+            "client":{
+                "docker_image": "ivit-i-demo",
+                "ip": "0.0.0.0",
+                "port": "4999"
+            }
         }
-    }
-    ```
-    * Server: fill with the IP Address of `ivit-i-<platform>`
-    * Client: shows the information of `Demo Site`
-    
+        ```
+        * Server: fill with the IP Address of `ivit-i-<platform>`
+        * Client: shows the information of `Demo Site`
+
+    * Quick Setup Script
+        > Notice: Only modify the parameters of `server` in config.
+        ```bash
+        ./quick_setup.sh -b intel -i 172.16.92.130 -p 819
+        ```
 4. Run the docker container
     ```bash
     $ ./docker/run.sh
