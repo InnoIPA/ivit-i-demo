@@ -84,7 +84,10 @@ function drawPoly2(){
     for(let i=0; i<clickPoints.length; i++){
 
         // Draw dots
-        drawDot2(clickPoints[i][0], clickPoints[i][1]);
+        if(clickPoints.length<=2){
+            drawDot2(clickPoints[i][0], clickPoints[i][1]);
+        };
+        // drawDot2(clickPoints[i][0], clickPoints[i][1]);
         
         if(i===0){
             // setup the start point: move the brush to first point.
@@ -123,7 +126,7 @@ const drawDot = (x, y) => {
 
 function drawDot2(x, y){
     console.log("Draw X, Y", x, y );
-    appCtx.arc(x, y, 2, 0, 1*Math.PI);
+    appCtx.arc(x, y, 2, 0, 2*Math.PI);
     // appCtx.fillStyle = "rgba(255, 0, 0, 0.5)";
 	// appCtx.fill()
 }
