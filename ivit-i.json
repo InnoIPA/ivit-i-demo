@@ -1,12 +1,12 @@
 {
-    "server":{
-        "ip": "172.16.92.130",
-        "platform": "intel",
-        "port": "819"
-    },
-    "client":{
-        "docker_image": "ivit-i-demo",
-        "ip": "0.0.0.0",
-        "port": "4999"
-    }
+  "server": {
+    "ip": "172.16.92.130",
+    "platform": "intel",
+    "port": "819"
+  },
+  "client": {
+    "docker_image": "ivit-i-demo",
+    "ip": "0.0.0.0",
+    "port": "4999"
+  }
 }
