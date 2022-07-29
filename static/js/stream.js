@@ -256,7 +256,7 @@ streamSocket.on(IMG_EVENT, function(msg){
     document.querySelector('#fullpage').style.backgroundImage = 'url(' + img.src + ')';
 });
 
-streamSocket.on(IMG_EVENT, function(msg){
+streamSocket.on(RES_EVENT, function(msg){
 
     // 解析資料
     const data = JSON.parse(msg);

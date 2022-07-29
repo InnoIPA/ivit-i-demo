@@ -3,10 +3,7 @@
     font-size: 14px;
 }
 
-.card-header.custom,
-.card-body.custom {
-    padding: 0.5rem 0.5rem;
-}
+
 
 .card-body.custom {
     height: 100%;
@@ -26,7 +23,7 @@
 .image {
     max-height:100%;
     max-width:100%;
-    padding: 5px;
+    /* padding: 5px; */
 }
 
 #fullpage {
@@ -41,4 +38,16 @@
     background-repeat: no-repeat no-repeat;
     background-position: center center;
     background-color: black;
+}
+
+.navbar.custom {
+    background-color: #E61F23;
+}
+
+.header.custom {
+    color:#FFFFFF;
+}
+
+.card-title {
+    color: #16272E;
 }

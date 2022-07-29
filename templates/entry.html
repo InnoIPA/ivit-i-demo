@@ -44,7 +44,7 @@
         }
 
         .material-symbols-outlined.custom {
-            color: gray
+            color: #16272E;
         }
 
     </style>
@@ -62,9 +62,9 @@
             <div id="content">
 
                 <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar custom mb-4 static-top shadow">
+                <nav class="navbar navbar-expand navbar-light topbar mb-custom static-top shadow custom">
                     <div class="h1 mt-4 text-gray-800 navtitle">
-                        <h1 class="header">iVIT-I</h1>
+                        <h1 class="header custom">iVIT-I</h1>
                     </div>
                 </nav>
                 <!-- End of Topbar -->
@@ -73,12 +73,12 @@
                 <div class="container-fluid custom">
 
                     <!-- DataTales Example -->
-                    <div class="card shadow mb-4">
+                    <div class="card mb-3 shadow-custom">
                         <!-- Table Title -->
-                        <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <div >
-                                <h3 style="float: left;" class=" h3 custom m-0  text-gray-600">Tasks</h3>
-                                <h3 id="title_framework" style="float: right; margin-left: 20px;" class="h3 custom ml-3 text-gray-300">( OpenVINO )</h3>
+                        <div class=" card-header custom py-3 d-flex flex-row align-items-center justify-content-between">
+                            <div class="align-items-center d-flex justify-content-between">
+                                <h3 style="float: left ; margin-right: 20px; margin-bottom:0px" class=" h3 ">Tasks</h3>
+                                <h3 id="title_framework" style="float: right; margin-bottom:0px" class="h3 text-gray-300">( OpenVINO )</h3>
                             </div>
                             
                             <a href="#" onclick="addModalEvent(true); return false;" class="btn btn-circle"
@@ -88,7 +88,7 @@
                             </a>
                         </div>
                         <!-- Table body -->
-                        <div class="card-body shadow custom">
+                        <div class="card-body">
                             <!-- Table -->
                             <div class="table-responsive">
                                 {% block data %}
@@ -113,8 +113,8 @@
                                             <td >
                                                 <div>
                                                     <a id="{{ app['uuid'] }}_name">{{ app['name'] }}</a>
-                                                    <br>
-                                                    <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a>
+                                                    <!-- <br> -->
+                                                    <!-- <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a> -->
                                                 </div>
                                             </td>
                                             <!-- Framework -->
@@ -180,8 +180,8 @@
                                             <td >
                                                 <div>
                                                     <a id="{{ app['uuid'] }}_name" class="err-name" data-toggle="modal" data-target="#errModal" onclick="errModalEvent(this);">{{ app['name'] }}</a>
-                                                    <br>
-                                                    <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a>
+                                                    <!-- <br> -->
+                                                    <!-- <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a> -->
                                                 </div>
                                             </td>
                                             <!-- framework -->
@@ -257,17 +257,17 @@
             <div class="modal-content full">
 
                 <!-- Header -->
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Add a Task</h5>
+                <div class="modal-header custom">
+                    <h4 class="modal-title" id="exampleModalLabel">Add a Task</h4>
                     
-                    <button id="add_sub_title_add" class="modal-sub-title add" type="button" data-dismiss="modal" data-target="#addModal" data-toggle="modal" style="opacity: 1;" disabled>Add</button>
-                    <a id="add_sub_title_divide" class="modal-sub-title divide">|</a>
-                    <button id="add_sub_title_import" class="modal-sub-title import" type="button" 
-                        data-dismiss="modal" data-target="#importModal" data-toggle="modal" onclick="importModalEvent(); return false;">Import</button>
+                    <!-- <button id="add_sub_title_add" class="modal-sub-title add" type="button" data-dismiss="modal" data-target="#addModal" data-toggle="modal" style="opacity: 1;" disabled>Add</button> -->
+                    <!-- <a id="add_sub_title_divide" class="modal-sub-title divide">|</a> -->
+                    <button id="add_sub_title_import" class="btn modal-sub-title import" type="button" 
+                            data-dismiss="modal" data-target="#importModal" data-toggle="modal" onclick="importModalEvent(); return false;">Import</button>
 
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="setDefaultModal(); return false;">
+                    <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="setDefaultModal(); return false;">
                         <span aria-hidden="true">×</span>
-                    </button>
+                    </button> -->
                 </div>
 
                 <!-- Body -->
@@ -277,7 +277,7 @@
                     <div class="row">
                         <div class="col">
 
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Name</h6>
                                 </div>
@@ -294,7 +294,7 @@
 
                         <!-- model -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Model</h6>
                                 </div>
@@ -314,7 +314,7 @@
 
                         <!-- Application -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Application</h6>
                                 </div>
@@ -340,7 +340,7 @@
 
                         <!-- Type -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Input Type</h6>
                                 </div>
@@ -366,7 +366,7 @@
 
                         <!-- Source -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Input Source</h6>
                                 </div>
@@ -402,7 +402,7 @@
 
                         <!-- Device -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Accelerator</h6>
                                 </div>
@@ -424,7 +424,7 @@
 
                         <!-- Thres -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Threshold</h6>
                                 </div>
@@ -440,11 +440,11 @@
 
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal"
+                    <button class="btn btn-secondary-custom" type="button" data-dismiss="modal"
                         onclick="setDefaultModal(); return false;">Cancel</button>
-                    <button name="bt_modal_app" class="btn btn-primary" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
+                    <button name="bt_modal_app" class="btn btn-primary-custom" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
                         onclick="appModalEvent(); return false;">Next</button>
-                    <!-- <a id="modal_add_submit" class="btn btn-primary" href="#" data-dismiss="modal"
+                    <!-- <a id="modal_add_submit" class="btn btn-primary-custom" href="#" data-dismiss="modal"
                         onclick="addSubmit(); return false;">Add</a> -->
                 </div>
             </div>
@@ -458,10 +458,10 @@
 
                 <!-- Header -->
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit a Task</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="setEditDefaultModal(); return false;">
+                    <h4 class="modal-title" id="exampleModalLabel">Edit a Task</h4>
+                    <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="setEditDefaultModal(); return false;">
                         <span aria-hidden="true">×</span>
-                    </button>
+                    </button> -->
                 </div>
 
                 <!-- Body -->
@@ -470,7 +470,7 @@
                     <!-- Name -->
                     <div class="row">
                         <div class="col">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Name</h6>
                                 </div>
@@ -488,7 +488,7 @@
 
                         <!-- model -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Model</h6>
                                 </div>
@@ -508,7 +508,7 @@
 
                         <!-- Application -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Application</h6>
                                 </div>
@@ -531,7 +531,7 @@
 
                         <!-- Type -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Input Type</h6>
                                 </div>
@@ -551,7 +551,7 @@
 
                         <!-- Source -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Input Source</h6>
                                 </div>
@@ -587,7 +587,7 @@
 
                         <!-- Device -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Accelerator</h6>
                                 </div>
@@ -607,7 +607,7 @@
 
                         <!-- Thres -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Threshold</h6>
                                 </div>
@@ -623,11 +623,11 @@
 
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal"
+                    <button class="btn btn-secondary-custom" type="button" data-dismiss="modal"
                         onclick="setEditDefaultModal(); return false;">Cancel</button>
-                        <button name="bt_modal_app" class="btn btn-primary" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
+                        <button name="bt_modal_app" class="btn btn-primary-custom" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
                         onclick="appModalEvent(); return false;">Next</button>
-                    <!-- <a id="modal_edit_submit" class="btn btn-primary" href="#" data-dismiss="modal" value=""
+                    <!-- <a id="modal_edit_submit" class="btn btn-primary-custom" href="#" data-dismiss="modal" value=""
                         onclick="editSubmit(this); return false;">Edit</a> -->
                 </div>
             </div>
@@ -639,17 +639,17 @@
         <div class="modal-dialog full" role="document">
             <div class="modal-content full">
                 <!-- Header -->
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Import a Task</h5>
+                <div class="modal-header custom">
+                    <h4 class="modal-title" id="exampleModalLabel">Import a Task</h4>
                     
-                    <button id="import_sub_title_add" class="modal-sub-title add" type="button" 
+                    <button id="import_sub_title_add" class="btn modal-sub-title add" type="button" 
                         data-dismiss="modal" data-target="#addModal" data-toggle="modal" onclick="addModalEvent()">Add</button>
-                    <a class="modal-sub-title divide">|</a>
-                    <button id="import_sub_title_import" class="modal-sub-title import" type="button" data-dismiss="modal" data-target="#importModal" data-toggle="modal" style="opacity: 1;" disabled>Import</button>
+                    <!-- <a class="modal-sub-title divide">|</a> -->
+                    <!-- <button id="import_sub_title_import" class="modal-sub-title import" type="button" data-dismiss="modal" data-target="#importModal" data-toggle="modal" style="opacity: 1;" disabled>Import</button> -->
 
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="setImportDefaultModal(); return false;">
+                    <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="setImportDefaultModal(); return false;">
                         <span aria-hidden="true">×</span>
-                    </button>
+                    </button> -->
                 </div>
 
                 <!-- Body -->
@@ -658,7 +658,7 @@
                     <!-- Name -->
                     <div class="row">
                         <div class="col">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Name</h6>
                                 </div>
@@ -675,7 +675,7 @@
 
                         <!-- Configuration -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">ZIP File</h6>
                                 </div>
@@ -691,7 +691,7 @@
 
                         <!-- Application -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Application</h6>
                                 </div>
@@ -717,7 +717,7 @@
 
                         <!-- Type -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Input Type</h6>
                                 </div>
@@ -737,7 +737,7 @@
 
                         <!-- Source -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Input Source</h6>
                                 </div>
@@ -773,7 +773,7 @@
 
                         <!-- Device -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Accelerator</h6>
                                 </div>
@@ -793,7 +793,7 @@
 
                         <!-- Thres -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Threshold</h6>
                                 </div>
@@ -808,11 +808,11 @@
 
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal"
+                    <button class="btn btn-secondary-custom" type="button" data-dismiss="modal"
                         onclick="setImportDefaultModal(); return false;">Cancel</button>
-                    <button name="bt_modal_app" class="btn btn-primary" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
+                    <button name="bt_modal_app" class="btn btn-primary-custom" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
                         onclick="appModalEvent(); return false;">Next</button>
-                    <!-- <button id="modal_import_submit" class="btn btn-primary" href="#" data-dismiss="modal"
+                    <!-- <button id="modal_import_submit" class="btn btn-primary-custom" href="#" data-dismiss="modal"
                         onclick="importSubmit(); return false;" disabled>Import</button> -->
                 </div>
             </div>
@@ -828,11 +828,11 @@
             <div class="modal-content full">
 
                 <!-- Header -->
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Error messages</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <div class="modal-header custom">
+                    <h4 class="modal-title" id="exampleModalLabel">Error messages</h4>
+                    <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
-                    </button>
+                    </button> -->
                 </div>
 
                 <!-- Body -->
@@ -842,7 +842,7 @@
 
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                    <button class="btn btn-secondary-custom" type="button" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -857,11 +857,11 @@
             <div class="modal-content full">
 
                 <!-- Header -->
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Delete?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <div class="modal-header custom">
+                    <h4 class="modal-title" id="exampleModalLabel">Ready to Delete?</h4>
+                    <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
-                    </button>
+                    </button> -->
                 </div>
 
                 <!-- Body -->
@@ -872,8 +872,8 @@
 
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <button id="modal_del_submit" class="btn btn-primary" type="button" data-dismiss="modal" onclick="delSubmit(this); return false;">Delete</button>
+                    <button class="btn btn-secondary-custom" type="button" data-dismiss="modal">Cancel</button>
+                    <button id="modal_del_submit" class="btn btn-primary-custom" type="button" data-dismiss="modal" onclick="delSubmit(this); return false;">Delete</button>
                 </div>
             </div>
         </div>
@@ -888,11 +888,11 @@
             <div class="modal-content full">
 
                 <!-- Header -->
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Application Setting</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <div class="modal-header custom">
+                    <h4 class="modal-title" id="exampleModalLabel">Application Setting</h4>
+                    <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
-                    </button>
+                    </button> -->
                 </div>
 
                 <!-- Body -->
@@ -901,7 +901,7 @@
                     <!-- Application -->
                     <div class="row">
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Application Name</h6>
                                 </div>
@@ -913,7 +913,7 @@
 
                         <!-- Depend on -->
                         <div class="col-lg-6">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Depend on</h6>
                                 </div>
@@ -943,7 +943,7 @@
                     <!-- Frame -->
                     <div id="area_div" class="row" style="display:none">
                         <div class="col">
-                            <div class="card mb-4">
+                            <div class="card mb-3">
                                 <div class="card-header custom d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold">Frame</h6>
                                     <a class="" onclick="clearCanvas()" style="cursor: pointer;">clear</a>
@@ -952,8 +952,9 @@
                                     <!-- <img id="app_frame" class="image"> -->
                                     <canvas id="app_canvas" style="width: 100%; height:100%;background-size: 100% 100%; cursor: crosshair;"></canvas>
                                     <!-- <canvas id="app_canvas" style="width: 500px"></canvas> -->
+                                    
                                     <div>
-                                        <table class="table application">
+                                        <table class="table-custom application">
                                             <tr>
                                                 <td class="application" >
                                                     <label>Scale</label>
@@ -981,8 +982,8 @@
 
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button id="modal_back_bt" class="btn btn-secondary" type="button" data-dismiss="modal">Back</button>
-                    <button id="modal_app_submit" class="btn btn-primary" type="button" data-dismiss="modal" onclick="delSubmit(this); return false;">Done</button>
+                    <button id="modal_back_bt" class="btn btn-secondary-custom" type="button" data-dismiss="modal">Back</button>
+                    <button id="modal_app_submit" class="btn btn-primary-custom" type="button" data-dismiss="modal" onclick="delSubmit(this); return false;">Done</button>
                 </div>
             </div>
         </div>

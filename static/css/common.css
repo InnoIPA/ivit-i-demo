@@ -42,18 +42,44 @@ a, td {
     line-height: 2;
 }
 
+.table th,
+.table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    border-top: 1px solid #e3e6f0; 
+}
+
+.table-custom {
+    display: table;
+    width: 100%;
+    border-collapse: separate;
+    box-sizing: border-box;
+    text-indent: initial;
+    border-spacing: 2px;
+    border-color: grey;
+}
+
+.table-custom th,
+.table-custom td {
+    padding: 0.2rem;
+    border-top: 1px solid #e3e6f0; 
+    overflow-x: auto;
+    display: table-cell;
+}
+
 .container-fluid.custom {
-    padding-right: 14%;
-    padding-left: 14%;
+    padding-right: 10%;
+    padding-left: 10%;
 }
 
 .navtitle {
-    padding-right: 13.5%;
-    padding-left: 13.5%;
+    padding-right: 10%;
+    padding-left: 10%;
 }
 
 .h1.custom {
     font-size: 40px;
+    color: #16272E;
 }
 
 .header {
@@ -63,11 +89,7 @@ a, td {
     font-size: 50px;
 }
 
-.h3.custom {
-    font-weight:400;
-    font-size: 28px;
-    /* font-size: 40px; */
-}
+
 .dropdown-item.custom {
     font-size: 13px;
 }
@@ -79,4 +101,74 @@ a, td {
 
 #page-top {
     background-color:#f8f9fc;
+}
+
+h3 {
+    font: normal normal normal 24px/32px Roboto Medium;
+    letter-spacing: 0px;
+    color: #16272E;
+    opacity: 1;
+}
+/* 
+.h3.custom {
+    font-weight:400;
+    font-size: 28px;
+} */
+
+.mb-custom {
+    margin-bottom: 36px;
+}
+
+.shadow-custom {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 4px #CACBD733;
+    border: 1px solid #E0E1E6;
+    border-radius: 12px;
+    opacity: 1;
+    padding: 5px;
+}
+
+.btn-primary-custom {
+    /* UI Properties */
+    background: #E61F23 0% 0% no-repeat padding-box;
+    border-radius: 3px;
+    opacity: 1;
+    text-align: center;
+    font: normal normal normal 16px/21px Roboto;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    opacity: 1;
+}
+
+.btn-primary-custom:hover {
+    background: #ff0004 0% 0% no-repeat padding-box;
+    color: #FFFFFF;
+}
+
+
+.btn-secondary-custom {
+    background: #9b9b9b 0% 0% no-repeat padding-box;
+    border-radius: 3px;
+    opacity: 1;
+    text-align: center;
+    font: normal normal normal 16px/21px Roboto;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    opacity: 1;
+}
+
+.btn-secondary-custom:hover {
+    background:  hsl(0, 0%, 63%) 0% 0% no-repeat padding-box;
+    color: #FFFFFF;
+}
+
+.card-header.custom,
+.card-body.custom {
+    padding: 1rem 1rem;
+    background-color:#FFFFFF;
+    /* border-bottom:1px; */
+}
+
+.modal {
+    top: 10%;
 }

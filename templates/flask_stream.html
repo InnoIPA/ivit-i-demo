@@ -50,10 +50,11 @@
 
             <!-- Main Content -->
             <div id="content">
+
                 <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar custom mb-4 static-top shadow">
+                <nav class="navbar navbar-expand navbar-light topbar custom mb-custom static-top">
                     <div class="h1 mt-4 text-gray-800 navtitle">
-                        <h1 class="header">iVIT-I</h1>
+                        <h1 class="header custom">iVIT-I</h1>
                     </div>
                 </nav>
                 <!-- End of Topbar -->
@@ -63,23 +64,26 @@
 
                     <!-- Page Heading -->
                     <div class="mb-2 d-sm-flex align-items-center justify-content-between m-0">
-                        <h3 id="title" class="h3 custom text-gray-600">Application Name</h3>
-                        <a href="#" class="btn btn-secondary btn-icon-split" onclick="backEvent()">
+                        <h3 id="title" class="h3 custom">Application Name</h3>
+                        <button class="btn btn-secondary-custom" type="button" data-dismiss="modal"
+                                onclick="backEvent(); return false;">Back</button>
+
+                        <!-- <a href="#" class="btn btn-secondary btn-icon-split" onclick="backEvent()">
                             <span class="icon text-gray-200">
                                 <i class="fas fa-arrow-right"></i>
                             </span>
                             <span class="text">Back</span>
-                        </a>
+                        </a> -->
                     </div>
-                    <!-- <p class="mb-4">Receve stream data</p>  -->
+                    <!-- <p class="mb-3">Receve stream data</p>  -->
                     <div class="row custom">
 
                         <div class="col-lg-6">
 
                             <!-- Live Stream -->
-                            <div id="live_stream" class="card shadow mb-4 custom">
-                                <div class="card-header py-3">
-                                    <h6 class="h5 m-0 font-weight-bold text-primary">Live Stream</h6>
+                            <div id="live_stream" class="card shadow-custom mb-3 custom">
+                                <div class="card-header py-3 custom">
+                                    <h6 class="h5 m-0 font-weight-bold card-title">Live Stream</h6>
                                 </div>
                                 <div class="card-body custom image">
                                     <img id="image" class="image">
@@ -87,9 +91,9 @@
                             </div>
 
                             <!-- Information -->
-                            <div id='information' class="card shadow mb-4 custom">
-                                <div class="card-header py-3">
-                                    <h6 class="h5 m-0 font-weight-bold text-primary">Information</h6>
+                            <div id='information' class="card shadow-custom mb-3 custom">
+                                <div class="card-header py-3 custom">
+                                    <h6 class="h5 m-0 font-weight-bold card-title">Information</h6>
                                 </div>
                                 <div class="card-body custom scroll">
                                     <!-- Table -->
@@ -143,18 +147,18 @@
                         <div class="col-lg-6">
 
                             <!-- Output Log -->
-                            <div id="log" class="card shadow mb-4 scroll custom">
-                                <div class="card-header py-3">
-                                    <h6 class="h5 m-0 font-weight-bold text-primary">Output Log</h6>
+                            <div id="log" class="card shadow-custom mb-3 scroll custom">
+                                <div class="card-header py-3 custom">
+                                    <h6 class="h5 m-0 font-weight-bold card-title">Output Log</h6>
                                 </div>
                                 <div id="result" class="card-body custom scroll">
                                     <div id="result"></div>
                                 </div>
                             </div>
                             <!-- Temperature -->
-                            <div id="temprature" class="card shadow mb-4 custom">
-                                <div class="card-header py-3">
-                                    <h6 class="h5 m-0 font-weight-bold text-primary">Temperature</h6>
+                            <div id="temprature" class="card shadow-custom mb-3 custom">
+                                <div class="card-header py-3 custom">
+                                    <h6 class="h5 m-0 font-weight-bold card-title">Temperature</h6>
                                 </div>
                                 <div class="card-body custom">
                                     <!-- Area Chart -->
