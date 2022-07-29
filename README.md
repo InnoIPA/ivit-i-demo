@@ -18,39 +18,35 @@ The web demo site for ivit-i
     ```bash
     $ ./docker/build.sh
     ```
-3. Modify Configuration or use Quick Setup Script
-    * Modify Config
-        ```JSON
-        {
-            "server":{
-                "ip": "172.16.92.130",
-                "platform": "intel",
-                "port": "819"
-            },
-            "client":{
-                "docker_image": "ivit-i-demo",
-                "ip": "0.0.0.0",
-                "port": "4999"
-            }
-        }
-        ```
-        * Server: fill with the IP Address of `ivit-i-<platform>`
-        * Client: shows the information of `Demo Site`
-
-    * Quick Setup Script
-        > Notice: Only modify the parameters of `server` in config.
+3. Run the docker container
+    * Run With Command Line
         ```bash
-        ./quick_setup.sh -b intel -i 172.16.92.130 -p 819
+        $ ./docker/run.sh -b intel -i 172.16.92.130 -p 819
         ```
-4. Run the docker container
-    ```bash
-    $ ./docker/run.sh
-    
-    # Run with CLI mode
-    $ ./docker/run.sh -c
-    ```
-    ![image](assests/ivit-i-demo-ip.png)
+        ![image](assests/ivit-i-demo-ip.png)
 
+    * Modify Config and Run
+        * Modify Config
+            ```JSON
+            {
+                "server":{
+                    "ip": "172.16.92.130",
+                    "platform": "intel",
+                    "port": "819"
+                },
+                "client":{
+                    "docker_image": "ivit-i-demo",
+                    "ip": "0.0.0.0",
+                    "port": "4999"
+                }
+            }
+            ```
+            * Server: fill with the IP Address of `ivit-i-<platform>`
+            * Client: shows the information of `Demo Site`
+        * Run
+            ```bash
+            ./docker/run.sh
+            ```
 # Demo
 > The image and video with high resolution in [my notion page](https://max-c.notion.site/iVIT-I-DEMO-v0-4-20592c5e3c11415e97540d0b72c5b706)
 <details>
