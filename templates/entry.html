@@ -112,7 +112,7 @@
                                             <!-- Application Name -->
                                             <td >
                                                 <div>
-                                                    <a id="{{ app['uuid'] }}_name">{{ app['name'] }}</a>
+                                                    <a id="{{ app['uuid'] }}_name" style="text-transform: capitalize">{{ app['name'] }}</a>
                                                     <!-- <br> -->
                                                     <!-- <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a> -->
                                                 </div>
@@ -179,7 +179,7 @@
                                             <!-- Application Name -->
                                             <td >
                                                 <div>
-                                                    <a id="{{ app['uuid'] }}_name" class="err-name" data-toggle="modal" data-target="#errModal" onclick="errModalEvent(this);">{{ app['name'] }}</a>
+                                                    <a id="{{ app['uuid'] }}_name" class="err-name" style="text-transform: capitalize" data-toggle="modal" data-target="#errModal" onclick="errModalEvent(this);">{{ app['name'] }}</a>
                                                     <!-- <br> -->
                                                     <!-- <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a> -->
                                                 </div>
@@ -282,7 +282,7 @@
                                     <h6 class="m-0 font-weight-bold">Name</h6>
                                 </div>
                                 <div class="card-body custom">
-                                    <input id="name" type="text" class="bg-light border-0 " placeholder="">
+                                    <input id="name" type="text" class="bg-light border-0" placeholder="">
                                 </div>
                             </div>
 
