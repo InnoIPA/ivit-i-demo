@@ -1,3 +1,4 @@
 static/vendor
 *.pyc
 **/*.pyc
+venv
