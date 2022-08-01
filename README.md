@@ -23,7 +23,7 @@ The web demo site for ivit-i
         ```bash
         $ ./docker/run.sh -b intel -i 172.16.92.130 -p 819
         ```
-        ![image](assests/ivit-i-demo-ip.png)
+        ![image](docs/imagesimages/ivit-i-demo-ip.png)
 
     * Modify Config and Run
         * Modify Config
@@ -53,48 +53,48 @@ The web demo site for ivit-i
     <summary>
         Entrance
     </summary>
-    <img src="./assests/entrace.png">
+    <img src="./docs/imagesimages/entrace.png">
 </details>
 
 <details>
     <summary>
         Add Event
     </summary>
-    <img src="./assests/add-modal.gif">
+    <img src="./docs/imagesimages/add-modal.gif">
 </details>
 <details>
     <summary>
         Edit and Delete Event
     </summary>
-    <img src="./assests/edit-del-modal.gif">
+    <img src="./docs/imagesimages/edit-del-modal.gif">
 </details>
 <details>
     <summary>
         Import Event
     </summary>
-    <img src="./assests/import-modal.gif">
+    <img src="./docs/imagesimages/import-modal.gif">
 </details>
 <details>
     <summary>
         Run AI Task
     </summary>
-    <img src="./assests/run-task.gif">
+    <img src="./docs/imagesimages/run-task.gif">
 </details>
 <details>
     <summary>
         Stream Page
     </summary>
-    <img src="./assests/stream.gif">
+    <img src="./docs/imagesimages/stream.gif">
 </details>
 <details>
     <summary>
         Application
     </summary>
-    <img src="./assests/application.gif">
+    <img src="./docs/imagesimages/application.gif">
 </details>
 <details>
     <summary>
         Application Result
     </summary>
-    <img src="./assests/application-result.gif">
+    <img src="./docs/imagesimages/application-result.gif">
 </details>
