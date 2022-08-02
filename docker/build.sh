@@ -3,6 +3,12 @@ CONF="ivit-i.json"
 ROOT=$(dirname `realpath $0`)
 source "${ROOT}/utils.sh"
 
+# Install pre-requirement
+if [[ -z $(which jq) ]];then
+    printd "Installing requirements .... " Cy
+    sudo apt-get install jq zip unzip -yqq
+fi
+
 # Concate name
 DOCKER_IMAGE=$(cat ${CONF} | jq -r '.client.docker_image')
 printd "Concatenate docker image name: ${DOCKER_IMAGE}" Cy

@@ -1,5 +1,6 @@
 #!/bin/bash
-source "$(dirname $(realpath $0))/utils.sh"
+ROOT=$(dirname $(realpath $0))
+source "${ROOT}/utils.sh"
 
 # Install pre-requirement
 if [[ -z $(which jq) ]];then
