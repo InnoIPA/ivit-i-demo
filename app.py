@@ -44,9 +44,9 @@ CORS(app)
 socketio = SocketIO(app, cors_allowed_origins='*') 
 # gunicorn --worker-class eventlet -w 1 --threads ${THREAD} --bind ${BIND} ${MODULE}:app
 # ------------
-app.config['AF']='intel'
+app.config['AF']='nvidia'
 app.config['HOST']='172.16.92.130'
-app.config['PORT']='819'
+app.config['PORT']='818'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 def webapi(cmds:list, method:str='GET', data=None):
