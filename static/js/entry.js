@@ -716,8 +716,18 @@ function importSubmit() {
         form_data.append( "source", document.getElementById("import_source_menu").innerText.replace(/(\r\n|\n|\r)/gm, ""));
     };
 
-    // Add other information: capture from /import_proc, it's the same with the return infor of /import_1 (web api)
-    const file_name = document.getElementById('import_zip_file_label').textContent.split(".")[0];
+    // Add other information: capture from /import_proc, it's the same with the return infor of /import_zip (web api)
+    const eleZipDiv = document.getElementById('import_zip_file')
+    const eleUrlDiv = document.getElementById('import_web_url')
+    let file_name;
+    if ( eleZipDiv.style.display==='block' ){
+        file_name = eleZipDiv.textContent.trim().split(".")[0];
+        console.log(eleZipDiv.textContent.trim());
+        console.log(file_name);
+    } else {
+        file_name = eleUrlDiv.value;
+    };
+    
 
     $.ajax({
         url: SCRIPT_ROOT + '/import_proc',
@@ -726,6 +736,7 @@ function importSubmit() {
         contentType: false,
         type: 'GET',
         success: function (data, textStatus, xhr) {
+            console.log(data);
             let trg_data = data[file_name]["info"];
             form_data.append( "path", trg_data["path"] );
             form_data.append( "model_path", trg_data["model_path"] );
@@ -734,15 +745,15 @@ function importSubmit() {
             form_data.append( "json_path", trg_data["json_path"] );
             form_data.append( "tag", trg_data["tag"] );
     
-            // Sending data via web api ( /import_2 )
-            console.log("/import_2 ");
+            // Sending data via web api ( /import )
+            console.log("/import ");
             console.log("-----------------------------------");
             for(var pair of form_data.entries()) {
                 console.log(pair[0]+ ', '+ pair[1]); 
             }
 
             $.ajax({
-                url: SCRIPT_ROOT + '/import_2',
+                url: SCRIPT_ROOT + '/import',
                 data: form_data,
                 processData: false,
                 contentType: false,
@@ -753,16 +764,14 @@ function importSubmit() {
                     location.reload();
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log("Import error");
-                    console.log(xhr);
-                    console.log(xhr.responseJSON);
+                    alert(`Import error: ${xhr.responseText}`);
+                    location.reload();
                 },
             });
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log("Extract error ( IMPORT )");
-            console.log(xhr);
-            console.log(xhr.responseJSON);
+            alert(`Extract error when convert import model: ${xhr.responseText}`);
+            location.reload();
         },
     });
 
