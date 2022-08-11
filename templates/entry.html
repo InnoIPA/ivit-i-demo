@@ -27,6 +27,7 @@
     <link href="static/css/switch.css" rel="stylesheet">
     <link href="static/css/entry.css" rel="stylesheet">
     <link href="static/css/common.css" rel="stylesheet">
+    <link href="static/css/import-option.css" rel="stylesheet">
 
     <!-- google font -->
     <style>
@@ -379,7 +380,7 @@
                                     </div>
                                     <!-- Input File -->
                                     <div id="source_file" class="custom-file" style="height:100%; display: none;">
-                                        <input type="file" style="height:100%" class="custom-file-input" data-target="file-uploader" id="file-uploader">
+                                        <input type="file" class="custom-file-input" data-target="file-uploader" id="file-uploader">
                                         <label id="custom_file_label" class="custom-file-label" style="height:100%">Choose file</label>
                                     </div>
                                     <!-- Drop down -->
@@ -564,7 +565,7 @@
                                     </div>
                                     <!-- Input File -->
                                     <div id="edit_source_file" class="custom-file" style="height:100%; display: none;">
-                                        <input type="file" style="height:100%" class="custom-file-input" data-target="edit-source-file-uploader" id="edit-source-file-uploader">
+                                        <input type="file"  class="custom-file-input" data-target="edit-source-file-uploader" id="edit-source-file-uploader">
                                         <label id="edit_source_file_label" class="custom-file-label" style="height:100%">Choose file</label>
                                     </div>
                                     <!-- Drop down -->
@@ -676,18 +677,29 @@
                         <!-- Configuration -->
                         <div class="col-lg-6">
                             <div class="card mb-3">
-                                <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">ZIP File</h6>
+                                <div class="card-header custom card-header d-flex align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold">Model</h6>
+                                    <div class="m-0"> 
+                                        <a id="import_model_zip" href="#" class="m-0 import-opt font-weight-bold" onclick="changeOption(this)">ZIP</a>
+                                        <a id="import_model_div" class="m-0 import-opt font-weight-bold"> / </a>
+                                        <a id="import_model_url" href="#" class="m-0 import-opt font-weight-bold" onclick="changeOption(this)">URL</a>
+                                    </div>
                                 </div>
                                 <div class="card-body custom">
-                                    <!-- Input File -->
-                                    <div id="import_zip_file" class="custom-file" style="height:100%;">
-                                        <input type="file" style="height:100%" class="custom-file-input" data-target="import-zip-file-uploader" id="import-zip-file-uploader">
+                                    <!-- ZIP File -->
+                                    <div id="import_zip_file" class="custom-file" style="height:100%; display:block">
+                                        <input type="file" class="custom-file-input" data-target="import-zip-file-uploader" id="import-zip-file-uploader">
                                         <label id="import_zip_file_label" class="custom-file-label" style="height:100%">Choose file</label>
                                     </div>
+                                    <div id="import_web_url" style="height:100%; display:none">
+                                        <!-- WEB URL -->
+                                        <input id="import_web_url_value" type="text" style="height:100%" class="bg-light border-0" placeholder="Press 'Enter' to extract URL ...">
+                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
+                        
 
                         <!-- Application -->
                         <div class="col-lg-6">
@@ -711,6 +723,7 @@
                             </div>
                         </div>
                     </div>
+
 
                     <!-- Input type and source -->
                     <div class="row">
@@ -750,7 +763,7 @@
                                     </div>
                                     <!-- Input File -->
                                     <div id="import_source_file" class="custom-file" style="height:100%; display: none;">
-                                        <input type="file" style="height:100%" class="custom-file-input" data-target="import-source-file-uploader" id="import-source-file-uploader">
+                                        <input type="file" class="custom-file-input" data-target="import-source-file-uploader" id="import-source-file-uploader">
                                         <label id="import_source_file_label" class="custom-file-label" style="height:100%">Choose file</label>
                                     </div>
                                     <!-- Drop down -->
@@ -1012,5 +1025,6 @@
     <script type="text/javascript" src="static/js/entry.js"></script>
     <script type="text/javascript" src="static/js/app_setting.js"></script>
     <script type="text/javascript" src="static/js/upload_file.js"></script>
+    <script type="text/javascript" src="static/js/import_model_option.js"></script>
     
 </body>
