@@ -23,7 +23,7 @@ The web demo site for ivit-i
         ```bash
         $ ./docker/run.sh -b intel -i 172.16.92.130 -p 819
         ```
-        ![image](docs/imagesimages/ivit-i-demo-ip.png)
+        ![image](docs/images/iVIT-I-IP.png)
 
     * Modify Config and Run
         * Modify Config
@@ -53,48 +53,38 @@ The web demo site for ivit-i
     <summary>
         Entrance
     </summary>
-    <img src="./docs/imagesimages/entrace.png">
+    <img src="./docs/images/iVIT-I-Entrance.png">
 </details>
 
 <details>
     <summary>
         Add Event
     </summary>
-    <img src="./docs/imagesimages/add-modal.gif">
+    <img src="./docs/images/iVIT-I-Add.png">
 </details>
 <details>
     <summary>
         Edit and Delete Event
     </summary>
-    <img src="./docs/imagesimages/edit-del-modal.gif">
+    <img src="./docs/images/iVIT-I-Edit.png">
 </details>
 <details>
     <summary>
         Import Event
     </summary>
-    <img src="./docs/imagesimages/import-modal.gif">
-</details>
-<details>
-    <summary>
-        Run AI Task
-    </summary>
-    <img src="./docs/imagesimages/run-task.gif">
-</details>
-<details>
-    <summary>
-        Stream Page
-    </summary>
-    <img src="./docs/imagesimages/stream.gif">
+    <img src="./docs/images/iVIT-I-Import-ZIP.png">
+    <img src="./docs/images/iVIT-I-Import-URL.png">
 </details>
 <details>
     <summary>
         Application
     </summary>
-    <img src="./docs/imagesimages/application.gif">
+    <img src="./docs/images/iVIT-I-App-Search.png">
+    <img src="./docs/images/iVIT-I-App-Area.png">
 </details>
 <details>
     <summary>
-        Application Result
+        Stream Page
     </summary>
-    <img src="./docs/imagesimages/application-result.gif">
+    <img src="./docs/images/iVIT-I-Stream.png">
 </details>
