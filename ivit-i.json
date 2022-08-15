@@ -1,8 +1,8 @@
 {
   "server": {
     "ip": "172.16.92.130",
-    "platform": "nvidia",
-    "port": "818"
+    "platform": "intel",
+    "port": "819"
   },
   "client": {
     "docker_image": "ivit-i-demo",

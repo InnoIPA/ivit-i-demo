@@ -1,7 +1,7 @@
 // Basic Information
 const DOMAIN = '172.16.92.130';
-const PORT = '818';
-const PLATFORM = 'nvidia';
+const PORT = '819';
+const PLATFORM = 'intel';
 const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
 
 const IMG_EVENT = "images";
