@@ -536,18 +536,23 @@ function updateSourceV4L2(key="source"){
 
 // Update GPU information
 function updateGPU(el_key="device"){
-    console.log(`Update gpu device, element:${el_key}`);    
-    let el_device_list = document.getElementById(`${el_key}_list`);
+    console.log(`Update gpu device, element:${el_key}`);   
+    
+    const el_device_menu = document.getElementById(`${el_key}_menu`);
+    const el_device_list = document.getElementById(`${el_key}_list`);
     
     $.ajax({
         url: SCRIPT_ROOT + `/device`,
         type: "GET",
         dataType: "json",
         success: function (data, textStatus, xhr) {
+
             for (const key of Object.keys(data)) {
                 const deviceName = data[key]['name'];
+                el_device_menu.textContent = deviceName;
                 el_device_list.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="${el_key}" value="${deviceName}}">${deviceName}</a>`;
             };
+
         },
         error: function (xhr, textStatus, errorThrown) {
             console.log("Error in capture device");
@@ -848,6 +853,7 @@ function addModalEvent(init=false) {
     updateSourceType("source_type");
     updateModel("model_list");
     // updateSourceV4L2("source");
+
     document.getElementById("model_menu").disabled = false;
     document.getElementById("model_app_menu").disabled = false;
     document.getElementById("device_menu").disabled = false;
