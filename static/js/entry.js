@@ -509,7 +509,10 @@ function updateSourceType(key="source_type", data=""){
 function updateSourceV4L2(key="source"){
     console.log(`Update v4l2, element:${key}`);
     
-    let el_source_list = document.getElementById(`${key}_list`);
+    const el_source_menu = document.getElementById(`${key}_menu`);
+    const el_source_list = document.getElementById(`${key}_list`);
+
+    el_source_menu.disabled = false;
     el_source_list.innerHTML = "";
 
     $.ajax({
@@ -524,7 +527,8 @@ function updateSourceV4L2(key="source"){
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log("Error in capture input source");
+            alert(xhr.responseText);
+            el_source_menu.disabled = true;
         },
     });
 
@@ -843,7 +847,7 @@ function addModalEvent(init=false) {
     updateGPU("device");
     updateSourceType("source_type");
     updateModel("model_list");
-    updateSourceV4L2("source");
+    // updateSourceV4L2("source");
     document.getElementById("model_menu").disabled = false;
     document.getElementById("model_app_menu").disabled = false;
     document.getElementById("device_menu").disabled = false;
@@ -919,7 +923,7 @@ function importModalEvent() {
     updateGPU("import_device");
     updateModel();
     updateSourceType("import_source_type");
-    updateSourceV4L2("import_source");
+    // updateSourceV4L2("import_source");
 
     document.getElementById("import_model_app_menu").disabled = false;
     document.getElementById("import_device_menu").disabled = false;
