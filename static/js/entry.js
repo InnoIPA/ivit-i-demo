@@ -181,18 +181,25 @@ $(document).ready(function () {
         }
 
     }
-    
+
     // When switch change
-    $('.switch :checkbox').change(function(){
+    $('.switch-custom :checkbox').change(function(){
         
-        let stats = ( this.checked ? 'run' : 'stop' )
-        const uuid = this.value
+        const eventTarget = this;
+        let stats = ( eventTarget.checked ? 'run' : 'stop' )
+        const uuid = eventTarget.value
         const af = document.getElementById(`${uuid}_framework`).textContent;
     
         // Loading
         document.getElementById( `${uuid}_status_btn`).innerText = 'loading';
         document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-gray custom");
         
+        // Freeze switch button
+        eventTarget.disabled = true;
+        const parentTarget = eventTarget.parentElement;
+        parentTarget.style = "pointer-events: none; opacity: 0.4;";
+
+
         // run app or stop app
         $.ajax({  
             type: 'GET',
@@ -201,7 +208,12 @@ $(document).ready(function () {
             dataType: "json",
             success: function (data, textStatus, xhr) {
                 console.log(`${data}`);
+                eventTarget.disabled = false;
+        
+                
+                parentTarget.style = "pointer-events: all; opacity: 1;";
                 statusEvent(uuid, stats);
+                
             },
             error: function (xhr, textStatus, errorThrown) {
                 
@@ -792,10 +804,13 @@ function delSubmit(obj) {
         contentType: "application/json;charset=utf-8",
         success: function (data, textStatus, xhr) {
             console.log(data);
+
+            console.log("Reload Page");
             location.reload();
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log("edit error");
+            console.log("Remove error", xhr.responseText);
+            alert(`Remove Task (${uuid}) Failed: \n${xhr.responseText}`);
         },
     });
 }
@@ -1123,4 +1138,3 @@ function appModalEvent(mode='Add', needArea=false){
     }
 
 }
-
