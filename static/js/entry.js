@@ -81,12 +81,15 @@ function statusEvent(uuid, stats, firstTime=false){
         hrefEvent('add', uuid);
         document.getElementById( `${uuid}_status_btn`).innerText = 'run';
         document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-green custom")
+        
         document.getElementById(`${uuid}_more`).disabled=true;
+        document.getElementById(`${uuid}_more`).style = "pointer-events: none;"
     }else if(stats==='stop'){
         hrefEvent('remove',uuid);
         document.getElementById( `${uuid}_status_btn`).innerText = 'stop';
         document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-gray custom")
         document.getElementById(`${uuid}_more`).disabled=false;
+        document.getElementById(`${uuid}_more`).style = "pointer-events: all;"
         // if(firstTime===false){
         //     stopTask(uuid);
         // };
