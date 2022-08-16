@@ -30,7 +30,6 @@ const URL = `http://${DOMAIN}:${PORT}/task/${uuid}/stream`;
 const streamSocket = io.connect(URL);
 
 $(document).ready(function(){
-
     // Setting Full Screen Event
     setFullScreenEvent();
 
