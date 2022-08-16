@@ -59,7 +59,7 @@ function stopTask(uuid){
 
 // Add superlink when task is avaible
 function hrefEvent(behavior, uuid){
-    console.log(`href event: ${behavior} ${uuid}`);
+    
     if (behavior==='add'){
         const url = document.URL.replace('#', '');
         document.getElementById(`${uuid}_name`).href=`${url}/task/${uuid}/stream`;
@@ -245,8 +245,9 @@ function setDefaultModal(){
     document.getElementById("name").placeholder = "Ex. Defect detection";
     document.getElementById("thres").value = 0.9;
     updateSource('default', 'source');
-    document.getElementById("model_app_menu").setAttribute("style", "display: none");
-    document.getElementById("model_app_menu_def").setAttribute("style", "cursor: auto");
+
+    // document.getElementById("model_app_menu").setAttribute("style", "display: none");
+    // document.getElementById("model_app_menu_def").setAttribute("style", "cursor: auto");
     document.getElementById("custom_file_label").textContent = "Choose file";
     document.getElementById("model_menu").textContent = "Please select one";
     document.getElementById("source_type_menu").textContent = "Please select one";
@@ -319,8 +320,15 @@ function dropdownSelectEvent(obj) {
         document.getElementById(`${srcKey}_menu`).value = `${srcType}`;
     }
     else if ( srcKey.includes("source_type")) {
-        updateSource(srcType, trgKey, "");
-    };
+
+        if (srcKey.includes("model")) {
+            updateModelSource(srcType )
+        }else{
+            updateSource(srcType, trgKey, "");
+        }
+    }
+    else if ( srcKey.includes(""))
+    ;
 }
 
 // Clear modal dropdown
@@ -329,13 +337,13 @@ function clearModalDropdown(key=""){
     if(key!==""){
         key=`${key}_`;
     }
-    let keyList = [ `${key}model_list`, `${key}model_app_list`, `${key}source_type_list`, `${key}source_list`, `${key}device_list` ];
+    let keyList = [ `${key}model_list`, `${key}model_app_list`, `${key}source_type_list`, `${key}model_source_type_list`, `${key}source_list`, `${key}device_list` ];
     keyList.forEach( function(val, idx){
         const el = document.getElementById(val);
         if(el){
             document.getElementById(val).innerHTML = "";
         } else {
-            console.log(val);
+            console.log("Could not found the element: ", val);
         }
     });
 }
@@ -416,7 +424,7 @@ function updateModelApp(eleKey, appKey){
         });
     }
 
-  }
+}
 
 // Update Source
 function updateSource(srcType, key="source", srcData=""){
@@ -507,6 +515,44 @@ function updateSourceType(key="source_type", data=""){
     }
 
 }
+
+// Update Model
+function updateModelSource(srcType){
+
+    const eleModelSrcDef = document.getElementById("model_def");
+    const eleModelSrcURL = document.getElementById("import_web_url");
+    const eleModelSrcZIP = document.getElementById("import_zip_file");
+    const eleModelSrcExist = document.getElementById("model_dropdown");
+
+    const eleModelList = [ eleModelSrcDef, eleModelSrcURL, eleModelSrcZIP, eleModelSrcExist ];
+
+    for( let i=0; i<eleModelList.length; i++){
+        eleModelList[i].style = "display: none";
+    }
+
+    if(srcType.includes("Exist")){
+        eleModelSrcExist.style = "display: block";
+    } else if (srcType.includes("ZIP")) {
+        eleModelSrcZIP.style = "display: block";
+    } else if (srcType.includes("URL")) {
+        eleModelSrcURL.style = "display: block";
+    }
+
+}
+
+// Update Model Source Type
+function updateModelSourceType(key="model_source_type", data=""){
+    
+    let srcTypeList = ['From Exist Model', 'Import ZIP File', 'Enter The URL'];
+    let el_list = document.getElementById(`${key}_list`);
+    let el_menu = document.getElementById(`${key}_menu`);
+    
+    console.log(`Add the model source type (${srcTypeList})`);
+    for(let step=0; step<srcTypeList.length; step++){
+        el_list.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="${key}" name=${ srcTypeList[step] } >${ srcTypeList[step] }</a>`;
+    }
+}
+
 
 // Update V4L2 list
 function updateSourceV4L2(key="source"){
@@ -853,11 +899,13 @@ function addModalEvent(init=false) {
     console.log(`Open "ADD" modal`);
     clearModalDropdown();
     updateGPU("device");
+    updateModelSourceType();
     updateSourceType("source_type");
     updateModel("model_list");
     // updateSourceV4L2("source");
 
     document.getElementById("model_menu").disabled = false;
+
     document.getElementById("model_app_menu").disabled = false;
     document.getElementById("device_menu").disabled = false;
     if(init){
@@ -973,10 +1021,10 @@ function appModalEvent(mode='Add', needArea=false){
     // Add
     if (src_bt.value === "Add"){
         console.log("Setting Add button");
-        trg_mode = "";
-        el_app_name.value = document.getElementById(`${trg_mode}${app_menu_name}`).textContent;
+        // trg_mode = "";
+        // el_app_name.value = document.getElementById(`${trg_mode}${app_menu_name}`).textContent;
         trg_model_name = document.getElementById(`${trg_mode}${model_name}`).textContent;
-        trg_bt.textContent = src_bt.value;
+        // trg_bt.textContent = src_bt.value;
         trg_bt.setAttribute("data-dismiss", "modal");
         trg_bt.setAttribute("onclick", "addSubmit()");
 
@@ -1062,6 +1110,7 @@ function appModalEvent(mode='Add', needArea=false){
     }
 
     // Update Image if need
+    /*
     if (el_app_name.value.includes("area")){
         needArea = true;
     }
@@ -1149,5 +1198,6 @@ function appModalEvent(mode='Add', needArea=false){
         });
 
     }
+    */
 
 }

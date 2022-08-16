@@ -293,6 +293,26 @@
                     <!-- model and Application -->
                     <div class="row">
 
+                        <!-- Model Source -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Model Source</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button class="btn btn-sm dropdown-toggle" type="button" id="model_source_type_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="model_source_type_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="model_source_type">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- model -->
                         <div class="col-lg-6">
                             <div class="card mb-3">
@@ -300,7 +320,25 @@
                                     <h6 class="m-0 font-weight-bold">Model</h6>
                                 </div>
                                 <div class="card-body custom">
-                                    <div class="dropdown m-0">
+
+                                    <!-- Default -->
+                                    <a class="btn btn-sm dropdown-toggle" id="model_def" style="cursor: auto;"></a>
+                                    
+                                    <!-- Input Text -->
+                                    <div id="import_web_url" style="height:100%; display:none">
+                                        <!-- WEB URL -->
+                                        <input id="import_web_url_value" type="text" style="height:100%" class="bg-light border-0" placeholder="Press 'Enter' to extract URL ...">
+                                    </div>
+
+                                    <!-- Input File -->
+                                    <div id="import_zip_file" class="custom-file" style="height:100%; display:none">
+                                        <input type="file" class="custom-file-input" data-target="import-zip-file-uploader" id="import-zip-file-uploader">
+                                        <label id="import_zip_file_label" class="custom-file-label" style="height:100%">Choose file</label>
+                                    </div>
+                                    
+                                    
+                                    <!-- Drop down -->
+                                    <div id="model_dropdown" class="dropdown m-0" style="display: none">
                                         <button class="btn btn-sm dropdown-toggle" type="button" id="model_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
@@ -309,11 +347,13 @@
                                             aria-labelledby="model_menu">
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
 
                         <!-- Application -->
+                        <!--
                         <div class="col-lg-6">
                             <div class="card mb-3">
                                 <div class="card-header custom">
@@ -329,11 +369,12 @@
                                                 style="cursor: auto;"></a>
                                             <div id="model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="model_app_menu"></div>
                                         </div>
-                                        <!-- <a id="bt_setup_app" class="btn" href="#" onclick="appModalEvent(); return false;" data-toggle="modal" data-target="#appModal" style="display: None;padding: 0%;">Setup</a> -->
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        -->
+
                     </div>
 
                     <!-- Input type and source -->
@@ -913,13 +954,36 @@
 
                     <!-- Application -->
                     <div class="row">
-                        <div class="col-lg-6">
+
+
+                        <!-- <div class="col-lg-6">
                             <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Application Name</h6>
                                 </div>
                                 <div class="card-body custom">
                                     <input id="app_name" type="text" class="bg-light border-0 " placeholder="" disabled>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- Application -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Application</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
+                                        <div class="dropdown m-0">
+                                            <a class="btn btn-sm dropdown-toggle" type="a" 
+                                                id="model_app_menu" data-toggle="dropdown" aria-haspopup="true" 
+                                                aria-expanded="false" style="display: none"> Please select one </a>
+                                            <a class="btn btn-sm dropdown-toggle" id="model_app_menu_def" 
+                                                style="cursor: auto;"></a>
+                                            <div id="model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="model_app_menu"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
