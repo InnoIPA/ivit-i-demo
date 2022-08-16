@@ -149,7 +149,7 @@
                                             <!-- Rounded switch -->
                                             <td >
                                                 
-                                                <label class="switch">
+                                                <label class="switch-custom">
 
                                                     <input id="{{ app['uuid'] }}_switch" type="checkbox" name="checkbox" value="{{ app['uuid'] }}">
                                                         <!-- {{ "checked" if app['status']=='run' }}> -->
@@ -197,7 +197,7 @@
                                             </td>
                                             <!-- Rounded switch -->
                                             <td >    
-                                                <label class="switch">
+                                                <label class="switch-custom">
                                                     <input type="checkbox" name="checkbox" value="{{ app['uuid'] }}" value="failed"
                                                         {{ "checked" if app['status']=='run' }} disabled>
                                                     <span class="slider round"></span>
