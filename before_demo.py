@@ -1,23 +1,12 @@
 import os, socket, argparse, json
 
-CONF="/workspace/ivit-i.json"
+CONF        = "/workspace/ivit-i.json"
+MODIFY_JS   = ['./static/js/common.js']
+MODIFY_PY   = ['app.py']
 
-BASIC_NAME_MAP={
-    "nvidia": [
-        "nvidia", "nv", "tensorrt", "trt"
-    ],
-    "intel": [
-        "intel", "openvino", "vino"
-    ]
-}
-
-BASIC_PORT_MAP={
-    "nvidia": "818",
-    "intel": "819"
-}
-
-MODIFY_JS=['./static/js/entry.js', './static/js/stream.js']
-MODIFY_PY=['app.py']
+SERVER      = "server"
+IP          = "ip"
+PORT        = "port"
 
 def extract_ip():
     st = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -30,29 +19,31 @@ def extract_ip():
         st.close()
     return IP
 
-if __name__ == '__main__':
+def parse_conf_info(conf_path);
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--ip", default="", help="the ivit-i-<platform> ip address")
-    parser.add_argument("-p", "--port", default="", help="the ivit-i-<platform> port number")
-    args = parser.parse_args()
+    if not os.path.exist(conf_path):
+        raise Exception("Could not found config file ({})".format(conf_path))
+    
+    with open(CONF, 'r') as f:
+        data = json.load(f)
+
+    return data
+
+def main(args):
 
     data = None
     ip, port = "", ""
+    
+    data = parse_cfg_info(CONF)
+    
+    # Get server ip
+    ip = data[SERVER][IP] if args.ip == "" else args.ip
+    if ip in [ "" , "0.0.0.0" ]:
+        print("User not setting IP Address, searching dynamically ... ")
+        ip = extract_ip()
 
-            
-    # Parse the configuration
-    with open(CONF, 'r') as f:
-        data = json.load(f)
-    if args.port=="":
-        print("Using configuration content -> {}:{}".format("port", data['server']["port"]))
-        port = data['server']['port']
-    if args.ip=="":
-        print("Using configuration content -> {}:{}".format("ip", data['server']["ip"]))
-        ip = data['server']['ip']
-        if ip=="":
-            print("User not setting IP Address, searching dynamically ... ")
-            ip = extract_ip()
+    # Get server port
+    port = data[SERVER][PORT] if args.port == "" else args.port
     
     # Modify JavaScript File
     cnts, lines, texts = [], [], []
@@ -85,9 +76,11 @@ if __name__ == '__main__':
             new_file_contents = "".join(src)
             my_file.write(new_file_contents)
             my_file.close()
-    # -------------------------------------------------------------------------------------------
+    
+    # Modify Python File
     for pyfile in MODIFY_PY:
         print("Modify Python File ({})".format(pyfile))
+        
         with open(pyfile, 'r') as f:
             src = f.readlines()
 
@@ -105,3 +98,12 @@ if __name__ == '__main__':
             new_cnt = "".join(src)
             f.write(new_cnt)
             f.close()
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--ip", default="", help="the ivit-i-<platform> ip address")
+    parser.add_argument("-p", "--port", default="", help="the ivit-i-<platform> port number")
+    args = parser.parse_args()
+
+    main(args)
