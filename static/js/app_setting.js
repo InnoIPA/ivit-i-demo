@@ -8,18 +8,14 @@ let appInfo = document.getElementById("app_info");
 let appRatio;
 
 $(document).ready(function () {
-    console.log("APP SETTING ...")
+    console.log("Set up application dialog and cursor event")
     appInfo.innerHTML = "";
-    
     appCanvas.addEventListener("mousedown", function(e){
         getCursorPosition(appCanvas, e);
     })
 });
 
 function getCursorPosition(canvas, event) {
-    
-    // console.log(event);
-    // console.log(appCanvas.width);
     
     const rect = canvas.getBoundingClientRect();
     
