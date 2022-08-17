@@ -1,19 +1,18 @@
-// ==================================================================
-// Init
-const DOMAIN = '172.16.92.130';
-const PORT = '819';
-const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
+/*
 
+Parameters from common.js
 
-// ==================================================================
+- DOMAIN        : IP Address
+- PORT          : Port Number
+- SCRIPT_ROOT   : Full IP Address with Port
+
+*/
+
 // Define global variable "model_app_map", it will updated by updateModel
 let model_app_map;   
 let model_task_map;  
 let trg_model_name;
 let trg_task_uuid;
-
-// ==================================================================
-// Start Up Function
 
 // Start streaming when press the name superlink
 function streamStart(uuid){
@@ -57,57 +56,64 @@ function stopTask(uuid){
 }
 
 // Add superlink when task is avaible
-function hrefEvent(behavior, uuid){
-    
-    if (behavior==='add'){
-        const url = document.URL.replace('#', '');
-        document.getElementById(`${uuid}_name`).href=`${url}/task/${uuid}/stream`;
-        document.getElementById(`${uuid}_name`).setAttribute("onclick", `streamStart("${uuid}");`);
 
-    } else {
-        document.getElementById(`${uuid}_name`).removeAttribute("href");
-        document.getElementById(`${uuid}_name`).removeAttribute("onclick");
-    }
+async function addStreamHref(uuid){
+    const url = await getDocURL();
+    const eleTaskName = document.getElementById(`${uuid}_name`);
+    eleTaskName.href=`${url}/task/${uuid}/stream`;
+    eleTaskName.setAttribute("onclick", `streamStart("${uuid}");`);
+}
+
+async function rmStramHref(uuid){
+    const eleTaskName = document.getElementById(`${uuid}_name`);
+    eleTaskName.removeAttribute("href");
+    eleTaskName.removeAttribute("onclick");
 }
 
 // Control the status button
-function statusEvent(uuid, stats, firstTime=false){
-    console.log(`\
-    * AI task       :${uuid}
-    * status        : ${stats}
-    * first_time    : ${firstTime}`);
-    // run app or stop app
-    // const status_ele = $(`#${uuid}_status`);
+function statusEvent(uuid, stats, debug=false){
 
-    if(stats==='run'){
-        hrefEvent('add', uuid);
-        document.getElementById( `${uuid}_status_btn`).innerText = 'run';
-        document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-green custom")
+    const name    = document.getElementById(`${uuid}_name`).textContent;
+    const run     = 'run';
+    const stop    = 'stop';
+    const error   = 'error';
+
+    const statsButton = document.getElementById( `${uuid}_status_btn`);
+    const optionButton = document.getElementById(`${uuid}_more`);
+    const launchButton = document.getElementById(`${uuid}_switch`)
+    
+    if (debug === true) console.log(`- ${name} (${uuid}) is ${stats}`);
+    
+    if(stats === run){
         
-        document.getElementById(`${uuid}_more`).disabled=true;
-        document.getElementById(`${uuid}_more`).style = "pointer-events: none;"
-    }else if(stats==='stop'){
-        hrefEvent('remove',uuid);
-        document.getElementById( `${uuid}_status_btn`).innerText = 'stop';
-        document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-gray custom")
-        document.getElementById(`${uuid}_more`).disabled=false;
-        document.getElementById(`${uuid}_more`).style = "pointer-events: all;"
-        // if(firstTime===false){
-        //     stopTask(uuid);
-        // };
+        statsButton.innerText = run;
+        statsButton.setAttribute("class", "btn btn-green custom");
+        addStreamHref(uuid);
+        disableButton(optionButton);
+
+    } else if ( stats === stop ) {
+        
+        statsButton.innerText = stop;
+        statsButton.setAttribute("class", "btn btn-gray custom");
+        rmStramHref(uuid);
+        enableButton(optionButton);
+
+    } else if ( stats === error ) {
+        
+        statsButton.innerText = error;
+        statsButton.setAttribute("class", "btn btn-red custom");
+        addErrorHref(uuid);
+        disableButtonParent(launchButton);
     };
 }
 
 // Setting up error name link when the task is unavailable
-function errNameEvent(uuid){
-    // class="err-name" data-toggle="modal" data-target="#errModal" onclick="errModalEvent(this);"
-    let ele = document.getElementById(`${uuid}_name`);
-    document.getElementById( `${uuid}_status_btn`).innerText = 'error';
-    document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-red custom")
-    ele.setAttribute("class", "err-name");
-    ele.setAttribute("data-toggle", "modal");
-    ele.setAttribute("data-target", "#errModal");
-    ele.setAttribute("onclick", "errModalEvent(this);");
+function addErrorHref(uuid){
+    const ele = document.getElementById(`${uuid}_name`);
+    ele.setAttribute("class"        , "err-name");
+    ele.setAttribute("data-toggle"  , "modal");
+    ele.setAttribute("data-target"  , "#errModal");
+    ele.setAttribute("onclick"      , "errModalEvent(this);");
 }
 
 // ==================================================================
@@ -160,7 +166,7 @@ function setDefaultModal(){
     document.getElementById("device_menu").textContent = "Please select one";
 }
 
-// Set default value on Edit 
+// Set default value on ap 
 function setEditDefaultModal(){
     document.getElementById("edit_name").placeholder = "Ex. Defect detection";
     document.getElementById("edit_thres").value = 0.9;
@@ -186,7 +192,7 @@ function setImportDefaultModal(){
     // document.getElementById("import_model_file_label").textContent = "Choose file";
     // document.getElementById("import_label_file_label").textContent = "Choose file";
     // document.getElementById("import_config_file_label").textContent = "Choose file";
-    document.getElementById("import_zip_file_label").textContent = "Choose file";
+    document.getElementById("import_zip_model_label").textContent = "Choose file";
 
     // document.getElementById("import-model-file-uploader").value = null;
     // document.getElementById("import-label-file-uploader").value = null;
@@ -341,19 +347,18 @@ function updateModelApp(eleKey, appKey){
         console.log("Error: ", error);
     }
 
-    // Clear and set default
-    appList.innerHTML   = "";
-    appMenu.textContent = "Please select one";
     
     // Update dropdown items
-    if ( model_app_map[appKey].length===0 ) {
-        appMenu.textContent = `No application`;
-    } else {
+    if ( appKey in model_app_map){
+        // Clear and set default
+        appList.innerHTML   = "";
+        appMenu.textContent = "Please select one";
+        console.log(model_app_map);
+        
         model_app_map[appKey].forEach(function(item, i){
             appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
         });
     }
-
 }
 
 // Update Source
@@ -450,8 +455,8 @@ function updateSourceType(key="source_type", data=""){
 function updateModelSource(srcType){
 
     const eleModelSrcDef = document.getElementById("model_def");
-    const eleModelSrcURL = document.getElementById("import_web_url");
-    const eleModelSrcZIP = document.getElementById("import_zip_file");
+    const eleModelSrcURL = document.getElementById("import_url_model");
+    const eleModelSrcZIP = document.getElementById("import_zip_model");
     const eleModelSrcExist = document.getElementById("model_dropdown");
 
     const eleModelList = [ eleModelSrcDef, eleModelSrcURL, eleModelSrcZIP, eleModelSrcExist ];
@@ -464,8 +469,10 @@ function updateModelSource(srcType){
         eleModelSrcExist.style = "display: block";
     } else if (srcType.includes("ZIP")) {
         eleModelSrcZIP.style = "display: block";
+        document.getElementsByName("bt_modal_app")[0].value = "Import";
     } else if (srcType.includes("URL")) {
         eleModelSrcURL.style = "display: block";
+        document.getElementsByName("bt_modal_app")[0].value = "Import";
     }
 
 }
@@ -604,9 +611,7 @@ function addSubmit() {
             location.reload();
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log("Add error");
-            console.log(xhr);
-            console.log(xhr.responseJSON);
+            alert(xhr.responseText);
         },
     });
 }
@@ -686,16 +691,16 @@ function importSubmit() {
 
     // Collection the related data from Import modal
     let data = {
-        name: document.getElementById("import_name").value,
-        thres: document.getElementById("import_thres").value,
+        name: document.getElementById("name").value,
+        thres: document.getElementById("thres").value,
         application: {},
-        source_type: document.getElementById("import_source_type_menu").innerText,
-        device: document.getElementById("import_device_menu").innerText,
+        source_type: document.getElementById("source_type_menu").innerText,
+        device: document.getElementById("device_menu").innerText,
     };
 
     // Update application
     data["application"] = JSON.stringify({
-        name: document.getElementById("import_model_app_menu").innerText,
+        name: document.getElementById("model_app_menu").innerText,
         area_points: `[ ${document.getElementById("app_info").innerText} ]`,
         depend_on: JSON.stringify(checkLabelFunction()),
     });
@@ -708,17 +713,17 @@ function importSubmit() {
 
     // Check and append source data
     if (data['source_type']=='RTSP' ){
-        form_data.append( "source", document.getElementById("import_source").value);
+        form_data.append( "source", document.getElementById("source").value);
     } else if (data['source_type']=='Video' || data['source_type']=='Image') {
-        const ele = document.querySelector('[data-target="import-source-file-uploader"]');
+        const ele = document.querySelector('[data-target="file-uploader"]');
         form_data.append( "source", ele.files[0])
     } else {
-        form_data.append( "source", document.getElementById("import_source_menu").innerText.replace(/(\r\n|\n|\r)/gm, ""));
+        form_data.append( "source", document.getElementById("source_menu").innerText.replace(/(\r\n|\n|\r)/gm, ""));
     };
 
     // Add other information: capture from /import_proc, it's the same with the return infor of /import_zip (web api)
-    const eleZipDiv = document.getElementById('import_zip_file')
-    const eleUrlDiv = document.getElementById('import_web_url')
+    const eleZipDiv = document.getElementById('import_zip_model')
+    const eleUrlDiv = document.getElementById('import_url_model')
     let file_name;
     if ( eleZipDiv.style.display==='block' ){
         file_name = eleZipDiv.textContent.trim().split(".")[0];
@@ -962,7 +967,7 @@ function appModalEvent(mode='Add', needArea=false){
         // el_app_name.value = document.getElementById(`${trg_mode}${app_menu_name}`).textContent;
         trg_model_name = document.getElementById(`${trg_mode}${model_name}`).textContent;
 
-        // trg_bt.textContent = src_bt.value;
+        trg_bt.textContent = src_bt.value;
         trg_bt.setAttribute("data-dismiss", "modal");
         trg_bt.setAttribute("onclick", "addSubmit()");
         trg_bt.value = mode;
@@ -981,7 +986,6 @@ function appModalEvent(mode='Add', needArea=false){
 
         updateModelApp(eleModelId, modelName);
         eleModelApp.textContent = modelAppName;
-        
 
     // Edit
     }else if (src_bt.value === "Edit"){
@@ -1005,7 +1009,8 @@ function appModalEvent(mode='Add', needArea=false){
     }else if (src_bt.value === "Import"){
         console.log("Setting Import button");
         trg_mode = "import_";
-        el_app_name.value = document.getElementById(`${trg_mode}${app_menu_name}`).textContent;
+        // el_app_name.value = document.getElementById(`${trg_mode}${app_menu_name}`).textContent;
+        // trg_model_name = document.getElementById(`${trg_mode}${model_name}`).textContent;
 
         trg_bt.textContent = src_bt.value;
         trg_bt.setAttribute("data-dismiss", "modal");
@@ -1013,11 +1018,10 @@ function appModalEvent(mode='Add', needArea=false){
 
         back_bt.setAttribute("data-dismiss", "modal");
         back_bt.setAttribute("data-toggle", "modal");
-        back_bt.setAttribute("data-target", "#importModal");
+        back_bt.setAttribute("data-target", "#addModal");
         
-        back_bt.setAttribute("onclick", "importModalEvent(); return false;");
+        back_bt.setAttribute("onclick", "addModalEvent(); return false;");
     }
-
 
     // Update label
     if (src_bt.value !== "Import"){
@@ -1034,6 +1038,7 @@ function appModalEvent(mode='Add', needArea=false){
             type: "GET",
             dataType: "json",
             success: function (data, textStatus, xhr) {
+                console.log(data, trg_model_name);
                 model_task_map = data;
                 trg_task_uuid = model_task_map[trg_model_name][0];
                 console.log(`Similar Task UUID: ${trg_task_uuid}`)
@@ -1058,17 +1063,6 @@ function appModalEvent(mode='Add', needArea=false){
             },
         });
     }
-
-    // Update Image if need
-    /*
-    if (el_app_name.value.includes("area")){
-        needArea = true;
-    }
-    if (needArea){
-
-
-    }
-    */
 
 }
 
@@ -1165,67 +1159,28 @@ function setArea(trg_mode=""){
     });
 }
 
-// ==================================================================
-// Start Up
 
-// Setting up when start the web demo up
-let isCheckedAll = true;
-$(document).ready(function () {
-
-    console.log("Loading Entry Page")
-
-    // 更新子標題
-    let af_title;
-    $.ajax({  
-        type: 'GET',
-        url: SCRIPT_ROOT + `/platform`,
+async function getPlatform(){
+    
+    const data = await $.ajax({  
+        type: "GET",
+        url: SCRIPT_ROOT + "/platform",
         dataType: "json",
-        success: function (data, textStatus, xhr) {
-            af_title = `${data.toUpperCase()}`;
-            document.getElementById("title_framework").textContent=`( ${af_title} )`;
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            alert( xhr.responseText);            
-        },
+        error: logError
     });
 
-    // 
-    let ele = document.querySelectorAll('input[type=checkbox]');
-    for(let i=0; i<ele.length; i++){
-        // let stats = ( ele[i].checked ? 'run' : 'stop' );
-        const uuid = ele[i].value;
-        
-        if ( uuid !== "" && uuid.length>=6 ){
-            $.ajax({
-                url: SCRIPT_ROOT + `/task/${uuid}/status`,
-                type: "GET",
-                dataType: "json",
-                success: function (data, textStatus, xhr) {
-                    // 如果 ready == false 的話就沒有 status
-                    let stats = data;
-                    if ( stats==='run'){
-                        ele[i].checked=true;
-                    } else{
-                        ele[i].checked=false;
-                    };
-                    statusEvent(uuid, stats, true); 
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    console.log("Error in capture status");
-                    console.log(xhr);
-                },
-            });
-        }
+    if (data) return data.toUpperCase();
+    else return undefined;
+    
+}
 
-    }
-
+async function defineLaunchButton(){
     // When switch change
     $('.switch-custom :checkbox').change(function(){
         
         const eventTarget = this;
         let stats = ( eventTarget.checked ? 'run' : 'stop' )
         const uuid = eventTarget.value
-        const af = document.getElementById(`${uuid}_framework`).textContent;
     
         // Loading
         document.getElementById( `${uuid}_status_btn`).innerText = 'loading';
@@ -1234,21 +1189,20 @@ $(document).ready(function () {
         // Freeze switch button
         eventTarget.disabled = true;
         const parentTarget = eventTarget.parentElement;
-        parentTarget.style = "pointer-events: none; opacity: 0.4;";
+        parentTarget.style = `pointer-events: none; opacity: ${DISABLE_OPACITY};`;
 
 
-        // run app or stop app
+        // run app or stop appdefineLaunchButton
         $.ajax({  
             type: 'GET',
             url: SCRIPT_ROOT + `/task/${uuid}/${stats}`,
-            // url: `http://0.0.0.0:4999/${stats}`,
             dataType: "json",
             success: function (data, textStatus, xhr) {
                 console.log(`${data}`);
                 eventTarget.disabled = false;
         
                 
-                parentTarget.style = "pointer-events: all; opacity: 1;";
+                parentTarget.style = `pointer-events: all; opacity: ${ENABLE_OPACITY};`;
                 statusEvent(uuid, stats);
                 
             },
@@ -1256,17 +1210,60 @@ $(document).ready(function () {
                 
                 document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-red custom")
                 document.getElementById(`${uuid}_switch`).checked = false;
-                hrefEvent('remove', uuid);
+                rmStramHref(uuid);
                 
                 console.log('Run application error ... stop application')
                 const err = xhr.responseJSON;
                 console.log(err);
                 stopTask(uuid);
                 
-                errNameEvent(uuid);
+                statusEvent(uuid, 'error');
+                // errNameEvent(uuid);
                 // alert(err);
             },
         });
     });
+}
+
+async function checkTaskStatus() {
+    // Get all check box of AI task
+    let ele = Array.from(document.querySelectorAll('input[type=checkbox]'));
+    
+    for ( let i=0; i<ele.length; i++){
+        if ( ! ele[i].id.includes("_switch") ) ele.splice(i, 1);
+    }
+    console.log(`Found ${ele.length} AI Tasks ...`)
+
+    // Get each AI Task's status
+    for(let i=0; i<ele.length; i++){
+        
+        const uuid = ele[i].value;
+        
+        if ( uuid === "" && uuid.length<=6 ) continue
+
+        const data = await getAPI(`/task/${uuid}/status`)
+        if (data) {
+            let stats = data;
+            if ( stats==='run') ele[i].checked = true;
+            else ele[i].checked = false;
+            statusEvent(uuid, stats, debug=true); 
+        }
+    }
+}
+
+// ==================================================================
+// Start Up
+
+// Setting up when start the web demo up
+let isCheckedAll = true;
+$(document).ready( async function () {
+
+    // Capture the platform
+    const pla = await getPlatform();
+    if (pla) document.getElementById("title_framework").textContent = `( ${pla} )`
+    
+    checkTaskStatus()
+
+    defineLaunchButton()
 
 });

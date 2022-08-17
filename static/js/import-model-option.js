@@ -6,8 +6,8 @@ const URL_OPT_TITLE = "import_model_url"
 const DIV_OPT_TITLE = "import_model_div"
 const DEFAULT_COLOR = "#c0c2ce";
 const TARGET_COLOR  = "#858796";
-const ZIP_OPT_DIV   = "import_zip_file";
-const URL_OPT_DIV   = "import_web_url" ;
+const ZIP_OPT_DIV   = "import_zip_model";
+const URL_OPT_DIV   = "import_url_model" ;
 
 let eleOptZipTitle  = document.getElementById(ZIP_OPT_TITLE);
 let eleOptUrlTitle  = document.getElementById(URL_OPT_TITLE);
@@ -23,8 +23,11 @@ let eleOptUrl       = document.getElementById(URL_OPT);
 // Import ZIP File Parameters
 let timer;
 let convertStatus = false;
-const importZipUploader = document.querySelector('[data-target="import-zip-file-uploader"]');
-importZipUploader.addEventListener("change", importZipFileUpload);
+// const importZipUploader = document.querySelector('[data-target="import-zip-file-uploader"]');
+// importZipUploader.addEventListener("change", importZipFileUpload);
+
+const zipModelUploader = document.querySelector('[data-target="import-zip-model-uploader"]');
+zipModelUploader.addEventListener("change", importZipFileUpload);
 
 // --------------------------------------------------
 // Import Option
@@ -102,7 +105,7 @@ function importURL(){
 
             console.log(data);
             
-            updateTagApp("import_model", data["tag"]);
+            updateTagApp("model", data["tag"]);
 
             eleOptUrlDiv.value = `${data["name"]}`;
 
@@ -183,16 +186,9 @@ function updateTagApp(eleKey, tagKey) {
         type: "GET",
         dataType: "json",
         success: function (data, textStatus, xhr) {
-            console.log(data);
-            if (data[tagKey].length === 0) {
-                appMenu.textContent = "No applications"
-            } else {
-                data[tagKey].forEach(function (item, i) {
-                    console.log(`Found application ${item}`);
-                    appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
-                });
-            }
-
+            data[tagKey].forEach(function (item, i) {
+                appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
+            });
         },
         error: function (xhr, textStatus, errorThrown) {
             console.log("Error in tag_app");
@@ -217,11 +213,11 @@ async function importZipFileUpload(e) {
         // const response = await uploadFileAJAX(arrayBuffer);
 
         // alert("File Uploaded Success");
-        document.getElementById('import_zip_file_label').textContent = file['name'];
+        document.getElementById('import_zip_model_label').textContent = file['name'];
 
         // showPreviewImage(file);
         console.log('Extract a task');
-        const ele = document.querySelector('[data-target="import-zip-file-uploader"]');
+        const ele = document.querySelector('[data-target="import-zip-model-uploader"]');
 
         // Create and append information
         let form_data = new FormData();
@@ -246,7 +242,7 @@ async function importZipFileUpload(e) {
 
                 console.log(data);
 
-                updateTagApp("import_model", data["tag"]);
+                updateTagApp("model", data["tag"]);
 
                 getConvertStatus(data["name"]);
                 if (convertStatus === false) {

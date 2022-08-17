@@ -25,7 +25,7 @@
     <!-- custom styles for this page -->
     <link href="static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="static/css/switch.css" rel="stylesheet">
-    <link href="static/css/entry.css" rel="stylesheet">
+    <link href="static/css/entrance.css" rel="stylesheet">
     <link href="static/css/common.css" rel="stylesheet">
     <link href="static/css/import-option.css" rel="stylesheet">
 
@@ -79,7 +79,7 @@
                         <div class=" card-header custom py-3 d-flex flex-row align-items-center justify-content-between">
                             <div class="align-items-center d-flex justify-content-between">
                                 <h3 style="float: left ; margin-right: 20px; margin-bottom:0px" class=" h3 ">Tasks</h3>
-                                <h3 id="title_framework" style="float: right; margin-bottom:0px" class="h3 text-gray-300">( OpenVINO )</h3>
+                                <h3 id="title_framework" style="float: right; margin-bottom:0px" class="h3 text-gray-300"></h3>
                             </div>
                             
                             <a href="#" onclick="addModalEvent(true); return false;" class="btn btn-circle"
@@ -148,9 +148,7 @@
                                             {% endif %}
                                             <!-- Rounded switch -->
                                             <td >
-                                                
                                                 <label class="switch-custom">
-
                                                     <input id="{{ app['uuid'] }}_switch" type="checkbox" name="checkbox" value="{{ app['uuid'] }}">
                                                         <!-- {{ "checked" if app['status']=='run' }}> -->
                                                     <span class="slider round"></span>
@@ -198,7 +196,7 @@
                                             <!-- Rounded switch -->
                                             <td >    
                                                 <label class="switch-custom">
-                                                    <input type="checkbox" name="checkbox" value="{{ app['uuid'] }}" value="failed"
+                                                    <input id="{{ app['uuid'] }}_switch" type="checkbox" name="checkbox" value="{{ app['uuid'] }}"
                                                         {{ "checked" if app['status']=='run' }} disabled>
                                                     <span class="slider round"></span>
                                                 </label>
@@ -263,8 +261,8 @@
                     
                     <!-- <button id="add_sub_title_add" class="modal-sub-title add" type="button" data-dismiss="modal" data-target="#addModal" data-toggle="modal" style="opacity: 1;" disabled>Add</button> -->
                     <!-- <a id="add_sub_title_divide" class="modal-sub-title divide">|</a> -->
-                    <button id="add_sub_title_import" class="btn modal-sub-title import" type="button" 
-                            data-dismiss="modal" data-target="#importModal" data-toggle="modal" onclick="importModalEvent(); return false;">Import</button>
+                    <!-- <button id="add_sub_title_import" class="btn modal-sub-title import" type="button" 
+                            data-dismiss="modal" data-target="#importModal" data-toggle="modal" onclick="importModalEvent(); return false;">Import</button> -->
 
                     <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="setDefaultModal(); return false;">
                         <span aria-hidden="true">×</span>
@@ -325,15 +323,15 @@
                                     <a class="btn btn-sm dropdown-toggle" id="model_def" style="cursor: auto;"></a>
                                     
                                     <!-- Input Text -->
-                                    <div id="import_web_url" style="height:100%; display:none">
+                                    <div id="import_url_model" style="height:100%; display:none">
                                         <!-- WEB URL -->
-                                        <input id="import_web_url_value" type="text" style="height:100%" class="bg-light border-0" placeholder="Press 'Enter' to extract URL ...">
+                                        <input id="import_url_model_value" type="text" style="height:100%" class="bg-light border-0" placeholder="Press 'Enter' to extract URL ...">
                                     </div>
 
                                     <!-- Input File -->
-                                    <div id="import_zip_file" class="custom-file" style="height:100%; display:none">
-                                        <input type="file" class="custom-file-input" data-target="import-zip-file-uploader" id="import-zip-file-uploader">
-                                        <label id="import_zip_file_label" class="custom-file-label" style="height:100%">Choose file</label>
+                                    <div id="import_zip_model" class="custom-file" style="height:100%; display:none">
+                                        <input type="file" class="custom-file-input" data-target="import-zip-model-uploader" id="import-zip-model-uploader">
+                                        <label id="import_zip_model_label" class="custom-file-label" style="height:100%">Choose file</label>
                                     </div>
                                     
                                     
@@ -1059,7 +1057,7 @@
                 <!-- Footer -->
                 <div class="modal-footer">
                     <button id="modal_back_bt" class="btn btn-secondary-custom" type="button" data-dismiss="modal">Back</button>
-                    <button id="modal_app_submit" class="btn btn-primary-custom" type="button" data-dismiss="modal" onclick="delSubmit(this); return false;">Done</button>
+                    <button id="modal_app_submit" class="btn btn-primary-custom" type="button" data-dismiss="modal" onclick="">Done</button>
                 </div>
             </div>
         </div>
@@ -1085,9 +1083,11 @@
     <script type="text/javascript" src="static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- Custom JS -->
-    <script type="text/javascript" src="static/js/entry.js"></script>
-    <script type="text/javascript" src="static/js/app_setting.js"></script>
+    <script type="text/javascript" src="static/js/common.js"></script>
+    <script type="text/javascript" src="static/js/utils.js"></script>
+    <script type="text/javascript" src="static/js/entrace.js"></script>
+    <script type="text/javascript" src="static/js/setup-app.js"></script>
     <script type="text/javascript" src="static/js/upload_file.js"></script>
-    <script type="text/javascript" src="static/js/import_model_option.js"></script>
+    <script type="text/javascript" src="static/js/import-model-option.js"></script>
     
 </body>
