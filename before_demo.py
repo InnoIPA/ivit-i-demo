@@ -33,27 +33,17 @@ def extract_ip():
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--platform", default="", help="select a platform")
     parser.add_argument("-i", "--ip", default="", help="the ivit-i-<platform> ip address")
     parser.add_argument("-p", "--port", default="", help="the ivit-i-<platform> port number")
     args = parser.parse_args()
 
     data = None
-    ip, platform, port = "", "", ""
+    ip, port = "", ""
 
-    # Parse the argument first
-    for key, list in BASIC_NAME_MAP.items():
-        if args.platform.lower() in list:
-            platform = key
-            port = BASIC_PORT_MAP[platform]
             
     # Parse the configuration
     with open(CONF, 'r') as f:
         data = json.load(f)
-    
-    if args.platform=="":
-        print("Using configuration content -> {}: {}".format("platform", data['server']["platform"]))
-        platform = data['server']['platform']
     if args.port=="":
         print("Using configuration content -> {}:{}".format("port", data['server']["port"]))
         port = data['server']['port']
@@ -83,11 +73,6 @@ if __name__ == '__main__':
                 src[line] = trg_cnt
                 print('Modify the DOMAIN: {}'.format(ip))
                 continue
-            
-            if 'const PLATFORM' in content:
-                trg_cnt = "{} = '{}';\n".format(content.split(' = ')[0], platform )
-                src[line] = trg_cnt
-                print('Modify the PLATFORM: {}'.format(platform))
 
             if 'const PORT' in content:
                 trg_cnt = "{} = '{}';\n".format(content.split(' = ')[0], port )
@@ -107,9 +92,7 @@ if __name__ == '__main__':
             src = f.readlines()
 
         for line, content in enumerate(src):
-            key = "app.config['AF']"
-            if key in content:
-                src[line]="{}='{}'\n".format( key, platform )
+
             key = "app.config['HOST']"
             if key in content:
                 src[line]="{}='{}'\n".format( key, ip )

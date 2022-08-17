@@ -5,7 +5,6 @@ CONF="ivit-i.json"
 
 S_IP=$(cat ${CONF} | jq -r '.server.ip')
 S_PORT=$(cat ${CONF} | jq -r '.server.port')
-S_PLA=$(cat ${CONF} | jq -r '.server.platform')
 
 PORT=$(cat ${CONF} | jq -r '.client.port')
 # IP=$(cat ${CONF} | jq -r '.client.ip')
@@ -25,7 +24,6 @@ CNT="\n
 --- \n
 SERVER IP | ${S_IP} \n
 SERVER PORT | ${S_PORT} \n
-SERVER PLA | ${S_PLA} \n
 --- \n
 CLIENT IP | ${IP} \n
 CLIENT PORT | ${PORT} \n

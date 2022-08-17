@@ -15,7 +15,6 @@ WORKSPACE="/workspace"
 
 # Read the config at first time
 IP=$(cat ${CONF} | jq -r '.server.ip')
-PLA=$(cat ${CONF} | jq -r '.server.platform')
 PORT=$(cat ${CONF} | jq -r '.server.port')
 
 # Help information
@@ -24,7 +23,7 @@ function help(){
 	echo
 	echo "Syntax: scriptTemplate [-f|b|i|p]"
 	echo "options:"
-	echo "b		brand or platform"   
+	# echo "b		brand or platform"   
     echo "i		ip"
     echo "p		port"
 	echo "h		help."
@@ -33,8 +32,6 @@ function help(){
 # Parse the argument
 while getopts "b:i:p:" option; do
 	case $option in
-		b )
-			PLA=$OPTARG ;;
 		i )
 			IP=$OPTARG ;;
         p )
@@ -50,8 +47,8 @@ done
 
 # Update the parameters of configuration
 CNT=$(jq \
---arg ip "${IP}" --arg pla "${PLA}" --arg port "${PORT}" \
-'.server.ip = $ip | .server.platform = $pla | .server.port = $port' \
+--arg ip "${IP}" --arg port "${PORT}" \
+'.server.ip = $ip | .server.port = $port' \
 ${CONF})
 
 echo -E "${CNT}" > ${CONF}
