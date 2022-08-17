@@ -2,7 +2,6 @@
 // Init
 const DOMAIN = '172.16.92.130';
 const PORT = '819';
-const PLATFORM = 'intel';
 const SCRIPT_ROOT = `http://${DOMAIN}:${PORT}`;
 
 
@@ -73,7 +72,10 @@ function hrefEvent(behavior, uuid){
 
 // Control the status button
 function statusEvent(uuid, stats, firstTime=false){
-    console.log(`capture the application: ${uuid}, status: ${stats}, first time: ${firstTime}`);
+    console.log(`\
+    * AI task       :${uuid}
+    * status        : ${stats}
+    * first_time    : ${firstTime}`);
     // run app or stop app
     // const status_ele = $(`#${uuid}_status`);
 
@@ -137,107 +139,6 @@ function checkLabelFunction() {
 }
 
 // ==================================================================
-// Start Up
-
-// Setting up when start the web demo up
-let isCheckedAll = true;
-$(document).ready(function () {
-
-    // 更新子標題
-    let af_title;
-    if(PLATFORM==='intel'){
-        af_title = 'Intel';
-    } else if(PLATFORM==='nvidia'){
-        af_title = 'NVIDIA';
-    } else if(PLATFORM==='xilinx'){
-        af_title = 'Xilinx';
-    } else {
-        af_title = 'Unkwon';
-    }
-    document.getElementById("title_framework").textContent=`( ${af_title} )`;
-    // 
-    let ele = document.querySelectorAll('input[type=checkbox]');
-    for(let i=0; i<ele.length; i++){
-        // let stats = ( ele[i].checked ? 'run' : 'stop' );
-        const uuid = ele[i].value;
-        
-        if ( uuid !== "" && uuid.length>=6 ){
-            $.ajax({
-                url: SCRIPT_ROOT + `/task/${uuid}/status`,
-                type: "GET",
-                dataType: "json",
-                success: function (data, textStatus, xhr) {
-                    // 如果 ready == false 的話就沒有 status
-                    let stats = data;
-                    if ( stats==='run'){
-                        ele[i].checked=true;
-                    } else{
-                        ele[i].checked=false;
-                    };
-                    statusEvent(uuid, stats, true); 
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    console.log("Error in capture status");
-                    console.log(xhr);
-                },
-            });
-        }
-
-    }
-
-    // When switch change
-    $('.switch-custom :checkbox').change(function(){
-        
-        const eventTarget = this;
-        let stats = ( eventTarget.checked ? 'run' : 'stop' )
-        const uuid = eventTarget.value
-        const af = document.getElementById(`${uuid}_framework`).textContent;
-    
-        // Loading
-        document.getElementById( `${uuid}_status_btn`).innerText = 'loading';
-        document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-gray custom");
-        
-        // Freeze switch button
-        eventTarget.disabled = true;
-        const parentTarget = eventTarget.parentElement;
-        parentTarget.style = "pointer-events: none; opacity: 0.4;";
-
-
-        // run app or stop app
-        $.ajax({  
-            type: 'GET',
-            url: SCRIPT_ROOT + `/task/${uuid}/${stats}`,
-            // url: `http://0.0.0.0:4999/${stats}`,
-            dataType: "json",
-            success: function (data, textStatus, xhr) {
-                console.log(`${data}`);
-                eventTarget.disabled = false;
-        
-                
-                parentTarget.style = "pointer-events: all; opacity: 1;";
-                statusEvent(uuid, stats);
-                
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                
-                document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-red custom")
-                document.getElementById(`${uuid}_switch`).checked = false;
-                hrefEvent('remove', uuid);
-                
-                console.log('Run application error ... stop application')
-                const err = xhr.responseJSON;
-                console.log(err);
-                stopTask(uuid);
-                
-                errNameEvent(uuid);
-                // alert(err);
-            },
-        });
-    });
-
-});
-
-// ==================================================================
 // Set Default Modal
 
 // Set default value on Add Modal
@@ -246,8 +147,13 @@ function setDefaultModal(){
     document.getElementById("thres").value = 0.9;
     updateSource('default', 'source');
 
-    // document.getElementById("model_app_menu").setAttribute("style", "display: none");
-    // document.getElementById("model_app_menu_def").setAttribute("style", "cursor: auto");
+    try {
+        document.getElementById("model_app_menu").setAttribute("style", "display: none");
+        document.getElementById("model_app_menu_def").setAttribute("style", "cursor: auto");    
+    } catch ( error ){
+        console.log(error);
+    }
+
     document.getElementById("custom_file_label").textContent = "Choose file";
     document.getElementById("model_menu").textContent = "Please select one";
     document.getElementById("source_type_menu").textContent = "Please select one";
@@ -327,7 +233,13 @@ function dropdownSelectEvent(obj) {
             updateSource(srcType, trgKey, "");
         }
     }
-    else if ( srcKey.includes(""))
+    else if ( srcKey.includes("model_app")) {
+        if (srcType.includes('area')) {
+            setArea( document.getElementById("modal_app_submit").value );
+        } else {
+            document.getElementById("area_div").style = "display: none";
+        };
+    }
     ;
 }
 
@@ -395,30 +307,48 @@ function updateModel(key=""){
 
 // Update Model and Application
 function updateModelApp(eleKey, appKey){
-    console.log('Update model application');
+    /*
+        Update Model and Application
+        - Args
+            - eleKey: choose target elements, if is add mode it will be "", edit mode will be "edit"
+            - appKey: appKey is the model you choose.
+     */
     
+    // Get taget element
     const appName = `${eleKey}_app`
     const appListName = `${appName}_list`;
     const appMenuName = `${appName}_menu`;
     const appDefNmae = `${appMenuName}_def`;
     
-    let appList = document.getElementById(appListName);
-    let appMenu = document.getElementById(appMenuName);
+    const appList = document.getElementById(appListName);
+    const appMenu = document.getElementById(appMenuName);
+
+    // Show LOG
+    console.log(`Update model application.\n
+    * Element   : ${eleKey},
+    * Model     : ${appKey},
+    * 
+    * Show Dropdown (${appMenuName}), set ${appDefNmae} display to none
+    * 
+    * `);
 
     // Display
-    document.getElementById(appDefNmae).style.display = "none";
-    document.getElementById(appMenuName).style.display = "block";
-    document.getElementById(appMenuName).removeAttribute("style");
+    try { 
+        document.getElementById(appDefNmae).style = "display: none";
+        appMenu.style = "display: block";
+        // appMenu.removeAttribute("style");
+    } catch ( error ) {
+        console.log("Error: ", error);
+    }
 
     // Clear and set default
-    appList.innerHTML = "";
+    appList.innerHTML   = "";
     appMenu.textContent = "Please select one";
     
-    // Update content
-    console.log(model_app_map);
-    if(model_app_map[appKey].length===0){
+    // Update dropdown items
+    if ( model_app_map[appKey].length===0 ) {
         appMenu.textContent = `No application`;
-    }else{
+    } else {
         model_app_map[appKey].forEach(function(item, i){
             appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
         });
@@ -1002,8 +932,15 @@ function delModalEvent(obj) {
 }
 
 function appModalEvent(mode='Add', needArea=false){
-    
-    console.log("Application Dialog", `Mode:${mode}`);
+    /*
+        Application Setting Event
+
+        - Args
+            - mode: define mode to capture target element
+            - needArea: legacy argument
+        
+        
+    */
     let trg_mode = "";
     let app_menu_name = "model_app_menu";
     let model_name = "model_menu"
@@ -1017,22 +954,34 @@ function appModalEvent(mode='Add', needArea=false){
     const trg_bt = document.getElementById("modal_app_submit");
     const back_bt = document.getElementById("modal_back_bt");
 
-
+    
     // Add
     if (src_bt.value === "Add"){
         console.log("Setting Add button");
-        // trg_mode = "";
+        trg_mode = "";
         // el_app_name.value = document.getElementById(`${trg_mode}${app_menu_name}`).textContent;
         trg_model_name = document.getElementById(`${trg_mode}${model_name}`).textContent;
+
         // trg_bt.textContent = src_bt.value;
         trg_bt.setAttribute("data-dismiss", "modal");
         trg_bt.setAttribute("onclick", "addSubmit()");
+        trg_bt.value = mode;
 
         back_bt.setAttribute("data-dismiss", "modal");
         back_bt.setAttribute("data-toggle", "modal");
         back_bt.setAttribute("data-target", "#addModal");
         
         back_bt.setAttribute("onclick", "addModalEvent(); return false;");
+
+        eleModelId      = "model"
+        eleModel        = document.getElementById("model_menu");
+        eleModelApp     = document.getElementById("model_app_menu")
+        modelName       = eleModel.textContent;
+        modelAppName    = eleModelApp.textContent;
+
+        updateModelApp(eleModelId, modelName);
+        eleModelApp.textContent = modelAppName;
+        
 
     // Edit
     }else if (src_bt.value === "Edit"){
@@ -1051,7 +1000,8 @@ function appModalEvent(mode='Add', needArea=false){
         back_bt.setAttribute("data-target", "#editModal");
         
         back_bt.setAttribute("onclick", "editModalEvent(this); return false;");
-    // Import
+    
+        // Import
     }else if (src_bt.value === "Import"){
         console.log("Setting Import button");
         trg_mode = "import_";
@@ -1115,89 +1065,208 @@ function appModalEvent(mode='Add', needArea=false){
         needArea = true;
     }
     if (needArea){
-        console.log("Update Area Setting");
 
-        document.getElementById("area_div").style.display = "block";
-
-        let appCanvas = document.getElementById("app_canvas");
-        let appFrame = document.getElementById("app_frame");
-        let appCtx = appCanvas.getContext("2d");
-        let appScale = document.getElementById("app_scale");
-        let img = new Image();
-        let imgHeight;
-        let imgWidth;
-        let imgScale;
-        let imgRate;
-    
-        // Create and append information
-        
-        let data = { source_type: document.getElementById(`${trg_mode}source_type_menu`).innerText };
-        
-        // Update source uploader
-        let srcLoader = "file-uploader"
-        if (trg_mode.includes("edit")){
-            srcLoader = `edit-source-${srcLoader}`;
-        } else if (trg_mode.includes("import")){
-            srcLoader = `import-source-${srcLoader}`;
-        }
-
-        let form_data = new FormData();
-        for ( let key in data ) form_data.append(key, data[key]);
-    
-        // Check and append source data
-        if (data['source_type']=='RTSP' ){
-            form_data.append( "source", document.getElementById("source").value);
-        } else if (data['source_type']=='Video' || data['source_type']=='Image') {
-            
-            const ele = document.querySelector(`[data-target="${srcLoader}"]`);
-            if( ele.files.length==0){
-                form_data.append( "source", document.getElementById("edit_source_file_label").value);
-            } else {
-                form_data.append( "source", ele.files[0]);
-            }
-
-        } else {
-            form_data.append( "source", document.getElementById(`${trg_mode}source_menu`).innerText.replace(/(\r\n|\n|\r)/gm, ""));
-            console.log(document.getElementById(`${trg_mode}source_menu`).innerText);
-        };
-
-        // Display the key/value pairs
-        for (var pair of form_data.entries()) {
-            console.log(pair[0]+ ', ' + pair[1]); 
-        }
-        $.ajax({
-            url: SCRIPT_ROOT + '/update_src',
-            data: form_data,
-            processData: false,
-            contentType: false,
-            type: 'POST',
-            success: function (data, textStatus, xhr) {
-
-                imgHeight = data["height"];
-                imgWidth = data["width"];
-
-                // setup canvas width and height
-                imgRate = imgHeight/imgWidth;
-                appCanvas.height = appCanvas.width*imgRate;
-
-                // load image
-                img.src="data:image/jpeg;base64,"+data["image"];
-                appCanvas.style.backgroundImage = `url(${img.src})`;
-
-                // calculate scale
-                console.log(`Canvas width: ${appCanvas.style.width}`);
-                appScale.textContent = appCanvas.width/imgWidth;
-
-                console.log(`H:${imgHeight}, W:${imgWidth}, Ratio:${imgRate}`);
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                console.log("Update source error");
-                console.log(xhr);
-                console.log(xhr.responseJSON);
-            },
-        });
 
     }
     */
 
 }
+
+function setArea(trg_mode=""){
+    
+    trg_mode = trg_mode.toLowerCase();
+
+    if (trg_mode==='add'){
+        console.log("ADDDDDDDDD");
+        trg_mode = "";
+    }
+
+    console.log("Update Area Setting");
+
+    document.getElementById("area_div").style.display = "block";
+
+    let appCanvas = document.getElementById("app_canvas");
+    let appFrame = document.getElementById("app_frame");
+    let appCtx = appCanvas.getContext("2d");
+    let appScale = document.getElementById("app_scale");
+    let img = new Image();
+    let imgHeight;
+    let imgWidth;
+    let imgScale;
+    let imgRate;
+
+    // Create and append information
+    
+    // Get source type
+    let data = { source_type: document.getElementById(`${trg_mode}source_type_menu`).innerText };
+    
+    // Update source uploader
+    let srcLoader = "file-uploader"
+    if (trg_mode.includes("edit")){
+        srcLoader = `edit-source-${srcLoader}`;
+    } else if (trg_mode.includes("import")){
+        srcLoader = `import-source-${srcLoader}`;
+    }
+
+    let form_data = new FormData();
+    for ( let key in data ) form_data.append(key, data[key]);
+
+    // Check and append source data
+    if (data['source_type']=='RTSP' ){
+        form_data.append( "source", document.getElementById("source").value);
+    } else if (data['source_type']=='Video' || data['source_type']=='Image') {
+        
+        const ele = document.querySelector(`[data-target="${srcLoader}"]`);
+        if( ele.files.length==0){
+            form_data.append( "source", document.getElementById("edit_source_file_label").value);
+        } else {
+            form_data.append( "source", ele.files[0]);
+        }
+
+    } else {
+        form_data.append( "source", document.getElementById(`${trg_mode}source_menu`).innerText.replace(/(\r\n|\n|\r)/gm, ""));
+        console.log(document.getElementById(`${trg_mode}source_menu`).innerText);
+    };
+
+    // Display the key/value pairs
+    for (var pair of form_data.entries()) {
+        console.log(pair[0]+ ', ' + pair[1]); 
+    }
+    $.ajax({
+        url: SCRIPT_ROOT + '/update_src',
+        data: form_data,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        success: function (data, textStatus, xhr) {
+
+            imgHeight = data["height"];
+            imgWidth = data["width"];
+
+            // setup canvas width and height
+            imgRate = imgHeight/imgWidth;
+            appCanvas.height = appCanvas.width*imgRate;
+
+            // load image
+            img.src="data:image/jpeg;base64,"+data["image"];
+            appCanvas.style.backgroundImage = `url(${img.src})`;
+
+            // calculate scale
+            console.log(`Canvas width: ${appCanvas.style.width}`);
+            appScale.textContent = appCanvas.width/imgWidth;
+
+            console.log(`H:${imgHeight}, W:${imgWidth}, Ratio:${imgRate}`);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log("Update source error");
+            console.log(xhr);
+            console.log(xhr.responseJSON);
+        },
+    });
+}
+
+// ==================================================================
+// Start Up
+
+// Setting up when start the web demo up
+let isCheckedAll = true;
+$(document).ready(function () {
+
+    console.log("Loading Entry Page")
+
+    // 更新子標題
+    let af_title;
+    $.ajax({  
+        type: 'GET',
+        url: SCRIPT_ROOT + `/platform`,
+        dataType: "json",
+        success: function (data, textStatus, xhr) {
+            af_title = `${data.toUpperCase()}`;
+            document.getElementById("title_framework").textContent=`( ${af_title} )`;
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            alert( xhr.responseText);            
+        },
+    });
+
+    // 
+    let ele = document.querySelectorAll('input[type=checkbox]');
+    for(let i=0; i<ele.length; i++){
+        // let stats = ( ele[i].checked ? 'run' : 'stop' );
+        const uuid = ele[i].value;
+        
+        if ( uuid !== "" && uuid.length>=6 ){
+            $.ajax({
+                url: SCRIPT_ROOT + `/task/${uuid}/status`,
+                type: "GET",
+                dataType: "json",
+                success: function (data, textStatus, xhr) {
+                    // 如果 ready == false 的話就沒有 status
+                    let stats = data;
+                    if ( stats==='run'){
+                        ele[i].checked=true;
+                    } else{
+                        ele[i].checked=false;
+                    };
+                    statusEvent(uuid, stats, true); 
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error in capture status");
+                    console.log(xhr);
+                },
+            });
+        }
+
+    }
+
+    // When switch change
+    $('.switch-custom :checkbox').change(function(){
+        
+        const eventTarget = this;
+        let stats = ( eventTarget.checked ? 'run' : 'stop' )
+        const uuid = eventTarget.value
+        const af = document.getElementById(`${uuid}_framework`).textContent;
+    
+        // Loading
+        document.getElementById( `${uuid}_status_btn`).innerText = 'loading';
+        document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-gray custom");
+        
+        // Freeze switch button
+        eventTarget.disabled = true;
+        const parentTarget = eventTarget.parentElement;
+        parentTarget.style = "pointer-events: none; opacity: 0.4;";
+
+
+        // run app or stop app
+        $.ajax({  
+            type: 'GET',
+            url: SCRIPT_ROOT + `/task/${uuid}/${stats}`,
+            // url: `http://0.0.0.0:4999/${stats}`,
+            dataType: "json",
+            success: function (data, textStatus, xhr) {
+                console.log(`${data}`);
+                eventTarget.disabled = false;
+        
+                
+                parentTarget.style = "pointer-events: all; opacity: 1;";
+                statusEvent(uuid, stats);
+                
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                
+                document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-red custom")
+                document.getElementById(`${uuid}_switch`).checked = false;
+                hrefEvent('remove', uuid);
+                
+                console.log('Run application error ... stop application')
+                const err = xhr.responseJSON;
+                console.log(err);
+                stopTask(uuid);
+                
+                errNameEvent(uuid);
+                // alert(err);
+            },
+        });
+    });
+
+});
