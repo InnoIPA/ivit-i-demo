@@ -171,8 +171,8 @@ function setEditDefaultModal(){
     document.getElementById("edit_name").placeholder = "Ex. Defect detection";
     document.getElementById("edit_thres").value = 0.9;
     updateSource("default", "edit_source", "");
-    document.getElementById("edit_model_app_menu").setAttribute("style", "display: none");
-    document.getElementById("edit_model_app_menu_def").setAttribute("style", "cursor: auto");
+    document.getElementById("model_app_menu").setAttribute("style", "display: none");
+    document.getElementById("model_app_menu_def").setAttribute("style", "cursor: auto");
     document.getElementById("custom_file_label").textContent = "Choose file";
     document.getElementById("edit_model_menu").textContent = "Please select one";
     document.getElementById("edit_source_type_menu").textContent = "Please select one";
@@ -241,7 +241,7 @@ function dropdownSelectEvent(obj) {
     }
     else if ( srcKey.includes("model_app")) {
         if (srcType.includes('area')) {
-            setArea( document.getElementById("modal_app_submit").value );
+            setArea();
         } else {
             document.getElementById("area_div").style = "display: none";
         };
@@ -312,31 +312,24 @@ function updateModel(key=""){
 }
 
 // Update Model and Application
-function updateModelApp(eleKey, appKey){
+function updateModelApp(eleName, modelName, defaultApp){
     /*
         Update Model and Application
         - Args
-            - eleKey: choose target elements, if is add mode it will be "", edit mode will be "edit"
-            - appKey: appKey is the model you choose.
+            - eleName: choose target elements, if is add mode it will be "", edit mode will be "edit"
+            - modelName: modelName is the model you choose.
      */
     
+    console.log("Update Model App ...")
+    console.log(eleName, modelName, defaultApp);
     // Get taget element
-    const appName = `${eleKey}_app`
+    const appName = `${eleName}_app`
     const appListName = `${appName}_list`;
     const appMenuName = `${appName}_menu`;
     const appDefNmae = `${appMenuName}_def`;
     
     const appList = document.getElementById(appListName);
     const appMenu = document.getElementById(appMenuName);
-
-    // Show LOG
-    console.log(`Update model application.\n
-    * Element   : ${eleKey},
-    * Model     : ${appKey},
-    * 
-    * Show Dropdown (${appMenuName}), set ${appDefNmae} display to none
-    * 
-    * `);
 
     // Display
     try { 
@@ -349,16 +342,26 @@ function updateModelApp(eleKey, appKey){
 
     
     // Update dropdown items
-    if ( appKey in model_app_map){
+    if ( !model_app_map ) {
+        console.log("no model_app_map");
+        getModelApp("model_list");
+    } 
+
+    console.log(model_app_map);
+
+    if ( modelName in model_app_map){
         // Clear and set default
         appList.innerHTML   = "";
         appMenu.textContent = "Please select one";
         console.log(model_app_map);
         
-        model_app_map[appKey].forEach(function(item, i){
+        model_app_map[modelName].forEach(function(item, i){
             appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
         });
     }
+
+    // Update default text
+    if (defaultApp) appMenu.textContent = defaultApp;
 }
 
 // Update Source
@@ -453,7 +456,9 @@ function updateSourceType(key="source_type", data=""){
 
 // Update Model
 function updateModelSource(srcType){
-
+    /*
+    
+    */
     const eleModelSrcDef = document.getElementById("model_def");
     const eleModelSrcURL = document.getElementById("import_url_model");
     const eleModelSrcZIP = document.getElementById("import_zip_model");
@@ -461,20 +466,18 @@ function updateModelSource(srcType){
 
     const eleModelList = [ eleModelSrcDef, eleModelSrcURL, eleModelSrcZIP, eleModelSrcExist ];
 
-    for( let i=0; i<eleModelList.length; i++){
-        eleModelList[i].style = "display: none";
-    }
+    for( let i=0; i<eleModelList.length; i++) eleModelList[i].style = "display: none";
 
-    if(srcType.includes("Exist")){
+    if ( srcType.includes("Exist") ) {
         eleModelSrcExist.style = "display: block";
-    } else if (srcType.includes("ZIP")) {
-        eleModelSrcZIP.style = "display: block";
-        document.getElementsByName("bt_modal_app")[0].value = "Import";
-    } else if (srcType.includes("URL")) {
-        eleModelSrcURL.style = "display: block";
-        document.getElementsByName("bt_modal_app")[0].value = "Import";
-    }
 
+    } else {
+        document.getElementsByName("bt_modal_app")[0].value = IMPORT_MODE;
+        window[MODE] = IMPORT_MODE;
+
+        if (srcType.includes("ZIP")) eleModelSrcZIP.style = "display: block";
+        else if (srcType.includes("URL")) eleModelSrcURL.style = "display: block";
+    }
 }
 
 // Update Model Source Type
@@ -639,7 +642,7 @@ function editSubmit(obj) {
 
     // Update application
     data["application"] = JSON.stringify({
-        name: document.getElementById("edit_model_app_menu").innerText,
+        name: document.getElementById("model_app_menu").innerText,
         area_points: `[ ${document.getElementById("app_info").innerText} ]`,
         depend_on: JSON.stringify(checkLabelFunction()),
     });
@@ -812,25 +815,18 @@ function delSubmit(obj) {
 // Dialog Modal
 
 // Capture error message via calling web api ( /task/<uuid>/error )
-function errModalEvent(obj) {
-    console.log(`Open "ERROR" modal`);
-    const id = obj.id;
-    let uuid=id.split('_')[0];
-    $.ajax({
-        url: SCRIPT_ROOT + `/task/${uuid}/error`,
-        type: "GET",
-        dataType: "json",
-        success: function (data, textStatus, xhr) {
-            document.getElementById("errMsg").textContent = data;
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log("Error in capturing error message");
-        },
-    });
+async function errModalEvent(obj) {
+    
+    const uuid  = obj.id.split('_')[0];
+    const data  = await getAPI(`/task/${uuid}/error`);
+
+    if (data) document.getElementById("errMsg").textContent = data;
+    else return undefined;
 }
 
 // Add related information when open the ADD modal
 function addModalEvent(init=false) {
+
     console.log(`Open "ADD" modal`);
     clearModalDropdown();
     updateGPU("device");
@@ -839,23 +835,26 @@ function addModalEvent(init=false) {
     updateModel("model_list");
     // updateSourceV4L2("source");
 
-    document.getElementById("model_menu").disabled = false;
+    window[MODE] = ADD_MODE;
 
+    document.getElementById("model_menu").disabled = false;
     document.getElementById("model_app_menu").disabled = false;
     document.getElementById("device_menu").disabled = false;
-    if(init){
-        setDefaultModal();
-    }
+    
+    if(init) setDefaultModal();
 
     document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
-        ele.value = "Add"
+        ele.value = ADD_MODE;
     })
     
 }
 
 // Add related information when open the EDIT modal
 function editModalEvent(obj) {
+    
     console.log(`Open "EDIT" modal`);
+    window[MODE] = EDIT_MODE;
+
     updateModel();
     clearModalDropdown("edit");
     updateGPU("edit_device");
@@ -866,7 +865,7 @@ function editModalEvent(obj) {
         url: SCRIPT_ROOT + `/task/${task_uuid}/info`,
         type: "GET",
         dataType: "json",
-        success: function (data, textStatus, xhr) {
+        success: function (data) {
 
             console.log(data);
 
@@ -877,14 +876,18 @@ function editModalEvent(obj) {
             // change source
             updateSource(data["source_type"], "edit_source", data["source"]);
 
+            // fix model source
+            document.getElementById("edit_model_source_type_menu").textContent = "From Exist Model";
+            document.getElementById("edit_model_source_type_menu").disabled = true;
+
             // update model information and disable it
             document.getElementById("edit_model_menu").textContent = data["model"];
             document.getElementById("edit_model_menu").disabled = true;
             
             // model_app
             // NOTICE!!!!!!! must add application choice in here....
-            updateModelApp("edit_model", data["model"]);
-            document.getElementById("edit_model_app_menu").textContent = data["application"]["name"];
+            updateModelApp("model", data["model"], data["application"]["name"]);
+
             
             // update device information 
             document.getElementById("edit_device_menu").textContent = data['device'];
@@ -899,7 +902,7 @@ function editModalEvent(obj) {
         }
     });
 
-    document.getElementById("modal_back_bt").setAttribute("onclick", `editModalEvent(this); return false;`);
+    // document.getElementById("modal_back_bt").setAttribute("onclick", `editModalEvent(this); return false;`);
     document.getElementById("modal_back_bt").value = task_uuid;
 
     document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
@@ -910,6 +913,7 @@ function editModalEvent(obj) {
 // Add related information when open the IMPORT modal
 function importModalEvent() {
     console.log(`Open "IMPORT" modal`);
+    window[MODE] = IMPORT_MODE;
 
     clearModalDropdown("import");
     updateGPU("import_device");
@@ -936,146 +940,152 @@ function delModalEvent(obj) {
     document.getElementById("del_uuid").textContent = uuid;
 }
 
-function appModalEvent(mode='Add', needArea=false){
-    /*
-        Application Setting Event
 
-        - Args
-            - mode: define mode to capture target element
-            - needArea: legacy argument
-        
-        
-    */
-    let trg_mode = "";
-    let app_menu_name = "model_app_menu";
-    let model_name = "model_menu"
+function setModalButton(eleButton, targetEvent, clickEvent, buttonText) {
 
-    // Check label
-    const el_app_name = document.getElementById("app_name");
+    eleButton.setAttribute("data-dismiss"  , "modal");
+    eleButton.setAttribute("data-toggle"   , "modal");
+    eleButton.setAttribute("data-target"   , targetEvent);
+    eleButton.setAttribute("onclick"       , clickEvent);
+
+    if (buttonText) eleButton.textContent = buttonText;
+}
+
+// About Application Modal Event - START
+
+function addAppModalEvent() {
+
+    // Get Button
+    const trgButton     = document.getElementById("modal_app_submit");
+    const backButton    = document.getElementById("modal_back_bt");
+    const curMode       = window[MODE];
+
+    // Setup Next Button
+    setModalButton( 
+        eleButton   = trgButton,
+        targetEvent = "#appModal",
+        clickEvent  = "addSubmit()",
+        buttonText  = curMode 
+    );
+
+    // Setup Back Button
+    setModalButton( 
+        eleButton   = backButton,
+        targetEvent = "#addModal", 
+        clickEvent  = "addModalEvent(); return false" 
+    );
+
+    // Switch App Modal from Add Modal have to update model_app list
+    updateModelApp(
+        eleName     = "model", 
+        modelName   = document.getElementById("model_menu").textContent, 
+        defaultApp  = document.getElementById("model_app_menu").textContent 
+    );
+}
+
+function editAppModalEvent() {
+    
+    // Get Button
+    const trgButton     = document.getElementById("modal_app_submit");
+    const backButton    = document.getElementById("modal_back_bt");
+    const curMode       = window[MODE];
+
+    // Setup Next Button
+    setModalButton( 
+        eleButton   = trgButton,
+        targetEvent = "#appModal",
+        clickEvent  = "editSubmit(this)",
+        buttonText  = curMode );
+
+    // Setup Back Button
+    setModalButton( 
+        eleButton   = backButton,
+        targetEvent = "#editModal", 
+        clickEvent  = "editModalEvent(this); return false" );
+}
+
+function importAppModalEvent() {
+
+    // Get Button
+    const trgButton     = document.getElementById("modal_app_submit");
+    const backButton    = document.getElementById("modal_back_bt");
+    const curMode       = window[MODE];
+
+    // Setup Next Button
+    setModalButton( 
+        eleButton   = trgButton,
+        targetEvent = "#appModal",
+        clickEvent  = "importSubmit()",
+        buttonText  = curMode );
+
+    // Setup Back Button
+    setModalButton( 
+        eleButton   = backButton,
+        targetEvent = "#addModal", 
+        clickEvent  = "addModalEvent(); return false" );
+}
+
+async function updateLabelDropdown() {
+
+    // Get target model name
+    let head = "";
+    if ( window[MODE] === EDIT_MODE) head = "edit_";
+
+    const modelName = document.getElementById(`${head}model_menu`).textContent;
+
+    // Update depend_on
+    const labelList = document.getElementById("label_list");
+    
+    // Clear dropdown-div
+    document.querySelectorAll("#dropdown-div").forEach( function(ele, idx){
+        ele.remove();
+    })
+
+    // Get the task uuid randomly which use the same model
+    const modelWithUUID = await getAPI( "/model" );
+    if (! modelWithUUID) return undefined;
+
+    // Get task label according the task
+    const taskUUID    = modelWithUUID[modelName][0];
+    const taskLabel   = await getAPI( `/task/${taskUUID}/label` )
+    if (! taskLabel) return undefined;
+
+    // Put all label on it
+    for(let i=0; i<taskLabel.length; i++){
+        labelList.innerHTML += '<div id="dropdown-div" class="dropdown-item d-flex flex-row align-items-center">'+
+            '<input class="app-opt" type="checkbox" onchange="atLeastOneRadio(this)" checked>' +
+            `<a class="app-opt-text">${taskLabel[i]}</a>` +
+            '</div>'
+        document.getElementById("label_list_menu").textContent = `Select ${i+1} Labels`;
+    }
+}
+
+function appModalEvent(){
+    
+    const curMode = window[MODE];
 
     // Update Button and related function : Add , Edit, Import
-    // src_bt value will be change when open the Add, Edit, Import dialog.
-    const src_bt = document.getElementsByName("bt_modal_app")[0];
-    const trg_bt = document.getElementById("modal_app_submit");
-    const back_bt = document.getElementById("modal_back_bt");
-
+    if ( curMode === ADD_MODE) addAppModalEvent();
+    else if ( curMode === IMPORT_MODE) importAppModalEvent();
+    else if ( curMode === EDIT_MODE) editAppModalEvent();
     
-    // Add
-    if (src_bt.value === "Add"){
-        console.log("Setting Add button");
-        trg_mode = "";
-        // el_app_name.value = document.getElementById(`${trg_mode}${app_menu_name}`).textContent;
-        trg_model_name = document.getElementById(`${trg_mode}${model_name}`).textContent;
-
-        trg_bt.textContent = src_bt.value;
-        trg_bt.setAttribute("data-dismiss", "modal");
-        trg_bt.setAttribute("onclick", "addSubmit()");
-        trg_bt.value = mode;
-
-        back_bt.setAttribute("data-dismiss", "modal");
-        back_bt.setAttribute("data-toggle", "modal");
-        back_bt.setAttribute("data-target", "#addModal");
-        
-        back_bt.setAttribute("onclick", "addModalEvent(); return false;");
-
-        eleModelId      = "model"
-        eleModel        = document.getElementById("model_menu");
-        eleModelApp     = document.getElementById("model_app_menu")
-        modelName       = eleModel.textContent;
-        modelAppName    = eleModelApp.textContent;
-
-        updateModelApp(eleModelId, modelName);
-        eleModelApp.textContent = modelAppName;
-
-    // Edit
-    }else if (src_bt.value === "Edit"){
-        
-        console.log("Setting Edit button");
-        trg_mode = "edit_";
-        el_app_name.value = document.getElementById(`${trg_mode}${app_menu_name}`).textContent;
-        trg_model_name = document.getElementById(`${trg_mode}${model_name}`).textContent;
-
-        trg_bt.textContent = src_bt.value;
-        trg_bt.setAttribute("data-dismiss", "modal");
-        trg_bt.setAttribute("onclick", "editSubmit(this)");
-
-        back_bt.setAttribute("data-dismiss", "modal");
-        back_bt.setAttribute("data-toggle", "modal");
-        back_bt.setAttribute("data-target", "#editModal");
-        
-        back_bt.setAttribute("onclick", "editModalEvent(this); return false;");
-    
-        // Import
-    }else if (src_bt.value === "Import"){
-        console.log("Setting Import button");
-        trg_mode = "import_";
-        // el_app_name.value = document.getElementById(`${trg_mode}${app_menu_name}`).textContent;
-        // trg_model_name = document.getElementById(`${trg_mode}${model_name}`).textContent;
-
-        trg_bt.textContent = src_bt.value;
-        trg_bt.setAttribute("data-dismiss", "modal");
-        trg_bt.setAttribute("onclick", "importSubmit()");
-
-        back_bt.setAttribute("data-dismiss", "modal");
-        back_bt.setAttribute("data-toggle", "modal");
-        back_bt.setAttribute("data-target", "#addModal");
-        
-        back_bt.setAttribute("onclick", "addModalEvent(); return false;");
-    }
-
     // Update label
-    if (src_bt.value !== "Import"){
-        // Update depend_on
-        const appOptList = document.getElementById("label_list");
-        
-        // Clear dropdown-div
-        document.querySelectorAll("#dropdown-div").forEach( function(ele, idx){
-            ele.remove();
-        })
-
-        $.ajax({
-            url: SCRIPT_ROOT + `/model`,
-            type: "GET",
-            dataType: "json",
-            success: function (data, textStatus, xhr) {
-                console.log(data, trg_model_name);
-                model_task_map = data;
-                trg_task_uuid = model_task_map[trg_model_name][0];
-                console.log(`Similar Task UUID: ${trg_task_uuid}`)
-                $.ajax({
-                    url: SCRIPT_ROOT + `/task/${trg_task_uuid}/label`,
-                    type: "GET",
-                    dataType: "json",
-                    success: function (data, textStatus, xhr) {
-
-                        for(let i=0; i<data.length; i++){
-                            appOptList.innerHTML += '<div id="dropdown-div" class="dropdown-item d-flex flex-row align-items-center">'+
-                                '<input class="app-opt" type="checkbox" onchange="atLeastOneRadio(this)" checked>' +
-                                `<a class="app-opt-text">${data[i]}</a>` +
-                                '</div>'
-                            document.getElementById("label_list_menu").textContent = `Select ${i+1} Labels`;
-                        }
-                    }
-                });
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                console.log("Error in model");
-            },
-        });
-    }
+    if (curMode !== IMPORT_MODE) updateLabelDropdown();
 
 }
 
 function setArea(trg_mode=""){
     
+    trg_mode = window["MODE"];
+    
     trg_mode = trg_mode.toLowerCase();
 
     if (trg_mode==='add'){
-        console.log("ADDDDDDDDD");
+    
         trg_mode = "";
     }
 
-    console.log("Update Area Setting");
+    console.log(`Update Area Setting, Mode: ${trg_mode}`);
 
     document.getElementById("area_div").style.display = "block";
 
@@ -1092,7 +1102,8 @@ function setArea(trg_mode=""){
     // Create and append information
     
     // Get source type
-    let data = { source_type: document.getElementById(`${trg_mode}source_type_menu`).innerText };
+    let data = { source_type: document.getElementById(`${trg_mode}_source_type_menu`).innerText };
+    console.log(data);
     
     // Update source uploader
     let srcLoader = "file-uploader"
@@ -1118,8 +1129,8 @@ function setArea(trg_mode=""){
         }
 
     } else {
-        form_data.append( "source", document.getElementById(`${trg_mode}source_menu`).innerText.replace(/(\r\n|\n|\r)/gm, ""));
-        console.log(document.getElementById(`${trg_mode}source_menu`).innerText);
+        form_data.append( "source", document.getElementById(`${trg_mode}_source_menu`).innerText.replace(/(\r\n|\n|\r)/gm, ""));
+        console.log(document.getElementById(`${trg_mode}_source_menu`).innerText);
     };
 
     // Display the key/value pairs
@@ -1158,6 +1169,8 @@ function setArea(trg_mode=""){
         },
     });
 }
+
+// About Application Modal Event - END
 
 
 async function getPlatform(){
@@ -1251,14 +1264,11 @@ async function checkTaskStatus() {
     }
 }
 
-// ==================================================================
-// Start Up
-
 // Setting up when start the web demo up
 let isCheckedAll = true;
 $(document).ready( async function () {
 
-    // Capture the platform
+    // Capture the platform and setup sub-title
     const pla = await getPlatform();
     if (pla) document.getElementById("title_framework").textContent = `( ${pla} )`
     
