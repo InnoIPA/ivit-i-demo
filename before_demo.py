@@ -19,7 +19,7 @@ def extract_ip():
         st.close()
     return IP
 
-def parse_conf_info(conf_path);
+def parse_conf_info(conf_path):
 
     if not os.path.exist(conf_path):
         raise Exception("Could not found config file ({})".format(conf_path))
