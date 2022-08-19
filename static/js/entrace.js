@@ -939,6 +939,11 @@ async function enableAppArea(trg_mode=""){
         return undefined;
     }
 
+    // If app_info has content
+    if(document.getElementById("app_info").textContent !== ""){
+        drawPoly2();
+    }
+
 }
 
 // About Application Modal Event - END
