@@ -441,6 +441,9 @@ async function getSourceContent(){
     
     let sourceType, sourceContent;
     let head = "";
+    let uploader = "file-uploader"
+
+    // Update Name when Edit Mode
     if (window[MODE]===EDIT_MODE){
         head        = "edit_";
         uploader    = "edit-source-file-uploader"
@@ -453,9 +456,7 @@ async function getSourceContent(){
     if ( sourceType==RTSP ) sourceContent = document.getElementById(`${head}source`).value;
     
     // VIDEO and IMAGE
-    else if (   sourceType==VIDEO || 
-                sourceType==IMAGE 
-    ) {
+    else if (   sourceType==VIDEO || sourceType==IMAGE ) {
         
         const uploaderFiles = document.querySelector(`#${uploader}`).files;
 
@@ -464,7 +465,6 @@ async function getSourceContent(){
             // We will keep the source file name and send back to server
             sourceContent = document.getElementById("edit_source_file_label").value;
         }
-
         else sourceContent = uploaderFiles[0];
     } 
 
