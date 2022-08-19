@@ -1,13 +1,3 @@
-
-// ---------------------------------------------------------------------------------------------------
-// const modelFileUploader = document.querySelector('[data-target="model-file-uploader"]');
-// modelFileUploader.addEventListener("change", modelFileUpload);
-// // ---------------------------------------------------------------------------------------------------
-// const labelFileUploader = document.querySelector('[data-target="label-file-uploader"]');
-// labelFileUploader.addEventListener("change", labelFileUpload);
-// // ---------------------------------------------------------------------------------------------------
-// const configFileUploader = document.querySelector('[data-target="config-file-uploader"]');
-// configFileUploader.addEventListener("change", configFileUpload);
 // ---------------------------------------------------------------------------------------------------
 const sourceUploader = document.querySelector('[data-target="file-uploader"]');
 sourceUploader.addEventListener("change", sourceFileUpload);
