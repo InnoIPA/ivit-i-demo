@@ -8,55 +8,26 @@ Parameters from common.js
 
 */
 
-// Define global variable "model_app_map", it will updated by updateModel
-let model_app_map;   
-let model_task_map;  
-let trg_model_name;
-let trg_task_uuid;
-
 // Start streaming when press the name superlink
-function streamStart(uuid){
-    $.ajax({
-        url: SCRIPT_ROOT + `/task/${uuid}/stream/start`,
-        type: "GET",
-        dataType: "json",
-        success: function (data, textStatus, xhr) {
-            console.log(data);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log("error in start streaming");
-        },
-    });
+async function streamStart(uuid){
+    const data = await getAPI(`/task/${uuid}/stream/start`, errType=ALERT);
+    if(data) console.log(data);
+    else return undefined;
 }
 
 // Stop task when turn off the swich
-function stopTask(uuid){
-    $.ajax({
-        url: SCRIPT_ROOT + `/task/${uuid}/stream/stop`,
-        type: "GET",
-        dataType: "json",
-        success: function (data, textStatus, xhr) {
-            console.log(data);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log("error in stopping application");
-        },
-    });
-    $.ajax({
-        url: SCRIPT_ROOT + `/task/${uuid}/stop`,
-        type: "GET",
-        dataType: "json",
-        success: function (data, textStatus, xhr) {
-            console.log(data);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log("Error in Database");
-        },
-    });
+async function stopTask(uuid){
+
+    const stopStreamLog = await getAPI(`/task/${uuid}/stream/stop`, ALERT)
+    if(stopStreamLog) console.log(stopStreamLog);
+    else return undefined;
+
+    const stopTaskLog = await getAPI(`/task/${uuid}/stop`, ALERT)
+    if(stopTaskLog) console.log(stopTaskLog);
+    else return undefined;
 }
 
 // Add superlink when task is avaible
-
 async function addStreamHref(uuid){
     const url = await getDocURL();
     const eleTaskName = document.getElementById(`${uuid}_name`);
@@ -74,33 +45,30 @@ async function rmStramHref(uuid){
 function statusEvent(uuid, stats, debug=false){
 
     const name    = document.getElementById(`${uuid}_name`).textContent;
-    const run     = 'run';
-    const stop    = 'stop';
-    const error   = 'error';
 
     const statsButton = document.getElementById( `${uuid}_status_btn`);
     const optionButton = document.getElementById(`${uuid}_more`);
-    const launchButton = document.getElementById(`${uuid}_switch`)
+    const launchButton = document.getElementById(`${uuid}_switch`);
     
     if (debug === true) console.log(`- ${name} (${uuid}) is ${stats}`);
     
-    if(stats === run){
+    if(stats === RUN){
         
-        statsButton.innerText = run;
+        statsButton.innerText = RUN;
         statsButton.setAttribute("class", "btn btn-green custom");
         addStreamHref(uuid);
         disableButton(optionButton);
 
-    } else if ( stats === stop ) {
+    } else if ( stats === STOP ) {
         
-        statsButton.innerText = stop;
+        statsButton.innerText = STOP;
         statsButton.setAttribute("class", "btn btn-gray custom");
         rmStramHref(uuid);
         enableButton(optionButton);
 
-    } else if ( stats === error ) {
+    } else if ( stats === ERROR ) {
         
-        statsButton.innerText = error;
+        statsButton.innerText = ERROR;
         statsButton.setAttribute("class", "btn btn-red custom");
         addErrorHref(uuid);
         disableButtonParent(launchButton);
@@ -116,7 +84,6 @@ function addErrorHref(uuid){
     ele.setAttribute("onclick"      , "errModalEvent(this);");
 }
 
-// ==================================================================
 // Testing
 function atLeastOneRadio() {
     var radios = document.querySelectorAll('.app-opt:checked');
@@ -144,175 +111,99 @@ function checkLabelFunction() {
     return depend_on;
 }
 
-// ==================================================================
 // Set Default Modal
 
-// Set default value on Add Modal
-function setDefaultModal(){
-    document.getElementById("name").placeholder = "Ex. Defect detection";
-    document.getElementById("thres").value = 0.9;
-    updateSource('default', 'source');
+async function setDefaultModal(){
+    let head = ""
+    if (window[MODE] == EDIT_MODE) head = "edit_";
 
-    try {
-        document.getElementById("model_app_menu").setAttribute("style", "display: none");
-        document.getElementById("model_app_menu_def").setAttribute("style", "cursor: auto");    
-    } catch ( error ){
-        console.log(error);
-    }
+    document.getElementById(`${head}name`).value = "";
+    document.getElementById(`${head}name`).placeholder = "Ex. Defect detection";
+    document.getElementById(`${head}thres`).value = 0.9;
+    updateSourceOption(DEFAULT, `${head}source`);
 
+    // Share items: Application Dialog 
+    document.getElementById(`model_app_menu`).setAttribute("style", "display: none");
+    document.getElementById(`model_app_menu_def`).setAttribute("style", "cursor: auto");    
     document.getElementById("custom_file_label").textContent = "Choose file";
-    document.getElementById("model_menu").textContent = "Please select one";
-    document.getElementById("source_type_menu").textContent = "Please select one";
-    document.getElementById("device_menu").textContent = "Please select one";
+
+    document.getElementById(`${head}model_menu`).textContent = "Please select one";
+    document.getElementById(`${head}source_type_menu`).textContent = "Please select one";
+    document.getElementById(`${head}device_menu`).textContent = "Please select one";
+
 }
 
-// Set default value on ap 
-function setEditDefaultModal(){
-    document.getElementById("edit_name").placeholder = "Ex. Defect detection";
-    document.getElementById("edit_thres").value = 0.9;
-    updateSource("default", "edit_source", "");
-    document.getElementById("model_app_menu").setAttribute("style", "display: none");
-    document.getElementById("model_app_menu_def").setAttribute("style", "cursor: auto");
-    document.getElementById("custom_file_label").textContent = "Choose file";
-    document.getElementById("edit_model_menu").textContent = "Please select one";
-    document.getElementById("edit_source_type_menu").textContent = "Please select one";
-    document.getElementById("edit_device_menu").textContent = "Please select one";
-}
-
-// Set default value on Import Modal 
-function setImportDefaultModal(){
-    document.getElementById("import_name").placeholder = "Ex. Defect detection";
-    
-    updateSource("default", "import_source", "");
-    // document.getElementById("import_model_app_menu").setAttribute("style", "display: none");
-    // document.getElementById("import_model_app_menu_def").setAttribute("style", "cursor: auto");
-    document.getElementById("import_model_app_menu").setAttribute("style", "cursor: auto");
-    document.getElementById("import_model_app_menu_def").setAttribute("style", "display: none");
-
-    // document.getElementById("import_model_file_label").textContent = "Choose file";
-    // document.getElementById("import_label_file_label").textContent = "Choose file";
-    // document.getElementById("import_config_file_label").textContent = "Choose file";
-    document.getElementById("import_zip_model_label").textContent = "Choose file";
-
-    // document.getElementById("import-model-file-uploader").value = null;
-    // document.getElementById("import-label-file-uploader").value = null;
-    // document.getElementById("import-config-file-uploader").value = null;
-    document.getElementById("import-zip-file-uploader").value = null;
-
-    // document.getElementById("import_model_menu").textContent = "Please select one";
-    document.getElementById("import_source_type_menu").textContent = "Please select one";
-    document.getElementById("import_device_menu").textContent = "Please select one";
-    
-    document.getElementById("import_thres").value = 0.9;
-}
-
-// ==================================================================
 // Update & Control Dialog ( Modal )
+
+function updateDropdownMenu(selectElement, selectContent){
+    document.getElementById(`${selectElement}_menu`).textContent = `${selectContent}`;
+    document.getElementById(`${selectElement}_menu`).value = `${selectContent}`;
+}
+
+// Update Application Items
+function updateAppItem(srcType){
+    if (srcType.includes('area')) enableAppArea();
+    else disableAppArea();
+}
 
 // Select dropdown object event
 function dropdownSelectEvent(obj) {
     
-    let srcType = obj.innerText;
-    let srcKey = obj.id;
-    
     // Combine the target key , split the _type
+    const srcType = obj.innerText;
+    const srcKey = obj.id;
     const srcKeyList = srcKey.split("_");
-    let trgKey = srcKey.replace( `_${srcKeyList[srcKeyList.length-1]}`, "");
+    const trgKey = srcKey.replace( `_${srcKeyList[srcKeyList.length-1]}`, "");
     
-    console.log(`Selected:\n* ID:${srcKey}\n* TEXT: ${srcType}\n* KEY:${trgKey}`);
+    // console.log(`Selected:\n* ID:${srcKey}\n* TEXT: ${srcType}\n* KEY:${trgKey}`);
     
-    // 更新按鈕文字
-    document.getElementById(`${srcKey}_menu`).textContent = srcType;
-    // 如果是類別的話要更新 APP 清單
-    if (srcKey === 'model'){    
-        updateModelApp(srcKey, srcType);
-    }
-    else if ( srcKey.includes("device") ) {
-        document.getElementById(`${srcKey}_menu`).textContent = `${srcType}`;
-        document.getElementById(`${srcKey}_menu`).value = `${srcType}`;
-    }
-    else if ( srcKey.includes("source_type")) {
+    // Update drop down menu
+    updateDropdownMenu(srcKey, srcType)
+    
+    if (srcKey === 'model') updateModelAppOption(srcKey, srcType);
+    else if ( srcKey.includes("model_source_type")) updateModelSource(srcType );
+    else if ( srcKey.includes("source_type")) updateSourceOption(srcType, trgKey, "");
+    else if ( srcKey.includes("model_app")) updateAppItem(srcType);
+}
 
-        if (srcKey.includes("model")) {
-            updateModelSource(srcType )
-        }else{
-            updateSource(srcType, trgKey, "");
-        }
-    }
-    else if ( srcKey.includes("model_app")) {
-        if (srcType.includes('area')) {
-            setArea();
-        } else {
-            document.getElementById("area_div").style = "display: none";
-        };
-    }
-    ;
+// Clear Dropdown Item
+function clearDropdownItem(element){
+    if(element) element.innerHTML = "";
+    else console.log("Could not find the element: ", element );
 }
 
 // Clear modal dropdown
 function clearModalDropdown(key=""){
-    console.log(`Clear ${key} modal drop down item ...`);
-    if(key!==""){
-        key=`${key}_`;
-    }
-    let keyList = [ `${key}model_list`, `${key}model_app_list`, `${key}source_type_list`, `${key}model_source_type_list`, `${key}source_list`, `${key}device_list` ];
+
+    // console.log(`Clear ${key} modal drop down item ...`);
+
+    if(key!=="") key=`${key}_`;
+    let keyList = [ 
+        `${key}model_list`, 
+        `${key}model_app_list`, 
+        `${key}source_type_list`, 
+        `${key}model_source_type_list`, 
+        `${key}source_list`, 
+        `${key}device_list` 
+    ];
+
     keyList.forEach( function(val, idx){
-        const el = document.getElementById(val);
-        if(el){
-            document.getElementById(val).innerHTML = "";
-        } else {
-            console.log("Could not found the element: ", val);
-        }
+        clearDropdownItem(document.getElementById(val));
     });
 }
 
-function getModelApp(key){
-    $.ajax({
-        url: SCRIPT_ROOT + `/model_app`,
-        type: "GET",
-        dataType: "json",
-        success: function (data, textStatus, xhr) {
-            let el = document.getElementById(`${key}`);
-            model_app_map = data;
-            console.log(model_app_map);
-
-            if(key!==""){
-                for (const key of Object.keys(data)) {
-                    el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="model" name="${key}">${key}</a>`;
-                };
-            }
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log("Error in model_app");
-        },
-    });
-}
-
-function getTaskModel(key){
-    $.ajax({
-        url: SCRIPT_ROOT + `/model`,
-        type: "GET",
-        dataType: "json",
-        success: function (data, textStatus, xhr) {
-            let el = document.getElementById(`${key}`);
-            model_task_map = data;
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log("Error in model");
-        },
-    });
-}
-
-// Add Model arguments and update the "model_app_map" ( global variable )
-function updateModel(key=""){
-
-    console.log(`Update model, element:${key}`);
-    getModelApp(key);
-    getTaskModel(key);
+// Add Model arguments and update the "window[MODEL_APP]" ( global variable )
+function updateModelOption(key){
+    if(key!==""){
+        let el = document.getElementById(`${key}`);
+        for (const key of Object.keys(window[MODEL_APP])) {
+            el.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="model" name="${key}">${key}</a>`;
+        };
+    } else return(undefined);
 }
 
 // Update Model and Application
-function updateModelApp(eleName, modelName, defaultApp){
+function updateModelAppOption(eleName, modelName, defaultApp){
     /*
         Update Model and Application
         - Args
@@ -321,7 +212,7 @@ function updateModelApp(eleName, modelName, defaultApp){
      */
     
     console.log("Update Model App ...")
-    console.log(eleName, modelName, defaultApp);
+
     // Get taget element
     const appName = `${eleName}_app`
     const appListName = `${appName}_list`;
@@ -331,50 +222,43 @@ function updateModelApp(eleName, modelName, defaultApp){
     const appList = document.getElementById(appListName);
     const appMenu = document.getElementById(appMenuName);
 
-    // Display
-    try { 
-        document.getElementById(appDefNmae).style = "display: none";
-        appMenu.style = "display: block";
-        // appMenu.removeAttribute("style");
-    } catch ( error ) {
-        console.log("Error: ", error);
-    }
+    // Display item
+    document.getElementById(appDefNmae).style = "display: none";
+    appMenu.style = "display: block";
 
-    
     // Update dropdown items
-    if ( !model_app_map ) {
-        console.log("no model_app_map");
-        getModelApp("model_list");
-    } 
-
-    console.log(model_app_map);
-
-    if ( modelName in model_app_map){
+    if ( modelName in window[MODEL_APP]){
         // Clear and set default
         appList.innerHTML   = "";
         appMenu.textContent = "Please select one";
-        console.log(model_app_map);
         
-        model_app_map[modelName].forEach(function(item, i){
+        window[MODEL_APP][modelName].forEach(function(item, i){
             appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
         });
     }
 
     // Update default text
-    if (defaultApp) appMenu.textContent = defaultApp;
+    if (defaultApp) {
+        appMenu.textContent = defaultApp;
+
+        if (defaultApp.includes("area")) enableAppArea()
+    }
 }
 
 // Update Source
-function updateSource(srcType, key="source", srcData=""){
+function updateSourceOption(srcType, key="source", srcData=""){
 
     // Block element helper
     function sourceTypeEvent(typeList, typeStatus){
+        
+        // Double Check
         if (typeList.length !== typeStatus.length){
             console.log("error in control source type");
-        } else {
-            for(let step=0; step<typeList.length; step++){
-                document.getElementById(typeList[step]).style.display = typeStatus[step];
-            }
+            return undefined;
+        }
+        // Setup the status
+        for(let step = 0; step < typeList.length; step++){
+            document.getElementById(typeList[step]).style.display = typeStatus[step];
         }
     }
 
@@ -385,29 +269,31 @@ function updateSource(srcType, key="source", srcData=""){
     const el_file_name = `${key}_file`; 
     const el_file_label_name = `${el_file_name}_label`;
     const el_drop_name = `${key}_dropdown`;
-    const el_drop_menu = `${key}`
-
+    
     // reset and block text, file, dropdown element if name "default"
-    if (srcType==='default'){
-        el_def.setAttribute("style", "cursor: auto");
-        sourceTypeEvent( [el_text_name, el_file_name, el_drop_name], ["none", "none", "none"] );
+    if ( srcType===DEFAULT ){
+        
+        el_def.style = "pointer-events: none";
+        sourceTypeEvent( 
+            typeList    = [ el_text_name , el_file_name , el_drop_name ],
+            typeStatus  = [ "none"       , "none"       , "none"] 
+        );
 
     } else {
         
         // block the default element
-        if (el_def) {
-            el_def.setAttribute("style", "display: none");
-        };
+        if (el_def) el_def.setAttribute("style", "display: none");
+            
         
         // RTSP
-        if (srcType==='RTSP'){
+        if (srcType===RTSP){
             sourceTypeEvent( [el_text_name, el_file_name, el_drop_name], ["block", "none", "none"] );
             if (srcData!==""){
                 document.getElementById(el_text_name).value = srcData;
             }
 
         // Video and Image
-        } else if (srcType==='Video' || srcType==='Image'){
+        } else if (srcType===VIDEO || srcType===IMAGE){
             sourceTypeEvent( [el_text_name, el_file_name, el_drop_name], ["none", "block", "none"] );
             if (srcData!==""){
                 let srcDataArr = srcData.split('/');
@@ -429,7 +315,7 @@ function updateSource(srcType, key="source", srcData=""){
 // Update Source Type
 function updateSourceType(key="source_type", data=""){
     
-    let srcTypeList = ['V4L2', 'Video', 'Image', 'RTSP'];
+    let srcTypeList = ['V4L2', VIDEO, IMAGE, RTSP];
     let el_list = document.getElementById(`${key}_list`);
     let el_menu = document.getElementById(`${key}_menu`);
     
@@ -439,14 +325,14 @@ function updateSourceType(key="source_type", data=""){
         el_list.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="${key}" name=${ srcTypeList[step] } >${ srcTypeList[step] }</a>`;
     }
     if (data!=="") {
-        if (data.includes('Video')){ 
-            el_menu.textContent='Video';
+        if (data.includes(VIDEO)){ 
+            el_menu.textContent=VIDEO;
         } else if (data.includes('V4L2')) {
             el_menu.textContent='V4L2';
-        } else if (data.includes('RTSP')) {
-            el_menu.textContent='RTSP';
-        } else if (data.includes('Image')) {
-            el_menu.textContent='Image';
+        } else if (data.includes(RTSP)) {
+            el_menu.textContent=RTSP;
+        } else if (data.includes(IMAGE)) {
+            el_menu.textContent=IMAGE;
         } else {
             console.log('Error in update source type')
         };
@@ -492,7 +378,6 @@ function updateModelSourceType(key="model_source_type", data=""){
         el_list.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="${key}" name=${ srcTypeList[step] } >${ srcTypeList[step] }</a>`;
     }
 }
-
 
 // Update V4L2 list
 function updateSourceV4L2(key="source"){
@@ -549,270 +434,204 @@ function updateGPU(el_key="device"){
     });
 }
 
-// ===============================================s===================
-// Behavior
+// About AI Task Behavior - START
 
-// Add Task
-function addSubmit() {
-    console.log('ADD a task');
-    // {
-    //     "name": "test_from_added_task",
-    //     "application": "counting_number":string,
-    //     "model": "resnet50.engine",
-    //     "device": "NVIDIA GeForce GTX 1050 Ti",
-    //     "source": "/dev/video0",
-    //     "source_type": "V4L2",
-    //     "thres": 0.7
-    // }
+// Get the source content, return { sourceType, sourceContent }
+async function getSourceContent(){
     
-    // Collection the related data from ADD modal
-    console.log(document.getElementById("app_info").innerText);
-    let data = {
-        name: document.getElementById("name").value,
-        thres: document.getElementById("thres").value,
-        model: document.getElementById("model_menu").innerText,
-        application: {},
-        source_type: document.getElementById("source_type_menu").innerText,
-        device: document.getElementById("device_menu").innerText,
-    };
-
-    // Update application
-    data["application"] = JSON.stringify({
-        name: document.getElementById("model_app_menu").innerText,
-        area_points: `[ ${document.getElementById("app_info").innerText} ]`,
-        depend_on: JSON.stringify(checkLabelFunction()),
-    });
-
-    // Create and append information
-    let form_data = new FormData();
-    for ( let key in data ) {
-        console.log(`${key}:${data[key]}`);
-        form_data.append(key, data[key]);
-    };
+    let sourceType, sourceContent;
+    let head = "";
+    if (window[MODE]===EDIT_MODE) head = "edit_";
 
     // Check and append source data
-    if (data['source_type']=='RTSP' ){
-        form_data.append( "source", document.getElementById("source").value);
-    } else if (data['source_type']=='Video' || data['source_type']=='Image') {
-        const ele = document.querySelector('[data-target="file-uploader"]');
-        form_data.append( "source", ele.files[0])
-    } else {
-        form_data.append( "source", document.getElementById("source_menu").innerText.replace(/(\r\n|\n|\r)/gm, ""));
-    };
+    sourceType = document.getElementById(`${head}source_type_menu`).innerText;
 
-    // Sending data via web api ( /add )
-    console.log(`Sending data: ${form_data}`);
-    $.ajax({
-        url: SCRIPT_ROOT + '/add',
-        data: form_data,
-        processData: false,
-        contentType: false,
-        type: 'POST',
-        success: function (data, textStatus, xhr) {
-            console.log(data);
-            setDefaultModal();
-            location.reload();
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            alert(xhr.responseText);
-        },
-    });
+    // RTSP
+    if ( sourceType==RTSP ) sourceContent = document.getElementById(`${head}source`).value;
+    
+    // VIDEO and IMAGE
+    else if ( sourceType==VIDEO || 
+                sourceType==IMAGE ) {
+        
+        const uploaderFiles = document.querySelector(`#${uploader}`).files;
+
+        if (window[MODE] === EDIT_MODE && uploaderFiles.length === 0 ){
+            // Maybe user don't want to change the source file
+            // We will keep the source file name and send back to server
+            sourceContent = document.getElementById("edit_source_file_label").value;
+        }
+
+        else sourceContent = uploaderFiles[0];
+    } 
+
+    // V4L2
+    else sourceContent = document.getElementById(`${head}source_menu`)
+                .innerText.replace(/(\r\n|\n|\r)/gm, "");
+
+    return { sourceType, sourceContent }
+}
+
+async function parseInfoToForm(){
+
+    let uploader    = "file-uploader";
+    let head        = "";
+    let data        = {};
+    let formData    = new FormData();
+    // let sourceContent, sourceType;
+
+    if (window[MODE] === EDIT_MODE) {
+        head        = "edit_";
+        uploader    = "edit-source-file-uploader";
+    }
+
+    // Define Data Key
+    dName       = "name";
+    dThres      = "thres"
+    dModel      = "model"
+    dApp        = "application"
+    dSrc        = "source"
+    dSrcType    = "source_type"
+    dDevice     = "device"
+
+    appName     = "name";
+    appDepend   = "depend_on";
+    appArea     = "area_points";
+
+    // Update application which on shared dialog
+    let appData = {};
+    appData[`${appName}`]   = document.getElementById("model_app_menu").innerText;
+    appData[`${appDepend}`] = JSON.stringify(checkLabelFunction());
+    appData[`${appArea}`]   = `[ ${document.getElementById("app_info").innerText} ]`;
+
+    // // Check and append source data
+    const { sourceType, sourceContent } = await getSourceContent();
+
+    // Collection the related data from ADD modal
+    data[dName]     = document.getElementById(`${head}name`).value;
+    data[dThres]    = document.getElementById(`${head}thres`).value;
+    data[dModel]    = document.getElementById(`${head}model_menu`).innerText;
+    data[dApp]      = JSON.stringify( appData );
+    data[dSrc]      = sourceContent;
+    data[dSrcType]  = sourceType;
+    data[dDevice]   = document.getElementById(`${head}device_menu`).innerText;
+
+    // Create and append information
+    for ( let key in data ) {
+        console.log(key, data[key]);
+        formData.append(key, data[key]);
+    }
+
+    return formData;
+}
+
+// Add Task
+async function addSubmit() {
+    console.log('ADD a task');
+
+    // Get formData from each element
+    const formData = await parseInfoToForm();
+
+    // Add TASK
+    const retData = await postAPI( `/add`, formData, FORM_FMT, ALERT )
+
+    // If success
+    if(retData) {
+        if(!DEBUG_MODE) location.reload();
+        console.log(retData);
+        setDefaultModal();
+    } else return(undefined);
 }
 
 // Edit Task
-function editSubmit(obj) {
-    // {
-    //     "name": "test_from_added_task",
-    //     "application": "counting_number": string,
-    //     "model": "resnet50.engine",
-    //     "device": "NVIDIA GeForce GTX 1050 Ti",
-    //     "source": "/dev/video0",
-    //     "source_type": "V4L2",
-    //     "thres": 0.7
-    // }
+async function editSubmit(obj) {
+
     console.log(`EDIT a task`);
-    // Collection the related data from ADD modal
-    let data = {
-        name: document.getElementById("edit_name").value,
-        thres: document.getElementById("edit_thres").value,
-        application: {},
-        source_type: document.getElementById("edit_source_type_menu").innerText,
-        device: document.getElementById("edit_device_menu").innerText,
-    };
 
-    // Update application
-    data["application"] = JSON.stringify({
-        name: document.getElementById("model_app_menu").innerText,
-        area_points: `[ ${document.getElementById("app_info").innerText} ]`,
-        depend_on: JSON.stringify(checkLabelFunction()),
-    });
+    // Get formData from each element
+    const formData = await parseInfoToForm();
+    
+    // Edit TASK
+    const retData = postAPI( `/edit/${obj.value}`, formData, FORM_FMT )
 
-    // Create and append information
-    let formData = new FormData();
-    for ( let key in data ) {
-        console.log(`${key}->${data[key]}`);
-        formData.append(key, data[key]);
-    };
-    // Check and append source data
-    if (data['source_type']=='RTSP' ){
-        formData.append( "source", document.getElementById("edit_source").value);
-    } else if (data['source_type']=='Video' || data['source_type']=='Image') {
-        const ele = document.querySelector('#edit-source-file-uploader');
-        if( ele.files.length==0){
-            formData.append( "source", document.getElementById("edit_source_file_label").value);
-        } else {
-            formData.append( "source", ele.files[0]);
-        }
-    } else {
-        formData.append( "source", document.getElementById("edit_source_menu").innerText.replace(/(\r\n|\n|\r)/gm, ""));
-    };
+    // if success
+    if(retData) {
+        if(!DEBUG_MODE) location.reload();
+        console.log(retData);
+        setDefaultModal();
+        
+    } else return(undefined);
 
-    for (const value of formData.values()) {
-        console.log(value);
-    }
-      
-    $.ajax({
-        url: SCRIPT_ROOT + `/edit/${obj.value}`,
-        data: formData,
-        processData: false,
-        contentType: false,
-        type: 'POST',
-        success: function (data, textStatus, xhr) {
-            console.log(data);
-            setEditDefaultModal();
-            location.reload();
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log("edit error");
-        },
-    });
 }
 
 // import task
-function importSubmit() {
+async function importSubmit() {
+
     console.log('Import a task');
 
-    // Collection the related data from Import modal
-    let data = {
-        name: document.getElementById("name").value,
-        thres: document.getElementById("thres").value,
-        application: {},
-        source_type: document.getElementById("source_type_menu").innerText,
-        device: document.getElementById("device_menu").innerText,
-    };
+    let fileName;
 
-    // Update application
-    data["application"] = JSON.stringify({
-        name: document.getElementById("model_app_menu").innerText,
-        area_points: `[ ${document.getElementById("app_info").innerText} ]`,
-        depend_on: JSON.stringify(checkLabelFunction()),
-    });
-
-    // Create and append information
-    let form_data = new FormData();
-    for ( let key in data ) {
-        form_data.append(key, data[key]);
-    };
-
-    // Check and append source data
-    if (data['source_type']=='RTSP' ){
-        form_data.append( "source", document.getElementById("source").value);
-    } else if (data['source_type']=='Video' || data['source_type']=='Image') {
-        const ele = document.querySelector('[data-target="file-uploader"]');
-        form_data.append( "source", ele.files[0])
-    } else {
-        form_data.append( "source", document.getElementById("source_menu").innerText.replace(/(\r\n|\n|\r)/gm, ""));
-    };
-
+    // Get formData from each element
+    const formData = await parseInfoToForm();
+    
     // Add other information: capture from /import_proc, it's the same with the return infor of /import_zip (web api)
     const eleZipDiv = document.getElementById('import_zip_model')
     const eleUrlDiv = document.getElementById('import_url_model')
-    let file_name;
-    if ( eleZipDiv.style.display==='block' ){
-        file_name = eleZipDiv.textContent.trim().split(".")[0];
-        console.log(eleZipDiv.textContent.trim());
-        console.log(file_name);
-    } else {
-        file_name = eleUrlDiv.value;
-    };
     
-
-    $.ajax({
-        url: SCRIPT_ROOT + '/import_proc',
-        data: form_data,
-        processData: false,
-        contentType: false,
-        type: 'GET',
-        success: function (data, textStatus, xhr) {
-            console.log(data);
-            let trg_data = data[file_name]["info"];
-            form_data.append( "path", trg_data["path"] );
-            form_data.append( "model_path", trg_data["model_path"] );
-            form_data.append( "label_path", trg_data["label_path"] );
-            form_data.append( "config_path", trg_data["config_path"] );
-            form_data.append( "json_path", trg_data["json_path"] );
-            form_data.append( "tag", trg_data["tag"] );
+    // Show the file name on ZIP div
+    if ( eleZipDiv.style.display==='block' ) fileName = eleZipDiv.textContent.trim().split(".")[0];
+    else fileName = eleUrlDiv.value;
     
-            // Sending data via web api ( /import )
-            console.log("/import ");
-            console.log("-----------------------------------");
-            for(var pair of form_data.entries()) {
-                console.log(pair[0]+ ', '+ pair[1]); 
-            }
+    // Get extracted information from /import_porc
+    const importProcData = await getAPI( `/import_proc`, ALERT);
 
-            $.ajax({
-                url: SCRIPT_ROOT + '/import',
-                data: form_data,
-                processData: false,
-                contentType: false,
-                type: 'POST',
-                success: function (data, textStatus, xhr) {
-                    console.log(data);
-                    setImportDefaultModal();
-                    location.reload();
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    alert(`Import error: ${xhr.responseText}`);
-                    location.reload();
-                },
-            });
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            alert(`Extract error when convert import model: ${xhr.responseText}`);
-            location.reload();
-        },
-    });
+    // If Failed
+    if(!importProcData) {
+        alert("Parsing Extract Data Error!"); return undefined;
+    }
 
+    // Parse output from importProcData
+    let trg_data = importProcData[fileName]["info"];
+
+    // Add more data into formData
+    formData.append( "path"         , trg_data["path"] );
+    formData.append( "model_path"   , trg_data["model_path"] );
+    formData.append( "label_path"   , trg_data["label_path"] );
+    formData.append( "config_path"  , trg_data["config_path"] );
+    formData.append( "json_path"    , trg_data["json_path"] );
+    formData.append( "tag"          , trg_data["tag"] );
+
+    // Log
+    // console.log("/import \n", "********");
+    // for(var pair of formData.entries()) console.log(pair[0]+ ', '+ pair[1]);
+
+    // Import Event
+    const retData = await postAPI( `/import`, formData, FORM_FMT, ALERT )
+
+    // if success
+    if(retData) {
+        console.log(retData);
+        location.reload();
+        setDefaultModal();
+        
+    } else return(undefined);
 }
 
-
 // Delete Task
-function delSubmit(obj) {
+async function delSubmit(obj) {
     console.log('delete the application')
     const uuid = document.getElementById("del_uuid").textContent;
     let data = { "uuid": uuid };
-    console.log(`Remove application ${uuid}`);
-    $.ajax({
-        url: SCRIPT_ROOT + "/remove/",
-        data: JSON.stringify(data),
-        type: "POST",
-        dataType: "json",
-        contentType: "application/json;charset=utf-8",
-        success: function (data, textStatus, xhr) {
-            console.log(data);
 
-            console.log("Reload Page");
-            location.reload();
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log("Remove error", xhr.responseText);
-            alert(`Remove Task (${uuid}) Failed: \n${xhr.responseText}`);
-        },
-    });
+    console.log(`Remove application ${uuid}`);
+
+    const retData = await postAPI( "/remove/", data, JSON_FMT, ALERT );
+
+    if(retData) { console.log(retData); location.reload(); }
+    else return undefined;
+
 }
 
-// ==================================================================
-// Dialog Modal
+// Dialog Modal - START
 
 // Capture error message via calling web api ( /task/<uuid>/error )
 async function errModalEvent(obj) {
@@ -825,21 +644,21 @@ async function errModalEvent(obj) {
 }
 
 // Add related information when open the ADD modal
-function addModalEvent(init=false) {
+async function addModalEvent(init=false) {
 
     console.log(`Open "ADD" modal`);
     clearModalDropdown();
     updateGPU("device");
     updateModelSourceType();
     updateSourceType("source_type");
-    updateModel("model_list");
+    updateModelOption("model_list");
     // updateSourceV4L2("source");
 
     window[MODE] = ADD_MODE;
 
-    document.getElementById("model_menu").disabled = false;
-    document.getElementById("model_app_menu").disabled = false;
-    document.getElementById("device_menu").disabled = false;
+    document.getElementById("model_menu").disabled      = false;
+    document.getElementById("model_app_menu").disabled  = false;
+    document.getElementById("device_menu").disabled     = false;
     
     if(init) setDefaultModal();
 
@@ -850,59 +669,50 @@ function addModalEvent(init=false) {
 }
 
 // Add related information when open the EDIT modal
-function editModalEvent(obj) {
+async function editModalEvent(obj) {
     
     console.log(`Open "EDIT" modal`);
-    window[MODE] = EDIT_MODE;
-
-    updateModel();
-    clearModalDropdown("edit");
-    updateGPU("edit_device");
     
-    let task_uuid = obj.value;
+    window[MODE] = EDIT_MODE;
+    const task_uuid = obj.value;
 
-    $.ajax({
-        url: SCRIPT_ROOT + `/task/${task_uuid}/info`,
-        type: "GET",
-        dataType: "json",
-        success: function (data) {
+    // updateModelOption("edit_model_list");
 
-            console.log(data);
+    const data = await getAPI(`/task/${task_uuid}/info`)
+    
+    if(!data) return(undefined);
+    else {
 
-            document.getElementById("edit_name").value = data["name"];
-            // update source type and source
-            updateSourceType("edit_source_type", data["source_type"]);
+        document.getElementById("edit_name").value = data["name"];
+        
+        // update source type and source
+        updateSourceType("edit_source_type", data["source_type"]);
+        updateSourceOption(data["source_type"], "edit_source", data["source"]);
 
-            // change source
-            updateSource(data["source_type"], "edit_source", data["source"]);
+        // fix model source
+        document.getElementById("edit_model_source_type_menu").textContent = "From Exist Model";
+        document.getElementById("edit_model_source_type_menu").disabled = true;
 
-            // fix model source
-            document.getElementById("edit_model_source_type_menu").textContent = "From Exist Model";
-            document.getElementById("edit_model_source_type_menu").disabled = true;
+        // update model information and disable it
+        document.getElementById("edit_model_menu").textContent = data["model"];
+        document.getElementById("edit_model_menu").disabled = true;
+        
+        // update model_app and setup default value
+        updateModelAppOption("model", data["model"], data["application"]["name"]);
 
-            // update model information and disable it
-            document.getElementById("edit_model_menu").textContent = data["model"];
-            document.getElementById("edit_model_menu").disabled = true;
-            
-            // model_app
-            // NOTICE!!!!!!! must add application choice in here....
-            updateModelApp("model", data["model"], data["application"]["name"]);
+        // update device information 
+        document.getElementById("edit_device_menu").textContent = data['device'];
+        document.getElementById("edit_device_menu").disabled = true;
+        
+        // update threshold
+        document.getElementById("edit_thres").value = data['thres'];
+        
+        // set the value of the submit button to uuid
+        // document.getElementById("modal_edit_submit").value = obj.id;
+        document.getElementById("modal_app_submit").value = task_uuid;
+        
+    }
 
-            
-            // update device information 
-            document.getElementById("edit_device_menu").textContent = data['device'];
-            document.getElementById("edit_device_menu").disabled = true;
-            // update threshold
-            document.getElementById("edit_thres").value = data['thres'];
-            
-            // set the value of the submit button to uuid
-            // document.getElementById("modal_edit_submit").value = obj.id;
-            document.getElementById("modal_app_submit").value = task_uuid;
-            
-        }
-    });
-
-    // document.getElementById("modal_back_bt").setAttribute("onclick", `editModalEvent(this); return false;`);
     document.getElementById("modal_back_bt").value = task_uuid;
 
     document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
@@ -910,37 +720,17 @@ function editModalEvent(obj) {
     })
 }
 
-// Add related information when open the IMPORT modal
-function importModalEvent() {
-    console.log(`Open "IMPORT" modal`);
-    window[MODE] = IMPORT_MODE;
-
-    clearModalDropdown("import");
-    updateGPU("import_device");
-    updateModel();
-    updateSourceType("import_source_type");
-    // updateSourceV4L2("import_source");
-
-    document.getElementById("import_model_app_menu").disabled = false;
-    document.getElementById("import_device_menu").disabled = false;
-    
-    setImportDefaultModal();
-    document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
-        ele.value = "Import"
-    })
-}
-
 // Double check and show information modal when deleting the task
 function delModalEvent(obj) {
-    const uuid = obj.id;
-    const name = document.getElementById(`${uuid}_name`).textContent;
-
-    console.log(`User want to delete application ${name}, which uuid is ${uuid}`)
-    document.getElementById("del_content").textContent = `The application ( ${name} , ${uuid} ) will be delete`;
+    const uuid  = obj.id;
+    const name  = document.getElementById(`${uuid}_name`).textContent;
+    const msg   =  `The application ( ${name} , ${uuid} ) will be delete`;
+    
+    document.getElementById("del_content").textContent = msg;
     document.getElementById("del_uuid").textContent = uuid;
 }
 
-
+// Setup Modal Button (data-dismiss, data-toggle, data-target, onclick and text).
 function setModalButton(eleButton, targetEvent, clickEvent, buttonText) {
 
     eleButton.setAttribute("data-dismiss"  , "modal");
@@ -950,6 +740,8 @@ function setModalButton(eleButton, targetEvent, clickEvent, buttonText) {
 
     if (buttonText) eleButton.textContent = buttonText;
 }
+
+// Dialog Modal - END
 
 // About Application Modal Event - START
 
@@ -976,7 +768,7 @@ function addAppModalEvent() {
     );
 
     // Switch App Modal from Add Modal have to update model_app list
-    updateModelApp(
+    updateModelAppOption(
         eleName     = "model", 
         modelName   = document.getElementById("model_menu").textContent, 
         defaultApp  = document.getElementById("model_app_menu").textContent 
@@ -1074,16 +866,14 @@ function appModalEvent(){
 
 }
 
-function setArea(trg_mode=""){
-    
-    trg_mode = window["MODE"];
-    
-    trg_mode = trg_mode.toLowerCase();
+function disableAppArea(){
+    document.getElementById("area_div").style = "display: none";
+}
 
-    if (trg_mode==='add'){
+async function enableAppArea(trg_mode=""){
     
-        trg_mode = "";
-    }
+    trg_mode = "";
+    if (window["MODE"]===EDIT_MODE) trg_mode = "edit_";
 
     console.log(`Update Area Setting, Mode: ${trg_mode}`);
 
@@ -1099,79 +889,55 @@ function setArea(trg_mode=""){
     let imgScale;
     let imgRate;
 
-    // Create and append information
+    // Define parameters
+    let data        = {};
+    let formData    = new FormData();
+    dSrc            = "source";
+    dSrcType        = "source_type";
     
-    // Get source type
-    let data = { source_type: document.getElementById(`${trg_mode}_source_type_menu`).innerText };
-    console.log(data);
-    
-    // Update source uploader
-    let srcLoader = "file-uploader"
-    if (trg_mode.includes("edit")){
-        srcLoader = `edit-source-${srcLoader}`;
-    } else if (trg_mode.includes("import")){
-        srcLoader = `import-source-${srcLoader}`;
+    const { sourceType, sourceContent } = await getSourceContent();
+    data[dSrcType] = sourceType;
+    data[dSrc]     = sourceContent;
+
+    // Define Form Data
+    for ( let key in data ){
+        console.log(key, data[key]);
+        formData.append(key, data[key]);
     }
-
-    let form_data = new FormData();
-    for ( let key in data ) form_data.append(key, data[key]);
-
-    // Check and append source data
-    if (data['source_type']=='RTSP' ){
-        form_data.append( "source", document.getElementById("source").value);
-    } else if (data['source_type']=='Video' || data['source_type']=='Image') {
-        
-        const ele = document.querySelector(`[data-target="${srcLoader}"]`);
-        if( ele.files.length==0){
-            form_data.append( "source", document.getElementById("edit_source_file_label").value);
-        } else {
-            form_data.append( "source", ele.files[0]);
-        }
-
-    } else {
-        form_data.append( "source", document.getElementById(`${trg_mode}_source_menu`).innerText.replace(/(\r\n|\n|\r)/gm, ""));
-        console.log(document.getElementById(`${trg_mode}_source_menu`).innerText);
-    };
 
     // Display the key/value pairs
-    for (var pair of form_data.entries()) {
+    for (var pair of formData.entries()) {
         console.log(pair[0]+ ', ' + pair[1]); 
     }
-    $.ajax({
-        url: SCRIPT_ROOT + '/update_src',
-        data: form_data,
-        processData: false,
-        contentType: false,
-        type: 'POST',
-        success: function (data, textStatus, xhr) {
 
-            imgHeight = data["height"];
-            imgWidth = data["width"];
+    // Update Source
+    const retData = await postAPI(`/update_src`, formData, FORM_FMT, ALERT)
+    if(retData){
 
-            // setup canvas width and height
-            imgRate = imgHeight/imgWidth;
-            appCanvas.height = appCanvas.width*imgRate;
+        imgHeight   = retData["height"];
+        imgWidth    = retData["width"];
 
-            // load image
-            img.src="data:image/jpeg;base64,"+data["image"];
-            appCanvas.style.backgroundImage = `url(${img.src})`;
+        // setup canvas width and height
+        imgRate             = imgHeight/imgWidth;
+        appCanvas.height    = appCanvas.width*imgRate;
 
-            // calculate scale
-            console.log(`Canvas width: ${appCanvas.style.width}`);
-            appScale.textContent = appCanvas.width/imgWidth;
+        // load image
+        img.src = "data:image/jpeg;base64," + retData["image"];
+        appCanvas.style.backgroundImage = `url(${img.src})`;
 
-            console.log(`H:${imgHeight}, W:${imgWidth}, Ratio:${imgRate}`);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log("Update source error");
-            console.log(xhr);
-            console.log(xhr.responseJSON);
-        },
-    });
+        // calculate scale
+        console.log(`Canvas width: ${appCanvas.style.width}`);
+        appScale.textContent = appCanvas.width/imgWidth;
+
+        console.log(`H:${imgHeight}, W:${imgWidth}, Ratio:${imgRate}`);   
+        
+    } else {
+        return undefined;
+    }
+
 }
 
 // About Application Modal Event - END
-
 
 async function getPlatform(){
     
@@ -1272,8 +1038,15 @@ $(document).ready( async function () {
     const pla = await getPlatform();
     if (pla) document.getElementById("title_framework").textContent = `( ${pla} )`
     
+
+    // Update Global Parameters
+    updateMapModelUUID()
+    updateMapModelApp()
+    
+    // Check the status of each task
     checkTaskStatus()
 
+    // Define the launch Switch Button
     defineLaunchButton()
 
 });
