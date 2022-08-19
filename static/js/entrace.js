@@ -441,7 +441,10 @@ async function getSourceContent(){
     
     let sourceType, sourceContent;
     let head = "";
-    if (window[MODE]===EDIT_MODE) head = "edit_";
+    if (window[MODE]===EDIT_MODE){
+        head        = "edit_";
+        uploader    = "edit-source-file-uploader"
+    }
 
     // Check and append source data
     sourceType = document.getElementById(`${head}source_type_menu`).innerText;
@@ -450,8 +453,9 @@ async function getSourceContent(){
     if ( sourceType==RTSP ) sourceContent = document.getElementById(`${head}source`).value;
     
     // VIDEO and IMAGE
-    else if ( sourceType==VIDEO || 
-                sourceType==IMAGE ) {
+    else if (   sourceType==VIDEO || 
+                sourceType==IMAGE 
+    ) {
         
         const uploaderFiles = document.querySelector(`#${uploader}`).files;
 
