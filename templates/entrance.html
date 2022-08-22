@@ -112,17 +112,25 @@
                                         <tr id="{{ app['uuid'] }}_block"  >
                                             <!-- Application Name -->
                                             <td >
-                                                <div>
-                                                    <a id="{{ app['uuid'] }}_name" style="text-transform: capitalize">{{ app['name'] }}</a>
-                                                    <!-- <br> -->
-                                                    <!-- <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a> -->
+                                                <div class="scroll-contain">
+                                                    <div class="scroll-text">
+                                                        <a id="{{ app['uuid'] }}_name" style="text-transform: capitalize">{{ app['name'] }}</a>
+                                                        <!-- <br> -->
+                                                        <!-- <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a> -->
+                                                    </div>
                                                 </div>
                                             </td>
-                                            <!-- Framework -->
-                                            <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">{{ app['framework'] }}</td>
-                                            <td id="{{ app['uuid'] }}_model" >{{ app['model'] }}</td>
+                                            <td id="{{ app['uuid'] }}_model" >
+                                                <div class="scroll-contain">
+                                                    <p class="scroll-text">{{ app['model'] }}</p>
+                                                </div>
+                                            </td>
                                             <!-- Application -->
-                                            <td id="{{ app['uuid'] }}_application" >{{ app['application']['name'] }}</td>
+                                            <td id="{{ app['uuid'] }}_application" >
+                                                <div class="scroll-contain">
+                                                    <p class="scroll-text">{{ app['application']['name'] }}</p>
+                                                </div>
+                                            </td>
                                             <!-- Status -->
                                             {% if app['status']=='run' %}
                                                 <td >
@@ -176,19 +184,23 @@
                                         {% for app in failed %}
                                         <tr id="{{ app['uuid'] }}_block"  >
                                             <!-- Application Name -->
-                                            <td >
-                                                <div>
+                                            <td>
+                                                <div class="scroll-text">
                                                     <a id="{{ app['uuid'] }}_name" class="err-name" style="text-transform: capitalize" data-toggle="modal" data-target="#errModal" onclick="errModalEvent(this);">{{ app['name'] }}</a>
-                                                    <!-- <br> -->
-                                                    <!-- <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a> -->
                                                 </div>
                                             </td>
                                             <!-- framework -->
-                                            <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">{{ app['framework'] }}</td>
+                                            <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">
+                                                <p class="scroll-text">{{ app['framework'] }}</p>
+                                            </td>
                                             <!-- model -->
-                                            <td id="{{ app['uuid'] }}_model" >{{ app['model'] }}</td>
+                                            <td id="{{ app['uuid'] }}_model" >
+                                                <p class="scroll-text">{{ app['model'] }}</p>
+                                            </td>
                                             <!-- Application -->
-                                            <td id="{{ app['uuid'] }}_application" >{{ app['application']['name'] }}</td>
+                                            <td id="{{ app['uuid'] }}_application" >
+                                                <p class="scroll-text">{{ app['application']['name'] }}</p>
+                                            </td>
                                             <!-- Status -->
                                             <td >
                                                 <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom">{{ app['status'] }}</span>

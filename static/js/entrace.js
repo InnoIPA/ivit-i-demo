@@ -1049,13 +1049,13 @@ $(document).ready( async function () {
     
 
     // Update Global Parameters
-    updateMapModelUUID()
-    updateMapModelApp()
+    updateMapModelUUID();
+    updateMapModelApp();
     
     // Check the status of each task
-    checkTaskStatus()
+    checkTaskStatus();
 
     // Define the launch Switch Button
-    defineLaunchButton()
+    defineLaunchButton();
 
 });
