@@ -127,6 +127,7 @@ async function setDefaultModal(){
     document.getElementById(`model_app_menu_def`).setAttribute("style", "cursor: auto");    
     document.getElementById("custom_file_label").textContent = "Choose file";
 
+    document.getElementById(`${head}model_source_type_menu`).textContent = "Please select one";
     document.getElementById(`${head}model_menu`).textContent = "Please select one";
     document.getElementById(`${head}source_type_menu`).textContent = "Please select one";
     document.getElementById(`${head}device_menu`).textContent = "Please select one";
@@ -243,12 +244,7 @@ function updateModelAppOption(eleName, modelName, defaultApp){
     // Update default text
     if (defaultApp) {
         appMenu.textContent = defaultApp;
-
         if (defaultApp.includes("area")) enableAppArea()
-    }
-
-    if (appMenu.offsetWidth > appMenu.parentElement.offsetWidth){
-        
     }
 }
 
