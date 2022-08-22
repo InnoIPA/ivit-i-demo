@@ -131,6 +131,8 @@ async function setDefaultModal(){
     document.getElementById(`${head}model_menu`).textContent = "Please select one";
     document.getElementById(`${head}source_type_menu`).textContent = "Please select one";
     document.getElementById(`${head}device_menu`).textContent = "Please select one";
+    document.getElementById(`${head}source_menu`).textContent = "Please select one";
+    
 
 }
 
