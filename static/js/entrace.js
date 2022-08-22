@@ -233,7 +233,10 @@ function updateModelAppOption(eleName, modelName, defaultApp){
         appMenu.textContent = "Please select one";
         
         window[MODEL_APP][modelName].forEach(function(item, i){
-            appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
+            appList.innerHTML += `<a class="dropdown-item custom" 
+            href="#" onclick="dropdownSelectEvent(this); return false;" 
+            id="${appName}" name="${item}">${item}</a>
+            `;
         });
     }
 
@@ -242,6 +245,10 @@ function updateModelAppOption(eleName, modelName, defaultApp){
         appMenu.textContent = defaultApp;
 
         if (defaultApp.includes("area")) enableAppArea()
+    }
+
+    if (appMenu.offsetWidth > appMenu.parentElement.offsetWidth){
+        
     }
 }
 

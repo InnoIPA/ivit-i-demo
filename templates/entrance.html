@@ -165,7 +165,7 @@
                                             <!-- Dropdown - Messages -->
                                             <td >
                                                 <div class="dropdown no-arrow">
-                                                    <a class="dropdown-toggle" href="#" role="button"
+                                                    <a class="dropdown-toggle dropdown-custom" href="#" role="button"
                                                         id="{{ app['uuid']}}_more" data-toggle="dropdown"
                                                         aria-haspopup="true" aria-expanded="false">
                                                         <!-- <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-500"></i> -->
@@ -216,7 +216,7 @@
                                             <!-- Dropdown - Messages -->
                                             <td >
                                                 <div class="dropdown no-arrow">
-                                                    <a class="dropdown-toggle" href="#" role="button"
+                                                    <a class="dropdown-toggle dropdown-custom" href="#" role="button"
                                                         id="{{ app['uuid']}}_more" data-toggle="dropdown"
                                                         aria-haspopup="true" aria-expanded="false">
                                                         <!-- <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-500"></i> -->
@@ -311,7 +311,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="model_source_type_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="model_source_type_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -332,7 +332,7 @@
                                 <div class="card-body custom">
 
                                     <!-- Default -->
-                                    <a class="btn btn-sm dropdown-toggle" id="model_def" style="cursor: auto;"></a>
+                                    <a class="btn btn-sm dropdown-toggle dropdown-custom" id="model_def" style="cursor: auto;"></a>
                                     
                                     <!-- Input Text -->
                                     <div id="import_url_model" style="height:100%; display:none">
@@ -349,7 +349,7 @@
                                     
                                     <!-- Drop down -->
                                     <div id="model_dropdown" class="dropdown m-0" style="display: none">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="model_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="model_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -372,10 +372,10 @@
                                 <div class="card-body custom">
                                     <div class="d-flex flex-row align-items-center justify-content-between">
                                         <div class="dropdown m-0">
-                                            <a class="btn btn-sm dropdown-toggle" type="a" 
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" 
                                                 id="model_app_menu" data-toggle="dropdown" aria-haspopup="true" 
                                                 aria-expanded="false" style="display: none"> Please select one </a>
-                                            <a class="btn btn-sm dropdown-toggle" id="model_app_menu_def" 
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" id="model_app_menu_def" 
                                                 style="cursor: auto;"></a>
                                             <div id="model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="model_app_menu"></div>
                                         </div>
@@ -398,7 +398,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="source_type_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="source_type_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -424,7 +424,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <!-- Default -->
-                                    <a class="btn btn-sm dropdown-toggle" id="source_def" style="cursor: auto;"></a>
+                                    <a class="btn btn-sm dropdown-toggle dropdown-custom" id="source_def" style="cursor: auto;"></a>
                                     <!-- Input Text -->
                                     <div id="source_text" style="display: none">
                                         <input id="source" type="text" class="bg-light border-0" placeholder="" aria-label="source">
@@ -436,7 +436,7 @@
                                     </div>
                                     <!-- Drop down -->
                                     <div id="source_dropdown" class="dropdown m-0" style="display: none;">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="source_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="source_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -460,7 +460,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="device_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="device_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -545,7 +545,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button id="edit_model_source_type_menu" class="btn btn-sm dropdown-toggle" type="button"
+                                        <button id="edit_model_source_type_menu" class="btn btn-sm dropdown-toggle dropdown-custom" type="button"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -565,7 +565,8 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="edit_model_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom dropdown-custom" type="button" 
+                                                id="edit_model_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -586,8 +587,8 @@
                                 <div class="card-body custom">
                                     <div class="d-flex flex-row align-items-center justify-content-between">
                                         <div class="dropdown m-0">
-                                            <a class="btn btn-sm dropdown-toggle" type="a" id="edit_model_app_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="display: none"> Please select one </a>
-                                            <a class="btn btn-sm dropdown-toggle" id="edit_model_app_menu_def" style="cursor: auto;"></a>
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" id="edit_model_app_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="display: none"> Please select one </a>
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" id="edit_model_app_menu_def" style="cursor: auto;"></a>
                                             <div id="edit_model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="edit_model_app_menu"></div>
                                         </div>
                                     </div>
@@ -608,7 +609,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="edit_source_type_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="edit_source_type_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -628,7 +629,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <!-- Default -->
-                                    <a class="btn btn-sm dropdown-toggle" id="edit_source_def" style="cursor: auto;"></a>
+                                    <a class="btn btn-sm dropdown-toggle dropdown-custom" id="edit_source_def" style="cursor: auto;"></a>
                                     <!-- Input Text -->
                                     <div id="edit_source_text" style="display: none">
                                         <input id="edit_source" type="text" class="bg-light border-0" placeholder="" aria-label="edit_source">
@@ -640,7 +641,7 @@
                                     </div>
                                     <!-- Drop down -->
                                     <div id="edit_source_dropdown" class="dropdown m-0" style="display: none;">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="edit_source_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="edit_source_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -664,7 +665,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="edit_device_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="edit_device_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -780,10 +781,10 @@
                                 <div class="card-body custom">
                                     <div class="d-flex flex-row align-items-center justify-content-between">
                                         <div class="dropdown m-0">
-                                            <a class="btn btn-sm dropdown-toggle" type="a" id="import_model_app_menu" 
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" id="import_model_app_menu" 
                                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
                                                 style="display: none"> Please select one </a>
-                                            <a class="btn btn-sm dropdown-toggle" id="import_model_app_menu_def" style="cursor: auto;"></a>
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" id="import_model_app_menu_def" style="cursor: auto;"></a>
                                             <div id="import_model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="import_model_app_menu"></div>
                                         </div>
                                         <!-- <a id="import_bt_setup_app" class="btn" href="#" onclick="appModalEvent(); return false;" data-toggle="modal" data-target="#appModal" style="display: none;padding: 0%;">Setup</a> -->
@@ -806,7 +807,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="import_source_type_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="import_source_type_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -826,7 +827,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <!-- Default -->
-                                    <a class="btn btn-sm dropdown-toggle" id="import_source_def" style="cursor: auto;"></a>
+                                    <a class="btn btn-sm dropdown-toggle dropdown-custom" id="import_source_def" style="cursor: auto;"></a>
                                     <!-- Input Text -->
                                     <div id="import_source_text" style="display: none">
                                         <input id="import_source" type="text" class="bg-light border-0" placeholder="" aria-label="source">
@@ -838,7 +839,7 @@
                                     </div>
                                     <!-- Drop down -->
                                     <div id="import_source_dropdown" class="dropdown m-0" style="display: none;">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="import_source_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="import_source_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -862,7 +863,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="import_device_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="import_device_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -1005,10 +1006,10 @@
                                 <div class="card-body custom">
                                     <div class="d-flex flex-row align-items-center justify-content-between">
                                         <div class="dropdown m-0">
-                                            <a class="btn btn-sm dropdown-toggle" type="a" 
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" 
                                                 id="model_app_menu" data-toggle="dropdown" aria-haspopup="true" 
                                                 aria-expanded="false" style="display: none"> Please select one </a>
-                                            <a class="btn btn-sm dropdown-toggle" id="model_app_menu_def" style="cursor: auto;"></a>
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" id="model_app_menu_def" style="cursor: auto;"></a>
                                             <div id="model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="model_app_menu"></div>
                                         </div>
                                     </div>
@@ -1024,7 +1025,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <a class="btn btn-sm dropdown-toggle" type="a" id="label_list_menu" 
+                                        <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" id="label_list_menu" 
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Please select one </a>
                                         <div id="label_list" class="dropdown-menu label-list" aria-labelledby="label_list_menu">
                                             

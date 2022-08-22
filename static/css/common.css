@@ -51,17 +51,15 @@ a, td {
 }
 
 .scroll-contain {
-    
     overflow-x: hidden;
     width: 100%;
-
 }
 
 .scroll-text {
     display:inline-block;
+    
     white-space:nowrap;
     margin: 0px;
-    /* width: 100%; */
 }
 
 .table.cnt {
@@ -117,9 +115,18 @@ a, td {
     font-size: 50px;
 }
 
+.dropdown-custom {
+    width: 100%;
+    overflow-x: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+}
 
 .dropdown-item.custom {
+    width: 95%;
     font-size: 13px;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
 }
 
 .topbar.custom {
