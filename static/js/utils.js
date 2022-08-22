@@ -151,7 +151,7 @@ function scrollText(){
 function addMarquee(ele, distance, speed){
     
     const timeFunc  = 'linear';
-    const padding   = 30;
+    const padding   = 0;
     let _speed       = 5;
     let _distance    = 300;
 
@@ -191,13 +191,14 @@ function rmMarquee(ele){
 }
 
 $('.scroll-contain').hover(
+    
     function(){
         const trg = this;
         const parent = trg.parentElement;
         const child = trg.getElementsByClassName('scroll-text')[0];
         if(!child) return undefined;
 
-        let swapeWidth = child.offsetWidth - parent.offsetWidth;
+        let swapeWidth = child.offsetWidth - trg.offsetWidth;
 
         if (swapeWidth>0) addMarquee(child, swapeWidth);
         else rmMarquee(child);
