@@ -133,6 +133,7 @@ async function setDefaultModal(){
     document.getElementById(`${head}device_menu`).textContent = "Please select one";
     document.getElementById(`${head}source_menu`).textContent = "Please select one";
     
+    document.getElementById("import_zip_model_label").textContent = "Choose file";
 
 }
 

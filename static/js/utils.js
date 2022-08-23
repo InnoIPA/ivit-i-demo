@@ -4,14 +4,22 @@ const DISABLE_ELE_OPACITY   = 0.4;
 const ENABLE_OPACITY        = 1;
 
 
-function alertError (xhr, _textStatus, _errorThrown) {
-    errMsg = xhr.responseText
+async function parseError(xhr){
+    err = xhr.responseText;
+    if( err.includes("[") && err.includes("]")){
+        err = err.slice(err.search("\\["), -1)
+    }
+    return err
+}
+
+async function alertError (xhr, _textStatus, _errorThrown) {
+    const errMsg = await parseError(xhr);
     alert( errMsg );
     return( errMsg );
 }
 
-function logError (xhr, _textStatus, _errorThrown) {
-    errMsg = xhr.responseText
+async function logError (xhr, _textStatus, _errorThrown) {
+    const errMsg = await parseError(xhr);
     console.log( errMsg );
     return( errMsg );
 }
@@ -77,7 +85,7 @@ async function getAPI(api, errType=LOG, log=false) {
     });
     // Return Data
     if (data) return data;
-    else return undefined;
+    else return(undefined);
 }
 
 async function postAPI(api, inData, inType=JSON_FMT, errType=LOG) {
@@ -113,7 +121,7 @@ async function postAPI(api, inData, inType=JSON_FMT, errType=LOG) {
 
     // Return Data
     if (retData) return retData;
-    else return undefined;
+    else return(undefined);
 }
 
 async function updateMapModelUUID(){
