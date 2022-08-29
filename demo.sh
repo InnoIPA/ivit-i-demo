@@ -15,11 +15,11 @@ python3 before_demo.py
 
 # Show the information about Demo Site 
 echo ""
-printd "\nOpen Browser and enter the IP Addres below, or just hold control and click it." Cy;
-TITLE="http://${IP}:${PORT}";
+printd "\nOpen Browser and enter the IP Addres below, or just hold control and click it." Cy
+TITLE="http://${IP}:${PORT}"
 
-echo -e "${TITLE}" | boxes -s 80x5 -a c;
-echo "";
+echo -e "${TITLE}" | boxes -s 80x5 -a c
+echo ""
 CNT="\n
 --- \n
 SERVER IP | ${S_IP} \n

@@ -19,9 +19,9 @@ def extract_ip():
         st.close()
     return IP
 
-def parse_conf_info(conf_path):
+def parse_cfg_info(conf_path):
 
-    if not os.path.exist(conf_path):
+    if not os.path.exists(conf_path):
         raise Exception("Could not found config file ({})".format(conf_path))
     
     with open(CONF, 'r') as f:
@@ -47,17 +47,17 @@ def main(args):
     
     # Modify JavaScript File
     cnts, lines, texts = [], [], []
-    for file in MODIFY_JS:
+    for js_file in MODIFY_JS:
         
         # Open and searching
-        with open(file, 'r') as f:
+        with open(js_file, 'r') as f:
             src = f.readlines()
         
         for line, content in enumerate(src):
             
             if 'const DOMAIN' in content:
                 print('-'*50, '\n')
-                print('Searching DOMAIN in {} ... '.format(file))
+                print('Searching DOMAIN in {} ... '.format(js_file))
                 print('Found DOMAIN in line {}: {}'.format(line, content.rstrip()))
                 
                 trg_cnt = "{} = '{}';\n".format(content.split(' = ')[0], ip )
@@ -71,8 +71,8 @@ def main(args):
                 print('Modify the PORT: {}'.format(port))
             
 
-        # Wrtie file
-        with open('{}'.format(file), 'w') as my_file:
+        # Wrtie js_file
+        with open('{}'.format(js_file), 'w') as my_file:
             new_file_contents = "".join(src)
             my_file.write(new_file_contents)
             my_file.close()
