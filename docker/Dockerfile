@@ -5,7 +5,7 @@ ENV WS=/workspace
 WORKDIR /workspace
 COPY [ "./requirements.sh", "./utils.sh", "./py-requirements.txt", "./" ]
 
-ENV DEBIAN_FRONTEND noninteractive  
+ENV DEBIAN_FRONTEND=noninteractive  
 
 RUN ./requirements.sh
 
