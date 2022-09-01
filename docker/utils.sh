@@ -45,3 +45,11 @@ function print_magic(){
 	fi
 	echo ""
 }
+
+function check_jq(){
+	# Install pre-requirement
+	if [[ -z $(which jq) ]];then
+		printd "Installing requirements .... " Cy
+		sudo apt-get install jq -yqq
+	fi
+}
