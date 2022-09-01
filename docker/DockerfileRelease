@@ -15,20 +15,20 @@ ENV IVIT=ivit-i-demo
 # Download Repository
 WORKDIR $WS
 RUN apt-get update -q \
-    && apt-get install -qqy git ssh openssh-server \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -qqy git ssh openssh-server zip \
     && git config --system credential.helper store \
     && echo "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com" > ~/.git-credentials \
     && git clone ${REPO} --branch ${VER}
 
 
 # Install packages and Remove cache and file
-WORKDIR $WS/$IVIT
-RUN ${WS}/${IVIT}/docker/requirements.sh \
-    && apt-get install zip \
-    && unzip ${WS}/${IVIT}/static/vendor.zip \
-    && rm -rf $WS/$IVIT/docker \
-    && rm -rf $WS/$IVIT/.git \
-    && rm $WS/$IVIT/package_vendor.sh
+WORKDIR ${WS}/${IVIT}
+RUN ./docker/requirements.sh \
+    && unzip -q ./static/vendor.zip \
+    && rm ./static/vendor.zip \
+    && rm ./package_vendor.sh \
+    && rm -rf ./docker \
+    && rm -rf ./.git*
 
 ENTRYPOINT [ "/bin/bash", "-c" ]
 
