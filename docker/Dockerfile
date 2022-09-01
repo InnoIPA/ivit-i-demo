@@ -3,7 +3,7 @@ FROM ubuntu:focal
 USER root
 ENV WS=/workspace
 WORKDIR /workspace
-COPY [ "requirements.sh", "./py-requirements.txt", "${WS}/" ]
+COPY [ "./requirements.sh", "./utils.sh", "./py-requirements.txt", "./" ]
 
 ENV DEBIAN_FRONTEND noninteractive  
 
