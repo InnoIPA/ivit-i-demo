@@ -9,22 +9,29 @@ ARG GITHUB_TOKEN
 # Setup Environment
 ENV DEBIAN_FRONTEND noninteractive
 ENV REPO=https://github.com/InnoIPA/ivit-i-demo.git
-ENV WS=/workspace
-
-# Switch to work directory
-WORKDIR ${WS}
+ENV WS=/opt/inno
+ENV IVIT=ivit-i-demo
 
 # Download Repository
+WORKDIR $WS
 RUN apt-get update -q \
-&& apt-get install -qqy git ssh openssh-server jq boxes \
-&& git config --system credential.helper store \
-&& echo "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com" > ~/.git-credentials \
-&& git clone ${REPO} --branch ${VER} \
-&& mv -f ${IVIT} ${WS}
+    && apt-get install -qqy git ssh openssh-server jq boxes \
+    && git config --system credential.helper store \
+    && echo "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com" > ~/.git-credentials \
+    && git clone ${REPO} --branch ${VER}
 
 # Install requirments
 RUN apt-get -y install python3-dev python3-pip \
-&& apt-get install boxes tree jq bsdmainutils -yq \
-&& pip3 install -r ${WS}/docker/py-requirements.txt
+    && apt-get install boxes tree jq bsdmainutils -yq \
+    && pip3 install -r ${WS}/${IVIT}/docker/py-requirements.txt
+
+# Remove cache and file
+WORKDIR $WS/$IVIT
+RUN rm -rf /var/lib/apt/lists/* \
+    && rm -rf $WS/$IVIT/docker \
+    && rm -rf $WS/$IVIT/.git \
+    && rm $WS/$IVIT/package_vendor.sh
 
 ENTRYPOINT [ "/bin/bash", "-c" ]
+
+# docker run --name ivit-i-demo-test --rm -it --net=host --ipc=host maxchanginnodisk/ivit-i-demo "./demo.sh"
