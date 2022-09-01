@@ -41,8 +41,13 @@ done
 
 # Update the parameters of configuration
 CNT=$(jq \
---arg ip "${IP}" --arg port "${PORT}" \
+--arg ip "${S_IP}" --arg port "${S_PORT}" \
 '.server.ip = $ip | .server.port = $port' \
+${CONF})
+
+CNT=$(jq \
+--arg ip "${IP}" --arg port "${PORT}" \
+'.client.ip = $ip | .client.port = $port' \
 ${CONF})
 
 echo -E "${CNT}" > ${CONF}
