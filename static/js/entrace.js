@@ -31,7 +31,7 @@ async function stopTask(uuid){
 async function addStreamHref(uuid){
     const url = await getDocURL();
     const eleTaskName = document.getElementById(`${uuid}_name`);
-    eleTaskName.href=`${url}/task/${uuid}/stream`;
+    eleTaskName.href=`${url}`+`task/${uuid}/stream`;
     eleTaskName.setAttribute("onclick", `streamStart("${uuid}");`);
 }
 
