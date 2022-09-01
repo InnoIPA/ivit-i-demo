@@ -6,7 +6,7 @@ source "${ROOT}/utils.sh"
 
 # Update and Install packages
 apt-get update -q
-apt-get install -qqy boxes tree jq bsdmainutils vim zip unzip
+apt-get install -qqy boxes tree jq bsdmainutils vim zip
 apt-get install -qqy python3-dev python3-pip
 
 # Install python module

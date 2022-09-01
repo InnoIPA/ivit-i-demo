@@ -24,6 +24,7 @@ RUN apt-get update -q \
 # Install packages and Remove cache and file
 WORKDIR $WS/$IVIT
 RUN ${WS}/${IVIT}/docker/requirements.sh \
+    && apt-get install zip \
     && unzip ${WS}/${IVIT}/static/vendor.zip \
     && rm -rf $WS/$IVIT/docker \
     && rm -rf $WS/$IVIT/.git \
