@@ -2,7 +2,7 @@ ROOT=$(dirname $(realpath $0))
 source "${ROOT}/utils.sh"
 
 # Show ivit-i configuration
-CONF="ivit-i.json"
+CONF="./ivit-i.json"
 
 S_IP=$(cat ${CONF} | jq -r '.server.ip')
 S_PORT=$(cat ${CONF} | jq -r '.server.port')
