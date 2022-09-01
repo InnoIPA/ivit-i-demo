@@ -1,5 +1,5 @@
 ROOT=$(dirname $(realpath $0))
-source "${ROOT}/utils.sh"
+source "${ROOT}/tools/utils.sh"
 
 # Show ivit-i configuration
 CONF="./ivit-i.json"
