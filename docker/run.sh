@@ -30,7 +30,7 @@ function help(){
 }
 
 # Parse the argument
-while getopts "b:i:p:" option; do
+while getopts "b:i:p:h" option; do
 	case $option in
 		i )
 			IP=$OPTARG ;;
@@ -72,6 +72,7 @@ DOCKER_CMD="docker run \
 ${DOCKER_IMAGE} \"${RUN_CMD}\""
 
 # Show 
+echo ${DOCKER_CMD}
 printd ${DOCKER_CMD}
 
 # Run docker container
