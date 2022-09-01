@@ -1,4 +1,5 @@
-source ./docker/utils.sh
+ROOT=$(dirname $(realpath $0))
+source "${ROOT}/utils.sh"
 
 # Show ivit-i configuration
 CONF="ivit-i.json"
@@ -9,6 +10,42 @@ S_PORT=$(cat ${CONF} | jq -r '.server.port')
 PORT=$(cat ${CONF} | jq -r '.client.port')
 # IP=$(cat ${CONF} | jq -r '.client.ip')
 IP=$(python3 -c "from before_demo import extract_ip; print(extract_ip())")
+
+# Help information
+function help(){
+	echo "Run the iVIT-I-DEMO environment."
+	echo
+	echo "Syntax: scriptTemplate [-f|b|i|p]"
+	echo "options:"
+	# echo "b		brand or platform"   
+    echo "i		ip"
+    echo "p		port"
+	echo "h		help."
+}
+
+# Parse the argument
+while getopts "b:i:p:h" option; do
+	case $option in
+		i )
+			IP=$OPTARG ;;
+        p )
+			PORT=$OPTARG ;;
+        h )
+			help; exit ;;
+		\? )
+			help; exit ;;
+		* )
+			help; exit ;;
+	esac
+done
+
+# Update the parameters of configuration
+CNT=$(jq \
+--arg ip "${IP}" --arg port "${PORT}" \
+'.server.ip = $ip | .server.port = $port' \
+${CONF})
+
+echo -E "${CNT}" > ${CONF}
 
 # Update ip information
 python3 before_demo.py
