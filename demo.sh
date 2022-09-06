@@ -27,9 +27,9 @@ function help(){
 while getopts "b:i:p:h" option; do
 	case $option in
 		i )
-			IP=$OPTARG ;;
+			S_IP=$OPTARG ;;
         p )
-			PORT=$OPTARG ;;
+			S_PORT=$OPTARG ;;
         h )
 			help; exit ;;
 		\? )
@@ -41,8 +41,13 @@ done
 
 # Update the parameters of configuration
 CNT=$(jq \
---arg ip "${IP}" --arg port "${PORT}" \
+--arg ip "${S_IP}" --arg port "${S_PORT}" \
 '.server.ip = $ip | .server.port = $port' \
+${CONF})
+
+CNT=$(jq \
+--arg ip "${IP}" --arg port "${PORT}" \
+'.client.ip = $ip | .client.port = $port' \
 ${CONF})
 
 echo -E "${CNT}" > ${CONF}
@@ -69,4 +74,4 @@ CLIENT PORT | ${PORT} \n
 echo -e $CNT | column -t -s "|"
 echo ""
 
-gunicorn --worker-class eventlet -w 1 --threads 10 --bind ${IP}:${PORT} app:app;
+# gunicorn --worker-class eventlet -w 1 --threads 10 --bind ${IP}:${PORT} app:app;
