@@ -74,4 +74,4 @@ CLIENT PORT | ${PORT} \n
 echo -e $CNT | column -t -s "|"
 echo ""
 
-# gunicorn --worker-class eventlet -w 1 --threads 10 --bind ${IP}:${PORT} app:app;
+gunicorn --worker-class eventlet -w 1 --threads 10 --bind ${IP}:${PORT} app:app;
