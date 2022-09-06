@@ -27,6 +27,10 @@ function check_container(){
 	echo "$(docker ps -a --format "{{.Names}}" | grep ${1} | wc -l )" 
 }
 
+function check_container_run(){
+	echo "$( docker container inspect -f '{{.State.Running}}' ${1} )"
+}
+
 function lower_case(){
 	echo "$1" | tr '[:upper:]' '[:lower:]'
 }
@@ -51,5 +55,13 @@ function check_jq(){
 	if [[ -z $(which jq) ]];then
 		printd "Installing requirements .... " Cy
 		sudo apt-get install jq -yqq
+	fi
+}
+
+function check_pyinstaller(){
+	# Install pyinstaller for inno-verify
+	if [[ -z $(which pyinstaller) ]];then
+		printd "Installing pyinstaller for inno-verify .... " Cy
+		pip3 install pyinstaller -q
 	fi
 }

@@ -29,6 +29,8 @@
     
 
     <!-- Custom Javscript -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/utils.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/stream.js') }}"></script>
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/switch.css') }}">
@@ -52,9 +54,12 @@
             <div id="content">
 
                 <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light topbar custom mb-custom static-top">
+                <nav class="navbar navbar-expand navbar-light topbar mb-custom static-top shadow custom">
                     <div class="h1 mt-4 text-gray-800 navtitle">
-                        <h1 class="header custom">iVIT-I</h1>
+                        <div>
+                            <img style="width:173px; vertical-align:baseline; margin-left: -15px;" src="/static/figures/Logo.png">
+                        </div>
+                        <!-- <h1 class="header custom">iVIT-I</h1> -->
                     </div>
                 </nav>
                 <!-- End of Topbar -->

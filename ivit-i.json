@@ -1,7 +1,8 @@
 {
+  "project": "ivit-i-demo",
+  "version": "v0.8",
   "server": {
     "ip": "172.16.92.130",
-    "platform": "intel",
     "port": "819"
   },
   "client": {

@@ -44,7 +44,7 @@ CORS(app)
 socketio = SocketIO(app, cors_allowed_origins='*') 
 # gunicorn --worker-class eventlet -w 1 --threads ${THREAD} --bind ${BIND} ${MODULE}:app
 # ------------
-app.config['AF']='intel'
+# app.config['AF']='intel'
 app.config['HOST']='172.16.92.130'
 app.config['PORT']='819'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -65,7 +65,7 @@ def home():
         
     
     # logging.info('Container status: {}'.format(webapi(['status'], 'GET')))
-    return render_template('entry.html', data=task_info)
+    return render_template('entrance.html', data=task_info)
 
 
 @app.route('/temp', methods=['GET', 'POST'])
@@ -149,7 +149,7 @@ def stop():
 
 @app.route('/task/<uuid>/stream')
 def app_stream(uuid):
-    return render_template('flask_stream.html')
+    return render_template('stream.html')
 
 if __name__=='__main__':
     socketio.run(app, host='0.0.0.0', port=4999, debug=True)

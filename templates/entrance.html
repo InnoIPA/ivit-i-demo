@@ -25,7 +25,7 @@
     <!-- custom styles for this page -->
     <link href="static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="static/css/switch.css" rel="stylesheet">
-    <link href="static/css/entry.css" rel="stylesheet">
+    <link href="static/css/entrance.css" rel="stylesheet">
     <link href="static/css/common.css" rel="stylesheet">
     <link href="static/css/import-option.css" rel="stylesheet">
 
@@ -65,7 +65,10 @@
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light topbar mb-custom static-top shadow custom">
                     <div class="h1 mt-4 text-gray-800 navtitle">
-                        <h1 class="header custom">iVIT-I</h1>
+                        <div>
+                            <img style="width:173px; vertical-align:baseline; margin-left: -15px;" src="/static/figures/Logo.png">
+                        </div>
+                        <!-- <h1 class="header custom">iVIT-I</h1> -->
                     </div>
                 </nav>
                 <!-- End of Topbar -->
@@ -79,7 +82,7 @@
                         <div class=" card-header custom py-3 d-flex flex-row align-items-center justify-content-between">
                             <div class="align-items-center d-flex justify-content-between">
                                 <h3 style="float: left ; margin-right: 20px; margin-bottom:0px" class=" h3 ">Tasks</h3>
-                                <h3 id="title_framework" style="float: right; margin-bottom:0px" class="h3 text-gray-300">( OpenVINO )</h3>
+                                <h3 id="title_framework" style="float: right; margin-bottom:0px" class="h3 text-gray-300"></h3>
                             </div>
                             
                             <a href="#" onclick="addModalEvent(true); return false;" class="btn btn-circle"
@@ -112,17 +115,25 @@
                                         <tr id="{{ app['uuid'] }}_block"  >
                                             <!-- Application Name -->
                                             <td >
-                                                <div>
-                                                    <a id="{{ app['uuid'] }}_name" style="text-transform: capitalize">{{ app['name'] }}</a>
-                                                    <!-- <br> -->
-                                                    <!-- <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a> -->
+                                                <div class="scroll-contain">
+                                                    <div class="scroll-text">
+                                                        <a id="{{ app['uuid'] }}_name" style="text-transform: capitalize">{{ app['name'] }}</a>
+                                                        <!-- <br> -->
+                                                        <!-- <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a> -->
+                                                    </div>
                                                 </div>
                                             </td>
-                                            <!-- Framework -->
-                                            <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">{{ app['framework'] }}</td>
-                                            <td id="{{ app['uuid'] }}_model" >{{ app['model'] }}</td>
+                                            <td id="{{ app['uuid'] }}_model" >
+                                                <div class="scroll-contain">
+                                                    <p class="scroll-text">{{ app['model'] }}</p>
+                                                </div>
+                                            </td>
                                             <!-- Application -->
-                                            <td id="{{ app['uuid'] }}_application" >{{ app['application']['name'] }}</td>
+                                            <td id="{{ app['uuid'] }}_application" >
+                                                <div class="scroll-contain">
+                                                    <p class="scroll-text">{{ app['application']['name'] }}</p>
+                                                </div>
+                                            </td>
                                             <!-- Status -->
                                             {% if app['status']=='run' %}
                                                 <td >
@@ -148,9 +159,7 @@
                                             {% endif %}
                                             <!-- Rounded switch -->
                                             <td >
-                                                
                                                 <label class="switch-custom">
-
                                                     <input id="{{ app['uuid'] }}_switch" type="checkbox" name="checkbox" value="{{ app['uuid'] }}">
                                                         <!-- {{ "checked" if app['status']=='run' }}> -->
                                                     <span class="slider round"></span>
@@ -159,7 +168,7 @@
                                             <!-- Dropdown - Messages -->
                                             <td >
                                                 <div class="dropdown no-arrow">
-                                                    <a class="dropdown-toggle" href="#" role="button"
+                                                    <a class="dropdown-toggle dropdown-custom" href="#" role="button"
                                                         id="{{ app['uuid']}}_more" data-toggle="dropdown"
                                                         aria-haspopup="true" aria-expanded="false">
                                                         <!-- <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-500"></i> -->
@@ -178,19 +187,23 @@
                                         {% for app in failed %}
                                         <tr id="{{ app['uuid'] }}_block"  >
                                             <!-- Application Name -->
-                                            <td >
-                                                <div>
+                                            <td>
+                                                <div class="scroll-text">
                                                     <a id="{{ app['uuid'] }}_name" class="err-name" style="text-transform: capitalize" data-toggle="modal" data-target="#errModal" onclick="errModalEvent(this);">{{ app['name'] }}</a>
-                                                    <!-- <br> -->
-                                                    <!-- <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a> -->
                                                 </div>
                                             </td>
                                             <!-- framework -->
-                                            <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">{{ app['framework'] }}</td>
+                                            <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">
+                                                <p class="scroll-text">{{ app['framework'] }}</p>
+                                            </td>
                                             <!-- model -->
-                                            <td id="{{ app['uuid'] }}_model" >{{ app['model'] }}</td>
+                                            <td id="{{ app['uuid'] }}_model" >
+                                                <p class="scroll-text">{{ app['model'] }}</p>
+                                            </td>
                                             <!-- Application -->
-                                            <td id="{{ app['uuid'] }}_application" >{{ app['application']['name'] }}</td>
+                                            <td id="{{ app['uuid'] }}_application" >
+                                                <p class="scroll-text">{{ app['application']['name'] }}</p>
+                                            </td>
                                             <!-- Status -->
                                             <td >
                                                 <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom">{{ app['status'] }}</span>
@@ -198,7 +211,7 @@
                                             <!-- Rounded switch -->
                                             <td >    
                                                 <label class="switch-custom">
-                                                    <input type="checkbox" name="checkbox" value="{{ app['uuid'] }}" value="failed"
+                                                    <input id="{{ app['uuid'] }}_switch" type="checkbox" name="checkbox" value="{{ app['uuid'] }}"
                                                         {{ "checked" if app['status']=='run' }} disabled>
                                                     <span class="slider round"></span>
                                                 </label>
@@ -206,7 +219,7 @@
                                             <!-- Dropdown - Messages -->
                                             <td >
                                                 <div class="dropdown no-arrow">
-                                                    <a class="dropdown-toggle" href="#" role="button"
+                                                    <a class="dropdown-toggle dropdown-custom" href="#" role="button"
                                                         id="{{ app['uuid']}}_more" data-toggle="dropdown"
                                                         aria-haspopup="true" aria-expanded="false">
                                                         <!-- <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-500"></i> -->
@@ -261,14 +274,6 @@
                 <div class="modal-header custom">
                     <h4 class="modal-title" id="exampleModalLabel">Add a Task</h4>
                     
-                    <!-- <button id="add_sub_title_add" class="modal-sub-title add" type="button" data-dismiss="modal" data-target="#addModal" data-toggle="modal" style="opacity: 1;" disabled>Add</button> -->
-                    <!-- <a id="add_sub_title_divide" class="modal-sub-title divide">|</a> -->
-                    <button id="add_sub_title_import" class="btn modal-sub-title import" type="button" 
-                            data-dismiss="modal" data-target="#importModal" data-toggle="modal" onclick="importModalEvent(); return false;">Import</button>
-
-                    <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="setDefaultModal(); return false;">
-                        <span aria-hidden="true">×</span>
-                    </button> -->
                 </div>
 
                 <!-- Body -->
@@ -293,6 +298,26 @@
                     <!-- model and Application -->
                     <div class="row">
 
+                        <!-- Model Source -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Model Source</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="model_source_type_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="model_source_type_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="model_source_type">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- model -->
                         <div class="col-lg-6">
                             <div class="card mb-3">
@@ -300,8 +325,26 @@
                                     <h6 class="m-0 font-weight-bold">Model</h6>
                                 </div>
                                 <div class="card-body custom">
-                                    <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="model_menu"
+
+                                    <!-- Default -->
+                                    <a class="btn btn-sm dropdown-toggle dropdown-custom" id="model_def" style="cursor: auto;"></a>
+                                    
+                                    <!-- Input Text -->
+                                    <div id="import_url_model" style="height:100%; display:none">
+                                        <!-- WEB URL -->
+                                        <input id="import_url_model_value" type="text" style="height:100%" class="bg-light border-0" placeholder="Press 'Enter' to extract URL ...">
+                                    </div>
+
+                                    <!-- Input File -->
+                                    <div id="import_zip_model" class="custom-file" style="height:100%; display:none">
+                                        <input type="file" class="custom-file-input" data-target="import-zip-model-uploader" id="import-zip-model-uploader">
+                                        <label id="import_zip_model_label" class="custom-file-label" style="height:100%">Choose file</label>
+                                    </div>
+                                    
+                                    
+                                    <!-- Drop down -->
+                                    <div id="model_dropdown" class="dropdown m-0" style="display: none">
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="model_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -309,11 +352,13 @@
                                             aria-labelledby="model_menu">
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
 
                         <!-- Application -->
+                        <!--
                         <div class="col-lg-6">
                             <div class="card mb-3">
                                 <div class="card-header custom">
@@ -322,18 +367,19 @@
                                 <div class="card-body custom">
                                     <div class="d-flex flex-row align-items-center justify-content-between">
                                         <div class="dropdown m-0">
-                                            <a class="btn btn-sm dropdown-toggle" type="a" 
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" 
                                                 id="model_app_menu" data-toggle="dropdown" aria-haspopup="true" 
                                                 aria-expanded="false" style="display: none"> Please select one </a>
-                                            <a class="btn btn-sm dropdown-toggle" id="model_app_menu_def" 
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" id="model_app_menu_def" 
                                                 style="cursor: auto;"></a>
                                             <div id="model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="model_app_menu"></div>
                                         </div>
-                                        <!-- <a id="bt_setup_app" class="btn" href="#" onclick="appModalEvent(); return false;" data-toggle="modal" data-target="#appModal" style="display: None;padding: 0%;">Setup</a> -->
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        -->
+
                     </div>
 
                     <!-- Input type and source -->
@@ -347,7 +393,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="source_type_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="source_type_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -373,7 +419,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <!-- Default -->
-                                    <a class="btn btn-sm dropdown-toggle" id="source_def" style="cursor: auto;"></a>
+                                    <a class="btn btn-sm dropdown-toggle dropdown-custom" id="source_def" style="cursor: auto;"></a>
                                     <!-- Input Text -->
                                     <div id="source_text" style="display: none">
                                         <input id="source" type="text" class="bg-light border-0" placeholder="" aria-label="source">
@@ -385,7 +431,7 @@
                                     </div>
                                     <!-- Drop down -->
                                     <div id="source_dropdown" class="dropdown m-0" style="display: none;">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="source_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="source_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -409,7 +455,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="device_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="device_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -486,6 +532,25 @@
 
                     <!-- model and Application -->
                     <div class="row">
+                        <!-- Model Source -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Model Source</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button id="edit_model_source_type_menu" class="btn btn-sm dropdown-toggle dropdown-custom" type="button"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="edit_model_source_type_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="edit_model_source_type">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- model -->
                         <div class="col-lg-6">
@@ -494,8 +559,10 @@
                                     <h6 class="m-0 font-weight-bold">Model</h6>
                                 </div>
                                 <div class="card-body custom">
-                                    <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="edit_model_menu"
+                                    <div class="dropdown m-0 scroll-contain">
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" 
+                                                type="button" 
+                                                id="edit_model_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -508,7 +575,7 @@
                         </div>
 
                         <!-- Application -->
-                        <div class="col-lg-6">
+                        <!-- <div class="col-lg-6">
                             <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Application</h6>
@@ -516,15 +583,15 @@
                                 <div class="card-body custom">
                                     <div class="d-flex flex-row align-items-center justify-content-between">
                                         <div class="dropdown m-0">
-                                            <a class="btn btn-sm dropdown-toggle" type="a" id="edit_model_app_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="display: none"> Please select one </a>
-                                            <a class="btn btn-sm dropdown-toggle" id="edit_model_app_menu_def" style="cursor: auto;"></a>
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" id="edit_model_app_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="display: none"> Please select one </a>
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" id="edit_model_app_menu_def" style="cursor: auto;"></a>
                                             <div id="edit_model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="edit_model_app_menu"></div>
                                         </div>
-                                        <!-- <a id="edit_bt_setup_app" class="btn" href="#" onclick="appModalEvent(); return false;" data-toggle="modal" data-target="#appModal" style="padding: 0%;">Setup</a> -->
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
+
                     </div>
 
                     <!-- Input type and source -->
@@ -538,7 +605,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="edit_source_type_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="edit_source_type_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -558,7 +625,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <!-- Default -->
-                                    <a class="btn btn-sm dropdown-toggle" id="edit_source_def" style="cursor: auto;"></a>
+                                    <a class="btn btn-sm dropdown-toggle dropdown-custom" id="edit_source_def" style="cursor: auto;"></a>
                                     <!-- Input Text -->
                                     <div id="edit_source_text" style="display: none">
                                         <input id="edit_source" type="text" class="bg-light border-0" placeholder="" aria-label="edit_source">
@@ -570,7 +637,7 @@
                                     </div>
                                     <!-- Drop down -->
                                     <div id="edit_source_dropdown" class="dropdown m-0" style="display: none;">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="edit_source_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="edit_source_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -594,7 +661,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="edit_device_menu"
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="edit_device_menu"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Please select one
                                         </button>
@@ -625,208 +692,11 @@
                 <!-- Footer -->
                 <div class="modal-footer">
                     <button class="btn btn-secondary-custom" type="button" data-dismiss="modal"
-                        onclick="setEditDefaultModal(); return false;">Cancel</button>
+                        onclick="setDefaultModal(); return false;">Cancel</button>
                         <button name="bt_modal_app" class="btn btn-primary-custom" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
                         onclick="appModalEvent(); return false;">Next</button>
                     <!-- <a id="modal_edit_submit" class="btn btn-primary-custom" href="#" data-dismiss="modal" value=""
                         onclick="editSubmit(this); return false;">Edit</a> -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Import Dialog-->
-    <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog full" role="document">
-            <div class="modal-content full">
-                <!-- Header -->
-                <div class="modal-header custom">
-                    <h4 class="modal-title" id="exampleModalLabel">Import a Task</h4>
-                    
-                    <button id="import_sub_title_add" class="btn modal-sub-title add" type="button" 
-                        data-dismiss="modal" data-target="#addModal" data-toggle="modal" onclick="addModalEvent()">Add</button>
-                    <!-- <a class="modal-sub-title divide">|</a> -->
-                    <!-- <button id="import_sub_title_import" class="modal-sub-title import" type="button" data-dismiss="modal" data-target="#importModal" data-toggle="modal" style="opacity: 1;" disabled>Import</button> -->
-
-                    <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="setImportDefaultModal(); return false;">
-                        <span aria-hidden="true">×</span>
-                    </button> -->
-                </div>
-
-                <!-- Body -->
-                <div class="modal-body">
-
-                    <!-- Name -->
-                    <div class="row">
-                        <div class="col">
-                            <div class="card mb-3">
-                                <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Name</h6>
-                                </div>
-                                <div class="card-body custom">
-                                    <input id="import_name" type="text" class="bg-light border-0 " placeholder="">
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <!-- ZIP and application -->
-                    <div class="row">
-
-                        <!-- Configuration -->
-                        <div class="col-lg-6">
-                            <div class="card mb-3">
-                                <div class="card-header custom card-header d-flex align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold">Model</h6>
-                                    <div class="m-0"> 
-                                        <a id="import_model_zip" href="#" class="m-0 import-opt font-weight-bold" onclick="changeOption(this)">ZIP</a>
-                                        <a id="import_model_div" class="m-0 import-opt font-weight-bold"> / </a>
-                                        <a id="import_model_url" href="#" class="m-0 import-opt font-weight-bold" onclick="changeOption(this)">URL</a>
-                                    </div>
-                                </div>
-                                <div class="card-body custom">
-                                    <!-- ZIP File -->
-                                    <div id="import_zip_file" class="custom-file" style="height:100%; display:block">
-                                        <input type="file" class="custom-file-input" data-target="import-zip-file-uploader" id="import-zip-file-uploader">
-                                        <label id="import_zip_file_label" class="custom-file-label" style="height:100%">Choose file</label>
-                                    </div>
-                                    <div id="import_web_url" style="height:100%; display:none">
-                                        <!-- WEB URL -->
-                                        <input id="import_web_url_value" type="text" style="height:100%" class="bg-light border-0" placeholder="Press 'Enter' to extract URL ...">
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                        </div>
-                        
-
-                        <!-- Application -->
-                        <div class="col-lg-6">
-                            <div class="card mb-3">
-                                <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Application</h6>
-                                </div>
-                                <div class="card-body custom">
-                                    <div class="d-flex flex-row align-items-center justify-content-between">
-                                        <div class="dropdown m-0">
-                                            <a class="btn btn-sm dropdown-toggle" type="a" id="import_model_app_menu" 
-                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
-                                                style="display: none"> Please select one </a>
-                                            <a class="btn btn-sm dropdown-toggle" id="import_model_app_menu_def" style="cursor: auto;"></a>
-                                            <div id="import_model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="import_model_app_menu"></div>
-                                        </div>
-                                        <!-- <a id="import_bt_setup_app" class="btn" href="#" onclick="appModalEvent(); return false;" data-toggle="modal" data-target="#appModal" style="display: none;padding: 0%;">Setup</a> -->
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <!-- Input type and source -->
-                    <div class="row">
-
-                        <!-- Type -->
-                        <div class="col-lg-6">
-                            <div class="card mb-3">
-                                <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Input Type</h6>
-                                </div>
-                                <div class="card-body custom">
-                                    <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="import_source_type_menu"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Please select one
-                                        </button>
-                                        <div id="import_source_type_list" class="dropdown-menu animated--fade-in"
-                                            aria-labelledby="import_source_type_menu">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Source -->
-                        <div class="col-lg-6">
-                            <div class="card mb-3">
-                                <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Input Source</h6>
-                                </div>
-                                <div class="card-body custom">
-                                    <!-- Default -->
-                                    <a class="btn btn-sm dropdown-toggle" id="import_source_def" style="cursor: auto;"></a>
-                                    <!-- Input Text -->
-                                    <div id="import_source_text" style="display: none">
-                                        <input id="import_source" type="text" class="bg-light border-0" placeholder="" aria-label="source">
-                                    </div>
-                                    <!-- Input File -->
-                                    <div id="import_source_file" class="custom-file" style="height:100%; display: none;">
-                                        <input type="file" class="custom-file-input" data-target="import-source-file-uploader" id="import-source-file-uploader">
-                                        <label id="import_source_file_label" class="custom-file-label" style="height:100%">Choose file</label>
-                                    </div>
-                                    <!-- Drop down -->
-                                    <div id="import_source_dropdown" class="dropdown m-0" style="display: none;">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="import_source_menu"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Please select one
-                                        </button>
-                                        <div id="import_source_list" class="dropdown-menu animated--fade-in"
-                                            aria-labelledby="import_source_menu">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Device and Thres -->
-                    <div class="row">
-
-                        <!-- Device -->
-                        <div class="col-lg-6">
-                            <div class="card mb-3">
-                                <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Accelerator</h6>
-                                </div>
-                                <div class="card-body custom">
-                                    <div class="dropdown m-0">
-                                        <button class="btn btn-sm dropdown-toggle" type="button" id="import_device_menu"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Please select one
-                                        </button>
-                                        <div id="import_device_list" class="dropdown-menu animated--fade-in"
-                                            aria-labelledby="import_device_menu">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Thres -->
-                        <div class="col-lg-6">
-                            <div class="card mb-3">
-                                <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Threshold</h6>
-                                </div>
-                                <div class="card-body custom">
-                                    <input id="import_thres" type="text" class="bg-light border-0"
-                                        aria-label="import_thres">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Footer -->
-                <div class="modal-footer">
-                    <button class="btn btn-secondary-custom" type="button" data-dismiss="modal"
-                        onclick="setImportDefaultModal(); return false;">Cancel</button>
-                    <button name="bt_modal_app" class="btn btn-primary-custom" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
-                        onclick="appModalEvent(); return false;">Next</button>
-                    <!-- <button id="modal_import_submit" class="btn btn-primary-custom" href="#" data-dismiss="modal"
-                        onclick="importSubmit(); return false;" disabled>Import</button> -->
                 </div>
             </div>
         </div>
@@ -913,13 +783,35 @@
 
                     <!-- Application -->
                     <div class="row">
-                        <div class="col-lg-6">
+
+
+                        <!-- <div class="col-lg-6">
                             <div class="card mb-3">
                                 <div class="card-header custom">
                                     <h6 class="m-0 font-weight-bold">Application Name</h6>
                                 </div>
                                 <div class="card-body custom">
                                     <input id="app_name" type="text" class="bg-light border-0 " placeholder="" disabled>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- Application -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Application</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
+                                        <div class="dropdown m-0">
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" 
+                                                id="model_app_menu" data-toggle="dropdown" aria-haspopup="true" 
+                                                aria-expanded="false" style="display: none"> Please select one </a>
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" id="model_app_menu_def" style="cursor: auto;"></a>
+                                            <div id="model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="model_app_menu"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -932,7 +824,7 @@
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
-                                        <a class="btn btn-sm dropdown-toggle" type="a" id="label_list_menu" 
+                                        <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" id="label_list_menu" 
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Please select one </a>
                                         <div id="label_list" class="dropdown-menu label-list" aria-labelledby="label_list_menu">
                                             
@@ -996,7 +888,7 @@
                 <!-- Footer -->
                 <div class="modal-footer">
                     <button id="modal_back_bt" class="btn btn-secondary-custom" type="button" data-dismiss="modal">Back</button>
-                    <button id="modal_app_submit" class="btn btn-primary-custom" type="button" data-dismiss="modal" onclick="delSubmit(this); return false;">Done</button>
+                    <button id="modal_app_submit" class="btn btn-primary-custom" type="button" data-dismiss="modal" onclick="">Done</button>
                 </div>
             </div>
         </div>
@@ -1022,9 +914,11 @@
     <script type="text/javascript" src="static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- Custom JS -->
-    <script type="text/javascript" src="static/js/entry.js"></script>
-    <script type="text/javascript" src="static/js/app_setting.js"></script>
+    <script type="text/javascript" src="static/js/common.js"></script>
+    <script type="text/javascript" src="static/js/utils.js"></script>
+    <script type="text/javascript" src="static/js/entrace.js"></script>
+    <script type="text/javascript" src="static/js/setup-app.js"></script>
     <script type="text/javascript" src="static/js/upload_file.js"></script>
-    <script type="text/javascript" src="static/js/import_model_option.js"></script>
+    <script type="text/javascript" src="static/js/import-model-option.js"></script>
     
 </body>

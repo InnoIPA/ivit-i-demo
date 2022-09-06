@@ -1,13 +1,3 @@
-
-// ---------------------------------------------------------------------------------------------------
-// const modelFileUploader = document.querySelector('[data-target="model-file-uploader"]');
-// modelFileUploader.addEventListener("change", modelFileUpload);
-// // ---------------------------------------------------------------------------------------------------
-// const labelFileUploader = document.querySelector('[data-target="label-file-uploader"]');
-// labelFileUploader.addEventListener("change", labelFileUpload);
-// // ---------------------------------------------------------------------------------------------------
-// const configFileUploader = document.querySelector('[data-target="config-file-uploader"]');
-// configFileUploader.addEventListener("change", configFileUpload);
 // ---------------------------------------------------------------------------------------------------
 const sourceUploader = document.querySelector('[data-target="file-uploader"]');
 sourceUploader.addEventListener("change", sourceFileUpload);
@@ -15,34 +5,6 @@ sourceUploader.addEventListener("change", sourceFileUpload);
 const editSourceUploader = document.querySelector('[data-target="edit-source-file-uploader"]');
 editSourceUploader.addEventListener("change", editSourceFileUpload);
 
-// ---------------------------------------------------------------------------------------------------
-const importSourceUploader = document.querySelector('[data-target="import-source-file-uploader"]');
-importSourceUploader.addEventListener("change", importSourceFileUpload);
-
-async function importSourceFileUpload(e) {
-    try {
-        const file = e.target.files[0];
-        // setUploading(true);
-        if (!file) return;
-
-        // const beforeUploadCheck = await beforeUpload(file);
-        // if (!beforeUploadCheck.isValid) throw beforeUploadCheck.errorMessages;
-
-        // const arrayBuffer = await getArrayBuffer(file);
-        // const response = await uploadFileAJAX(arrayBuffer);
-
-        // alert("File Uploaded Success");
-        console.log(file);
-        document.getElementById('import_source_file_label').textContent = file['name'];
-        // showPreviewImage(file);
-    } catch (error) {
-        alert(error);
-        console.log("Catch Error: ", error);
-    } finally {
-        // e.target.value = '';  // reset input file
-        // setUploading(false);
-    }
-}
 
 async function editSourceFileUpload(e) {
     try {
