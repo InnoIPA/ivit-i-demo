@@ -1,9 +1,9 @@
 {
   "project": "ivit-i-demo",
-  "version": "v0.8",
+  "version": "v0.9",
   "server": {
     "ip": "172.16.92.130",
-    "port": "819"
+    "port": "818"
   },
   "client": {
     "docker_image": "ivit-i-demo",
