@@ -14,3 +14,4 @@ pip3 install -r "${ROOT}/py-requirements.txt"
 
 # Remove Caches
 rm -rf /var/lib/apt/lists/*
+apt-get clean
