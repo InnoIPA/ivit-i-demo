@@ -9,44 +9,57 @@ The web demo site for ivit-i
 * Install [docker](https://max-c.notion.site/Install-Docker-9a0927c9b8aa4455b66548843246152f)
 
 # How to work
-1. Download the repository
-    ```bash
-    # Donwload repo and install python package
-    $ git clone https://github.com/InnoIPA/ivit-i-demo.git && cd ivit-i-demo
-    ```
-2. Build the docker image
-    ```bash
-    $ ./docker/build.sh
-    ```
-3. Run the docker container
-    * Run With Command Line
-        ```bash
-        $ ./docker/run.sh -b intel -i 172.16.92.130 -p 819
-        ```
-        ![image](docs/images/iVIT-I-IP.png)
 
-    * Modify Config and Run
-        * Modify Config
-            ```JSON
-            {
-                "server":{
-                    "ip": "172.16.92.130",
-                    "platform": "intel",
-                    "port": "819"
-                },
-                "client":{
-                    "docker_image": "ivit-i-demo",
-                    "ip": "0.0.0.0",
-                    "port": "4999"
-                }
-            }
-            ```
-            * Server: fill with the IP Address of `ivit-i-<platform>`
-            * Client: shows the information of `Demo Site`
-        * Run
+* From Docker Hub
+    ```bash
+    IVIT_SERVER_IP="172.16.92.130"
+    IVIT_SERVER_PORT="818"
+    
+    docker run --name ivit-i-demo --rm -it \
+    --net=host --ipc=host \
+    maxchanginnodisk/ivit-i-demo:v0.9 "./demo.sh -i ${IVIT_SERVER_IP} -p ${IVIT_SERVER_PORT}"
+    ```
+
+* Build From Source
+    1. Download the repository
+        ```bash
+        # Donwload repo and install python package
+        $ git clone https://github.com/InnoIPA/ivit-i-demo.git && cd ivit-i-demo
+        ```
+    2. Build the docker image
+        ```bash
+        $ ./docker/build.sh
+        ```
+    3. Run the docker container
+        * Run With Command Line
             ```bash
-            ./docker/run.sh
+            $ ./docker/run.sh -b intel -i 172.16.92.130 -p 819
             ```
+            ![image](docs/images/iVIT-I-IP.png)
+
+        * Modify Config and Run
+            * Modify Config
+                ```JSON
+                {
+                    "server":{
+                        "ip": "172.16.92.130",
+                        "platform": "intel",
+                        "port": "819"
+                    },
+                    "client":{
+                        "docker_image": "ivit-i-demo",
+                        "ip": "0.0.0.0",
+                        "port": "4999"
+                    }
+                }
+                ```
+                * Server: fill with the IP Address of `ivit-i-<platform>`
+                * Client: shows the information of `Demo Site`
+            * Run
+                ```bash
+                ./docker/run.sh
+                ```
+                
 # Demo
 > The image and video with high resolution in [my notion page](https://max-c.notion.site/iVIT-I-DEMO-v0-4-20592c5e3c11415e97540d0b72c5b706)
 <details>
