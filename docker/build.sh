@@ -1,25 +1,35 @@
 #!/bin/bash
+
+# Basic Parameters
 CONF="ivit-i.json"
-ROOT=$(dirname `realpath $0`)
+DOCKER_USER="maxchanginnodisk"
+
+# Store the utilities
+FILE=$(realpath "$0")
+ROOT=$(dirname "${FILE}")
 source "${ROOT}/utils.sh"
 
-# Install pre-requirement
-if [[ -z $(which jq) ]];then
-    printd "Installing requirements .... " Cy
-    sudo apt-get install jq zip unzip -yqq
-fi
+# Parse information from configuration
+check_jq
+BASE_NAME=$(cat ${CONF} | jq -r '.project')
+TAG_VER=$(cat ${CONF} | jq -r '.version')
 
 # Concate name
-DOCKER_IMAGE=$(cat ${CONF} | jq -r '.client.docker_image')
-printd "Concatenate docker image name: ${DOCKER_IMAGE}" Cy
+IMAGE_NAME="${DOCKER_USER}/${BASE_NAME}:${TAG_VER}"
+printd "Concatenate docker image name: ${IMAGE_NAME}" Cy
 
 # Unpack ZIP file
-if [[ -z `ls static/vendor 2>/dev/null` ]];then
+VENDOR_ZIP=$(ls static/vendor 2>/dev/null)
+if [[ -z "${VENDOR_ZIP}" ]];then
     printd "Extract vendor library ( vendor.zip )"
     unzip static/vendor.zip
 fi
 
 # Build the docker image
-cd ${ROOT};
-printd "Build the docker image. (${DOCKER_IMAGE})" Cy;
-docker build -t ${DOCKER_IMAGE} .
+cd "${ROOT}" || exit
+printd "Build the docker image... (${IMAGE_NAME})" Cy;
+exit
+docker build -t "${IMAGE_NAME}" .
+
+# Check Docker Image
+docker run --rm -it "${IMAGE_NAME}" echo -ne "\niVIT-I-Web-UI Test\n"
