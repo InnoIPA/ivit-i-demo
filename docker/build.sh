@@ -28,7 +28,6 @@ fi
 # Build the docker image
 cd "${ROOT}" || exit
 printd "Build the docker image... (${IMAGE_NAME})" Cy;
-exit
 docker build -t "${IMAGE_NAME}" .
 
 # Check Docker Image
