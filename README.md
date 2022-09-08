@@ -31,6 +31,7 @@ The web demo site for ivit-i
     |   ---         |   ---
     |   -i          |   server ip
     |   -p          |   server port
+    |   -c          |   client port, default is `4999`
 
     ![image](docs/images/iVIT-I-IP.png)
             
