@@ -13,7 +13,7 @@ IP=$(python3 -c "from before_demo import extract_ip; print(extract_ip())")
 
 # Help information
 function help(){
-	echo "Run the iVIT-I-DEMO environment."
+	echo "Run the iVIT-I-Web-UI environment."
 	echo
 	echo "Syntax: scriptTemplate [-f|b|i|p]"
 	echo "options:"
@@ -44,7 +44,7 @@ CNT=$(jq \
 --arg s_ip "${S_IP}" --arg s_port "${S_PORT}" \
 --arg ip "${IP}" --arg port "${PORT}" \
 '.server.ip = $s_ip | .server.port = $s_port' \
-'.client.ip = $ip | .client.port = $port' \
+'| .client.ip = $ip | .client.port = $port' \
 ${CONF})
 
 echo -E "${CNT}" > ${CONF}

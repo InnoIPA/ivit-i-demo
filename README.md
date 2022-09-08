@@ -1,4 +1,6 @@
-# ivit-i-demo
+![LOGO](docs/images/iVIT-I-Logo-B.png)
+
+# ivit-i-web-ui
 The web demo site for ivit-i
 
 * [Requirements](#requirements)
@@ -15,16 +17,18 @@ The web demo site for ivit-i
     IVIT_SERVER_IP="172.16.92.130"
     IVIT_SERVER_PORT="818"
     
-    docker run --name ivit-i-demo --rm -it \
+    docker run --name ivit-i-web-ui \
+    --rm -it \
     --net=host --ipc=host \
-    maxchanginnodisk/ivit-i-demo:v0.9 "./demo.sh -i ${IVIT_SERVER_IP} -p ${IVIT_SERVER_PORT}"
+    maxchanginnodisk/ivit-i-web-ui:v1.0 \
+    "./demo.sh -i ${IVIT_SERVER_IP} -p ${IVIT_SERVER_PORT}"
     ```
 
 * Build From Source
     1. Download the repository
         ```bash
         # Donwload repo and install python package
-        $ git clone https://github.com/InnoIPA/ivit-i-demo.git && cd ivit-i-demo
+        $ git clone https://github.com/InnoIPA/ivit-i-web-ui.git && cd ivit-i-web-ui
         ```
     2. Build the docker image
         ```bash
@@ -41,13 +45,14 @@ The web demo site for ivit-i
             * Modify Config
                 ```JSON
                 {
-                    "server":{
+                    "project": "ivit-i-web-ui",
+                    "version": "v1.0",
+                    "server": {
                         "ip": "172.16.92.130",
-                        "platform": "intel",
-                        "port": "819"
+                        "port": "818"
                     },
-                    "client":{
-                        "docker_image": "ivit-i-demo",
+                    "client": {
+                        "docker_image": "ivit-i-web-ui",
                         "ip": "0.0.0.0",
                         "port": "4999"
                     }
@@ -59,9 +64,14 @@ The web demo site for ivit-i
                 ```bash
                 ./docker/run.sh
                 ```
+
+                |   Argument    |   Describe    
+                |   ---         |   ---
+                |   -i          |   server ip
+                |   -p          |   server port
                 
 # Demo
-> The image and video with high resolution in [my notion page](https://max-c.notion.site/iVIT-I-DEMO-v0-4-20592c5e3c11415e97540d0b72c5b706)
+
 <details>
     <summary>
         Entrance

@@ -1,12 +1,16 @@
 #!/bin/bash
-ROOT=$(dirname $(realpath $0))
+
+# Basic Parameters
+CONF="ivit-i.json"
+DOCKER_USER="maxchanginnodisk"
+
+# Store the utilities
+FILE=$(realpath "$0")
+ROOT=$(dirname "${FILE}")
 source "${ROOT}/utils.sh"
 
 # Install pre-requirement
-if [[ -z $(which jq) ]];then
-    printd "Installing requirements .... " Cy
-    sudo apt-get install jq -yqq
-fi
+check_jq
 
 # Define the configuration path
 CONF="ivit-i.json"
@@ -46,34 +50,34 @@ while getopts "b:i:p:h" option; do
 done
 
 # Update the parameters of configuration
-CNT=$(jq \
---arg ip "${IP}" --arg port "${PORT}" \
-'.server.ip = $ip | .server.port = $port' \
-${CONF})
+RUN_CMD="${RUN_CMD} -i ${IP} -p ${PORT}"
 
-echo -E "${CNT}" > ${CONF}
+# Parse information from configuration
+check_jq
+BASE_NAME=$(cat ${CONF} | jq -r '.project')
+TAG_VER=$(cat ${CONF} | jq -r '.version')
 
-# setup parameters
-DOCKER_IMAGE=$(cat ${CONF} | jq -r '.client.docker_image')
-DOCKER_NAME=${DOCKER_IMAGE}
-PORT=$(cat ${CONF} | jq -r '.client.port')
-IP=$(cat ${CONF} | jq -r '.client.ip')
+# Concate name
+IMAGE_NAME="${DOCKER_USER}/${BASE_NAME}:${TAG_VER}"
+CONTAINER_NAME="${BASE_NAME}-${TAG_VER}"
 
 # Allow all device connect to display
-xhost + > /dev/null 2>&1
+# xhost + > /dev/null 2>&1
 
 # Combine the docker command
-DOCKER_CMD="docker run \
---name ${DOCKER_NAME} \
---rm -it \
---net=host --ipc=host \
--w ${WORKSPACE} \
--v `pwd`:${WORKSPACE} \
-${DOCKER_IMAGE} \"${RUN_CMD}\""
+DOCKER_CMD="docker run \n\
+--name ${CONTAINER_NAME} \n\
+--rm -it \n\
+--net=host --ipc=host \n\
+-w ${WORKSPACE} \n\
+-v $(pwd):${WORKSPACE} \n\
+${IMAGE_NAME} \n\
+'${RUN_CMD}'"
 
-# Show 
-echo ${DOCKER_CMD}
-printd ${DOCKER_CMD}
+# Show Log
+printd "Docker Command:\n${DOCKER_CMD}\n" Cy
+DOCKER_CMD="${DOCKER_CMD//\\n/}"
 
 # Run docker container
+printd "Start up docker container ..."
 bash -c "${DOCKER_CMD}"
