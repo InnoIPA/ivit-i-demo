@@ -15,16 +15,16 @@ The web demo site for ivit-i
 1. Download the repository
     ```bash
     # Donwload repo and install python package
-    $ git clone https://github.com/InnoIPA/ivit-i-web-ui.git && cd ivit-i-web-ui
+    git clone https://github.com/InnoIPA/ivit-i-web-ui.git && cd ivit-i-web-ui
     ```
 2. Build the docker image
     ```bash
-    $ ./docker/build.sh
+    ./docker/build.sh
     ```
 3. Run the docker container
 
     ```bash
-    $ ./docker/run.sh -i 172.16.92.130 -p 819
+    ./docker/run.sh -i 172.16.92.130 -p 819
     ```
     
     |   Argument    |   Describe    
