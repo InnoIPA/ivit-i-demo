@@ -8,13 +8,21 @@ The web demo site for ivit-i
 * [Demo](#demo)
 
 # Requirements
-* Install [docker](https://max-c.notion.site/Install-Docker-9a0927c9b8aa4455b66548843246152f)
+* [Docker](https://max-c.notion.site/Install-Docker-9a0927c9b8aa4455b66548843246152f)
+* One of the "iVIT-I" platforms that has been launched
+    
+    > __NOTICE:__
+    > 
+    > __make sure the release version is the same, e.g. `ivit-i-web-ui:v1.0` bind to `ivit-i-intel:v1.0` .*__
+
+    * [ivit-i-intel](https://github.com/InnoIPA/ivit-i-intel/)
+    * [ivit-i-nvidia](https://github.com/InnoIPA/ivit-i-nvidia/)
+    * [ivit-i-xilinx](https://github.com/InnoIPA/ivit-i-xilinx/)
 
 # How to work
 
 1. Download the repository
     ```bash
-    # Donwload repo and install python package
     git clone https://github.com/InnoIPA/ivit-i-web-ui.git && cd ivit-i-web-ui
     ```
 2. Build the docker image
@@ -29,8 +37,8 @@ The web demo site for ivit-i
     
     |   Argument    |   Describe    
     |   ---         |   ---
-    |   -i          |   server ip
-    |   -p          |   server port
+    |   -i          |   server ip, which will show up in your device when `ivit-i-{platform}` is started, if not provided, default is the IP Address of `ivit-i-web-ui`
+    |   -p          |   server port defined in `ivit-i-{platform}/ivit-i.json`
     |   -c          |   client port, default is `4999`
 
     ![image](docs/images/iVIT-I-IP.png)
