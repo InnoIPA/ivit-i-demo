@@ -24,12 +24,14 @@ function help(){
 }
 
 # Parse the argument
-while getopts "b:i:p:h" option; do
+while getopts "b:i:p:c:h" option; do
 	case $option in
 		i )
 			S_IP=$OPTARG ;;
         p )
 			S_PORT=$OPTARG ;;
+		c )
+			PORT=$OPTARG ;;
         h )
 			help; exit ;;
 		\? )

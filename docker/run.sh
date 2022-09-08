@@ -16,6 +16,7 @@ check_jq
 CONF="ivit-i.json"
 RUN_CMD="./demo.sh"
 WORKSPACE="/workspace"
+C_PORT=""
 
 # Read the config at first time
 IP=$(cat ${CONF} | jq -r '.server.ip')
@@ -34,12 +35,14 @@ function help(){
 }
 
 # Parse the argument
-while getopts "b:i:p:h" option; do
+while getopts "b:i:p:c:h" option; do
 	case $option in
 		i )
 			IP=$OPTARG ;;
         p )
 			PORT=$OPTARG ;;
+		c )
+			C_PORT=$OPTARG ;;
         h )
 			help; exit ;;
 		\? )
@@ -51,6 +54,7 @@ done
 
 # Update the parameters of configuration
 RUN_CMD="${RUN_CMD} -i ${IP} -p ${PORT}"
+if [[ ${C_PORT} != "" ]]; then RUN_CMD="${RUN_CMD} -c ${C_PORT}"; fi
 
 # Parse information from configuration
 check_jq
