@@ -1,6 +1,6 @@
 {
   "project": "ivit-i-web-ui",
-  "version": "v1.0",
+  "version": "v1.1",
   "server": {
     "ip": "172.16.92.130",
     "port": "818"
