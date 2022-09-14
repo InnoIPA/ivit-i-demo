@@ -305,6 +305,9 @@ function updateSourceOption(srcType, key="source", srcData=""){
                 let srcDataArr = srcData.split('/');
                 document.getElementById(el_file_label_name).textContent = srcDataArr[srcDataArr.length-1];
                 document.getElementById(el_file_label_name).value = srcData;
+            } else {
+                document.getElementById(el_file_label_name).textContent = "Choose file";
+                document.getElementById(el_file_label_name).value = "";
             }
         
         // V4L2
@@ -555,7 +558,7 @@ async function addSubmit() {
 // Edit Task
 async function editSubmit(obj) {
 
-    console.log(`EDIT a task`);
+    console.log(`EDIT a task ${obj.value}`);
 
     // Get formData from each element
     const formData = await parseInfoToForm();
@@ -565,7 +568,7 @@ async function editSubmit(obj) {
 
     // if success
     if(retData) {
-        if(!DEBUG_MODE) location.reload();
+        // if(!DEBUG_MODE) location.reload();
         console.log(retData);
         setDefaultModal();
         
