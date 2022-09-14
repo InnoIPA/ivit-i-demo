@@ -568,7 +568,7 @@ async function editSubmit(obj) {
 
     // if success
     if(retData) {
-        // if(!DEBUG_MODE) location.reload();
+        if(!DEBUG_MODE) location.reload();
         console.log(retData);
         setDefaultModal();
         
