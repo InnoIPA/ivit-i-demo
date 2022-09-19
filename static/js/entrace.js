@@ -328,6 +328,7 @@ function updateSourceOption(srcType, key="source", srcData=""){
             // Check if have the default value, like in Edit Mode
             if (srcData!==""){
                 let srcDataArr = srcData.split('/');
+
                 document.getElementById(el_file_label_name).textContent = srcDataArr[srcDataArr.length-1];
                 document.getElementById(el_file_label_name).value = srcData;
             } else {
@@ -335,12 +336,13 @@ function updateSourceOption(srcType, key="source", srcData=""){
                 document.getElementById(el_file_label_name).value = "";
             }
         
-        // V4L2
-        } else if (srcType==='V4L2') {
+        // USB Cam
+        } else {
             sourceTypeEvent( [el_text_name, el_file_name, el_drop_name], ["none", "none", "block"] );
             updateSourceV4L2(`${key}`);
             if (srcData!==""){
                 el_menu.innerText = srcData;
+                el_menu.value = srcData;
             }
         }
     }
@@ -349,7 +351,7 @@ function updateSourceOption(srcType, key="source", srcData=""){
 // Update Source Type
 function updateSourceType(key="source_type", data=""){
     
-    let srcTypeList = ['V4L2', VIDEO, IMAGE, RTSP];
+    let srcTypeList = ['USB CAM', VIDEO, IMAGE, RTSP];
     let el_list = document.getElementById(`${key}_list`);
     let el_menu = document.getElementById(`${key}_menu`);
     
@@ -368,7 +370,7 @@ function updateSourceType(key="source_type", data=""){
         if (data.includes(VIDEO)){ 
             setTextValue(el_menu, VIDEO);
         } else if (data.includes('V4L2')) {
-            setTextValue(el_menu, 'V4L2');
+            setTextValue(el_menu, 'USB CAM');
         } else if (data.includes(RTSP)) {
             setTextValue(el_menu, RTSP);
         } else if (data.includes(IMAGE)) {
@@ -515,9 +517,12 @@ async function getSourceContent(){
         else sourceContent = uploaderFiles[0];
     } 
 
-    // V4L2
-    else sourceContent = document.getElementById(`${head}source_menu`)
+    // USB Cam
+    else {
+        sourceContent = document.getElementById(`${head}source_menu`)
                 .innerText.replace(/(\r\n|\n|\r)/gm, "");
+        sourceType = "V4L2"
+    }
 
     return { sourceType, sourceContent }
 }
@@ -820,21 +825,21 @@ async function checkModalOption(){
 
     
     let srcOptions = {
-        "V4L2": "source_menu",
+        "USB CAM": "source_menu",
         "Video": "custom_file_label",
         "Image": "custom_file_label",
         "RTSP": "source"
     }
 
     if(curMode==="Edit"){
-        srcOptions["V4L2"]  = "edit_source_menu";
+        srcOptions["USB CAM"]  = "edit_source_menu";
         srcOptions["Video"] = "edit_source_file_label";
         srcOptions["Image"] = "edit_source_file_label";
         srcOptions["RTSP"]  = "edit_source_text";
     }
 
     const modelType = document.getElementById( modelTypeKey ).value;    
-    const srcType = document.getElementById( srcTypeKey ).value.replace(/ /g,"");
+    const srcType = document.getElementById( srcTypeKey ).value.trim();
 
     let msg = ""
     let status = true;
