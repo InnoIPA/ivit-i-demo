@@ -287,7 +287,10 @@ function updateSourceOption(srcType, key="source", srcData=""){
     const el_menu = document.getElementById(`${key}_menu`);
     const el_text_name = `${key}_text`;
     const el_file_name = `${key}_file`; 
-    const el_file_label_name = `${el_file_name}_label`;
+    let el_file_label_name = "custom_file_label"
+
+    if ( window[MODE]===EDIT_MODE) el_file_label_name = `${el_file_name}_label`;
+
     const el_drop_name = `${key}_dropdown`;
 
     let tempVar = ""
@@ -322,8 +325,8 @@ function updateSourceOption(srcType, key="source", srcData=""){
             sourceTypeEvent( [el_text_name, el_file_name, el_drop_name], ["none", "block", "none"] );   
 
             // Setup file uploader via accept
-            if ( srcType === IMAGE ) eleFileUploader.setAttribute("accept", "image/*") 
-            else eleFileUploader.setAttribute("accept", "video/*") 
+            if ( srcType === IMAGE ) eleFileUploader.setAttribute("accept", "image/png, image/bmp, image/jpeg, image/jpg") 
+            else eleFileUploader.setAttribute("accept", "video/mp4, video/avi, video/wmv") 
 
             // Check if have the default value, like in Edit Mode
             if (srcData!==""){
@@ -559,6 +562,11 @@ async function parseInfoToForm(){
     appData[`${appDepend}`] = JSON.stringify(checkLabelFunction());
     appData[`${appArea}`]   = `[ ${document.getElementById("app_info").innerText} ]`;
 
+    // Double Check
+    if (appData[`${appName}`]==="Please select one"){
+        return undefined;
+    }
+
     // // Check and append source data
     const { sourceType, sourceContent } = await getSourceContent();
 
@@ -587,14 +595,19 @@ async function addSubmit() {
     // Get formData from each element
     const formData = await parseInfoToForm();
 
+    if(!formData) {
+        alert("Not Setup Application");
+        return undefined;
+    };
+
     // Add TASK
     const retData = await postAPI( `/add`, formData, FORM_FMT, ALERT )
 
     // If success
     if(retData) {
+        setDefaultModal();
         if(!DEBUG_MODE) location.reload();
         console.log(retData);
-        setDefaultModal();
     } else return(undefined);
 }
 
@@ -605,13 +618,17 @@ async function editSubmit(obj) {
 
     // Get formData from each element
     const formData = await parseInfoToForm();
-    
+    if(!formData) {
+        alert("Not Setup Application");
+        return undefined;
+    };
+
     // Edit TASK
     const retData = postAPI( `/edit/${obj.value}`, formData, FORM_FMT )
 
     // if success
     if(retData) {
-        // if(!DEBUG_MODE) location.reload();
+        if(!DEBUG_MODE) location.reload();
         console.log(retData);
         setDefaultModal();
         
@@ -628,7 +645,12 @@ async function importSubmit() {
 
     // Get formData from each element
     const formData = await parseInfoToForm();
-    
+    if(!formData) {
+        alert("Not Setup Application");
+        return undefined;
+    };
+
+
     // Add other information: capture from /import_proc, it's the same with the return infor of /import_zip (web api)
     const eleZipDiv = document.getElementById('import_zip_model')
     const eleUrlDiv = document.getElementById('import_url_model')
@@ -792,12 +814,15 @@ function delModalEvent(obj) {
 }
 
 // Setup Modal Button (data-dismiss, data-toggle, data-target, onclick and text).
-function setModalButton(eleButton, targetEvent, clickEvent, buttonText) {
+function setModalButton(eleButton, targetEvent, clickEvent, buttonText, manualOpen=false) {
 
-    eleButton.setAttribute("data-dismiss"  , "modal");
-    eleButton.setAttribute("data-toggle"   , "modal");
-    eleButton.setAttribute("data-target"   , targetEvent);
-    eleButton.setAttribute("onclick"       , clickEvent);
+    if(manualOpen===false){
+        eleButton.setAttribute("data-dismiss"  , "modal");
+        eleButton.setAttribute("data-toggle"   , "modal");    
+        if(targetEvent) eleButton.setAttribute("data-target"   , targetEvent);
+    }
+
+    eleButton.setAttribute("onclick" , clickEvent);
 
     if (buttonText) eleButton.textContent = buttonText;
 }
@@ -889,7 +914,8 @@ async function addAppModalEvent(self) {
         eleButton   = trgButton,
         targetEvent = "#appModal",
         clickEvent  = "addSubmit()",
-        buttonText  = curMode 
+        buttonText  = curMode,
+        manualOpen = true 
     );
 
     // Setup Back Button
