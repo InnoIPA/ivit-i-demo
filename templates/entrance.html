@@ -177,7 +177,7 @@
                                                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                                                         aria-labelledby="{{ app['uuid']}}_more">
                                                         <!-- <div class="dropdown-header">Option</div> -->
-                                                        <button id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#editModal" onclick="editModalEvent(this);return false;">edit</button>
+                                                        <button id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#editModal" onclick="editModalEvent(this, true);return false;">edit</button>
                                                         <button id="{{ app['uuid'] }}" value="{{ app['name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModalEvent(this);">delete</button>
                                                     </div>
                                                 </div>
@@ -426,7 +426,7 @@
                                     </div>
                                     <!-- Input File -->
                                     <div id="source_file" class="custom-file" style="height:100%; display: none;">
-                                        <input type="file" class="custom-file-input" data-target="file-uploader" id="file-uploader">
+                                        <input type="file" accept="image/*,video/*" class="custom-file-input" data-target="file-uploader" id="file-uploader">
                                         <label id="custom_file_label" class="custom-file-label" style="height:100%">Choose file</label>
                                     </div>
                                     <!-- Drop down -->
@@ -489,7 +489,7 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary-custom" type="button" data-dismiss="modal"
                         onclick="setDefaultModal(); return false;">Cancel</button>
-                    <button id="bt_modal_app" name="bt_modal_app" class="btn btn-primary-custom" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
+                    <button id="bt_modal_app" name="bt_modal_app" class="btn btn-primary-custom" href="#"
                         onclick="appModalEvent(); return false;">Next</button>
                     <!-- <a id="modal_add_submit" class="btn btn-primary-custom" href="#" data-dismiss="modal"
                         onclick="addSubmit(); return false;">Add</a> -->
@@ -632,7 +632,7 @@
                                     </div>
                                     <!-- Input File -->
                                     <div id="edit_source_file" class="custom-file" style="height:100%; display: none;">
-                                        <input type="file"  class="custom-file-input" data-target="edit-source-file-uploader" id="edit-source-file-uploader">
+                                        <input type="file" accept="image/*,video/*" class="custom-file-input" data-target="edit-source-file-uploader" id="edit-source-file-uploader">
                                         <label id="edit_source_file_label" class="custom-file-label" style="height:100%">Choose file</label>
                                     </div>
                                     <!-- Drop down -->
@@ -693,8 +693,8 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary-custom" type="button" data-dismiss="modal"
                         onclick="setDefaultModal(); return false;">Cancel</button>
-                        <button id="edit_bt_modal_app" name="bt_modal_app" class="btn btn-primary-custom" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
-                        onclick="appModalEvent(self); return false;">Next</button>
+                        <button id="edit_bt_modal_app" name="bt_modal_app" class="btn btn-primary-custom" href="#"
+                        onclick="appModalEvent(); return false;">Next</button>
                     <!-- <a id="modal_edit_submit" class="btn btn-primary-custom" href="#" data-dismiss="modal" value=""
                         onclick="editSubmit(this); return false;">Edit</a> -->
                 </div>

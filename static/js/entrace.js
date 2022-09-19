@@ -112,8 +112,15 @@ function checkLabelFunction() {
 }
 
 // Set Default Modal
+function setDefaultContent(eleName, content){
+    document.getElementById(eleName).textContent = content;
+    document.getElementById(eleName).value = "";
+}
 
 async function setDefaultModal(){
+
+    console.log("Set the Modal to Default Status");
+
     let head = ""
     if (window[MODE] == EDIT_MODE) head = "edit_";
 
@@ -123,17 +130,24 @@ async function setDefaultModal(){
     updateSourceOption(DEFAULT, `${head}source`);
 
     // Share items: Application Dialog 
+    document.getElementById("model_app_menu").textContent = "";
+    document.getElementById("model_app_menu").value = "";
     document.getElementById(`model_app_menu`).setAttribute("style", "display: none");
     document.getElementById(`model_app_menu_def`).setAttribute("style", "cursor: auto");    
     document.getElementById("custom_file_label").textContent = "Choose file";
+    disableAppArea();
 
-    document.getElementById(`${head}model_source_type_menu`).textContent = "Please select one";
-    document.getElementById(`${head}model_menu`).textContent = "Please select one";
-    document.getElementById(`${head}source_type_menu`).textContent = "Please select one";
-    document.getElementById(`${head}device_menu`).textContent = "Please select one";
-    document.getElementById(`${head}source_menu`).textContent = "Please select one";
+    // Other
+    const defaultContent = "Please select one"
+    setDefaultContent(`${head}model_source_type_menu`, defaultContent);
+    setDefaultContent(`${head}model_menu`, defaultContent);
+    updateModelSource();
+
+    setDefaultContent(`${head}source_type_menu`, defaultContent)
+    setDefaultContent(`${head}device_menu`, defaultContent)
+    setDefaultContent(`${head}source_menu`, defaultContent)
     
-    document.getElementById("import_zip_model_label").textContent = "Choose file";
+    setDefaultContent("import_zip_model_label", "Choose file");
 
 }
 
@@ -275,6 +289,12 @@ function updateSourceOption(srcType, key="source", srcData=""){
     const el_file_name = `${key}_file`; 
     const el_file_label_name = `${el_file_name}_label`;
     const el_drop_name = `${key}_dropdown`;
+
+    let tempVar = ""
+    if (window[MODE]===EDIT_MODE) tempVar = `edit-source-file-uploader`;
+    else tempVar = `file-uploader`;
+    const eleFileUploader = document.getElementById(tempVar);
+
     
     // reset and block text, file, dropdown element if name "default"
     if ( srcType===DEFAULT ){
@@ -289,7 +309,6 @@ function updateSourceOption(srcType, key="source", srcData=""){
         
         // block the default element
         if (el_def) el_def.setAttribute("style", "display: none");
-            
         
         // RTSP
         if (srcType===RTSP){
@@ -300,7 +319,13 @@ function updateSourceOption(srcType, key="source", srcData=""){
 
         // Video and Image
         } else if (srcType===VIDEO || srcType===IMAGE){
-            sourceTypeEvent( [el_text_name, el_file_name, el_drop_name], ["none", "block", "none"] );
+            sourceTypeEvent( [el_text_name, el_file_name, el_drop_name], ["none", "block", "none"] );   
+
+            // Setup file uploader via accept
+            if ( srcType === IMAGE ) eleFileUploader.setAttribute("accept", "image/*") 
+            else eleFileUploader.setAttribute("accept", "video/*") 
+
+            // Check if have the default value, like in Edit Mode
             if (srcData!==""){
                 let srcDataArr = srcData.split('/');
                 document.getElementById(el_file_label_name).textContent = srcDataArr[srcDataArr.length-1];
@@ -333,15 +358,22 @@ function updateSourceType(key="source_type", data=""){
     for(let step=0; step<srcTypeList.length; step++){
         el_list.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="${key}" name=${ srcTypeList[step] } >${ srcTypeList[step] }</a>`;
     }
+
+    function setTextValue(ele, val){
+        ele.textContent = val;
+        ele.value = val;
+    }
+
     if (data!=="") {
         if (data.includes(VIDEO)){ 
-            el_menu.textContent=VIDEO;
+            setTextValue(el_menu, VIDEO);
         } else if (data.includes('V4L2')) {
-            el_menu.textContent='V4L2';
+            setTextValue(el_menu, 'V4L2');
         } else if (data.includes(RTSP)) {
-            el_menu.textContent=RTSP;
+            setTextValue(el_menu, RTSP);
         } else if (data.includes(IMAGE)) {
-            el_menu.textContent=IMAGE;
+            setTextValue(el_menu, IMAGE);
+            
         } else {
             console.log('Error in update source type')
         };
@@ -361,7 +393,13 @@ function updateModelSource(srcType){
 
     const eleModelList = [ eleModelSrcDef, eleModelSrcURL, eleModelSrcZIP, eleModelSrcExist ];
 
+
     for( let i=0; i<eleModelList.length; i++) eleModelList[i].style = "display: none";
+
+    if(srcType===undefined){
+        eleModelSrcDef.style = "display: block";
+        return undefined;
+    }
 
     if ( srcType.includes("Exist") ) {
         eleModelSrcExist.style = "display: block";
@@ -675,17 +713,19 @@ async function addModalEvent(init=false) {
     
     if(init) setDefaultModal();
 
-    document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
-        ele.value = ADD_MODE;
-    })
-    
+    const nextBtn = document.getElementById("bt_modal_app");
+    nextBtn.value = ADD_MODE;
+    // nextBtn.disabled = true;
+
 }
 
 // Add related information when open the EDIT modal
-async function editModalEvent(obj) {
+async function editModalEvent(obj, init=false) {
     
+
     console.log(`Open "EDIT" modal`);
-    
+    if (init) setDefaultModal();
+
     window[MODE] = EDIT_MODE;
     const task_uuid = obj.value;
 
@@ -704,10 +744,12 @@ async function editModalEvent(obj) {
 
         // fix model source
         document.getElementById("edit_model_source_type_menu").textContent = "From Exist Model";
+        document.getElementById("edit_model_source_type_menu").value = "From Exist Model";
         document.getElementById("edit_model_source_type_menu").disabled = true;
 
         // update model information and disable it
         document.getElementById("edit_model_menu").textContent = data["model"];
+        document.getElementById("edit_model_menu").value = data["model"];
         document.getElementById("edit_model_menu").disabled = true;
         
         // update model_app and setup default value
@@ -728,9 +770,10 @@ async function editModalEvent(obj) {
 
     document.getElementById("modal_back_bt").value = task_uuid;
 
-    document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
-        ele.value = "Edit"
-    })
+    const nextBtn = document.getElementById("edit_bt_modal_app");
+    nextBtn.value = "Edit";
+    // nextBtn.disabled = true;
+
 }
 
 // Double check and show information modal when deleting the task
@@ -758,7 +801,78 @@ function setModalButton(eleButton, targetEvent, clickEvent, buttonText) {
 
 // About Application Modal Event - START
 
-function addAppModalEvent() {
+async function checkModalOption(){
+    
+    const curMode = window[MODE];
+    let header = "";
+    if(curMode==="Edit") header = "edit_"
+
+    const modelTypeKey = `${header}model_source_type_menu`
+    const srcTypeKey = `${header}source_type_menu`    // value
+
+    let modelOptions = { 
+        "From Exist Model": "model_menu",
+        "Import ZIP File": "import-zip-model-uploader",
+        "Enter The URL": "import_url_model_value"
+    }
+
+    if(curMode==="Edit") modelOptions["From Exist Model"] = "edit_model_menu";
+
+    
+    let srcOptions = {
+        "V4L2": "source_menu",
+        "Video": "custom_file_label",
+        "Image": "custom_file_label",
+        "RTSP": "source"
+    }
+
+    if(curMode==="Edit"){
+        srcOptions["V4L2"]  = "edit_source_menu";
+        srcOptions["Video"] = "edit_source_file_label";
+        srcOptions["Image"] = "edit_source_file_label";
+        srcOptions["RTSP"]  = "edit_source_text";
+    }
+
+    const modelType = document.getElementById( modelTypeKey ).value;    
+    const srcType = document.getElementById( srcTypeKey ).value.replace(/ /g,"");
+
+    let msg = ""
+    let status = true;
+
+    try { 
+        model = document.getElementById( modelOptions[modelType] ).value; 
+        if(model==="") msg = msg + "Modal, ";
+        else console.log(`Get Model: ${model}`);
+    } catch(e) { 
+        // console.log(e);
+        msg = msg + "Modal, "; 
+    }
+
+    try { 
+        src = document.getElementById( srcOptions[srcType] ).value; 
+        if(src==="" || !src ) msg = msg + "Input Source, ";
+        else console.log(`Get Source: ${src}`);
+    } catch(e) { 
+        // console.log(e);
+        msg = msg + "Input Source, "; 
+    }
+
+    if ( msg !== "" ) status = false;
+
+    return [status, msg]
+
+}
+
+function showModal(name){
+    $(`#${name}`).modal('show');
+}
+
+function hideModal(name){
+    $(`#${name}`).modal('hide');
+}
+
+async function addAppModalEvent(self) {
+
 
     // Get Button
     const trgButton     = document.getElementById("modal_app_submit");
@@ -786,6 +900,10 @@ function addAppModalEvent() {
         modelName   = document.getElementById("model_menu").textContent, 
         defaultApp  = document.getElementById("model_app_menu").textContent 
     );
+
+    showModal("appModal");
+    hideModal("addModal");
+
 }
 
 function editAppModalEvent() {
@@ -806,7 +924,10 @@ function editAppModalEvent() {
     setModalButton( 
         eleButton   = backButton,
         targetEvent = "#editModal", 
-        clickEvent  = "editModalEvent(this); return false" );
+        clickEvent  = "" );
+
+    showModal("appModal");
+    hideModal("editModal");
 }
 
 function importAppModalEvent() {
@@ -842,7 +963,10 @@ async function updateLabelDropdown() {
     const labelList = document.getElementById("label_list");
     
     // Clear dropdown-div
-    document.querySelectorAll("#dropdown-div").forEach( function(ele, idx){
+    let totalDropdwon = document.querySelectorAll("#dropdown-div");
+
+    totalDropdwon.forEach( function(ele, idx){
+        console.log("Clean label dropdown");
         ele.remove();
     })
 
@@ -865,29 +989,62 @@ async function updateLabelDropdown() {
     }
 }
 
-function appModalEvent(){
+async function checkNewSource(){
+
+//     let uploaderEleName = "custom_file_label"
+//     if (window[MODE]==="Edit") uploaderEleName = "edit_source_file_label"
+// textContent
+//     console.log("Double check the source is the same ...");
+//     const fileName = document.getElementById(uploaderEleName).textContent;
+    
+    if(document.getElementById("model_app_menu").textContent.includes("area")){
+        console.log("Update Area");
+        disableAppArea()
+        enableAppArea()
+    }
+}
+
+async function appModalEvent(){
     
     const curMode = window[MODE];
 
-    // Update Button and related function : Add , Edit, Import
-    if ( curMode === ADD_MODE) addAppModalEvent();
-    else if ( curMode === IMPORT_MODE) importAppModalEvent();
-    else if ( curMode === EDIT_MODE) editAppModalEvent();
-    
-    // Update label
-    if (curMode !== IMPORT_MODE) updateLabelDropdown();
+    const [ status, msg ] = await checkModalOption();
 
+    if( status === true ){
+    
+        // Update Button and related function : Add , Edit, Import
+        if ( curMode === ADD_MODE) addAppModalEvent();
+        else if ( curMode === IMPORT_MODE) importAppModalEvent();
+        else if ( curMode === EDIT_MODE) editAppModalEvent();
+        
+        // Update label
+        if (curMode !== IMPORT_MODE) {
+            updateLabelDropdown();
+            checkNewSource();
+        }
+            
+    } else {
+        alert(`Capture Empty Input ( ${msg} )`);
+    }
 }
 
 function disableAppArea(){
     document.getElementById("area_div").style = "display: none";
+    document.getElementById("app_scale").textContent = "";
+    document.getElementById("app_info").textContent = "";
+    clearCanvas();
 }
 
 async function enableAppArea(trg_mode=""){
     
-    trg_mode = "";
-    if (window["MODE"]===EDIT_MODE) trg_mode = "edit_";
+    console.log("Enable");
 
+    trg_mode = "";
+    
+    if (window["MODE"]===EDIT_MODE){
+        trg_mode = "edit_";
+    } 
+    
     console.log(`Update Area Setting, Mode: ${trg_mode}`);
 
     document.getElementById("area_div").style.display = "block";
@@ -988,6 +1145,8 @@ async function defineLaunchButton(){
         const parentTarget = eventTarget.parentElement;
         parentTarget.style = `pointer-events: none; opacity: ${DISABLE_OPACITY};`;
 
+        // Disable Option Button
+        disableButton(document.getElementById(`${uuid}_more`));
 
         // run app or stop appdefineLaunchButton
         $.ajax({  
