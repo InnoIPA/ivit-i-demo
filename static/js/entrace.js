@@ -1063,11 +1063,12 @@ function disableAppArea(){
     document.getElementById("area_div").style = "display: none";
     document.getElementById("app_scale").textContent = "";
     document.getElementById("app_info").textContent = "";
+    document.getElementById("loading").style.display = "none";
     clearCanvas();
 }
 
 async function enableAppArea(trg_mode=""){
-    
+    document.getElementById("loading").style.display = "block";
     console.log("Enable");
 
     trg_mode = "";
@@ -1078,8 +1079,12 @@ async function enableAppArea(trg_mode=""){
     
     console.log(`Update Area Setting, Mode: ${trg_mode}`);
 
-    document.getElementById("area_div").style.display = "block";
-
+    // Element Behaviour
+    document.getElementById("loading").style.display = "block";
+    
+    document.getElementById("modal_app_submit").disabled = true;
+    document.getElementById("modal_back_bt").disabled = true;
+    
     let appCanvas = document.getElementById("app_canvas");
     let appFrame = document.getElementById("app_frame");
     let appCtx = appCanvas.getContext("2d");
@@ -1114,7 +1119,7 @@ async function enableAppArea(trg_mode=""){
     // Update Source
     const retData = await postAPI(`/update_src`, formData, FORM_FMT, ALERT)
     if(retData){
-
+        
         imgHeight   = retData["height"];
         imgWidth    = retData["width"];
 
@@ -1123,6 +1128,11 @@ async function enableAppArea(trg_mode=""){
         appCanvas.height    = appCanvas.width*imgRate;
 
         // load image
+        document.getElementById("area_div").style.display = "block";
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("modal_app_submit").disabled = false;
+        document.getElementById("modal_back_bt").disabled = false;
+
         img.src = "data:image/jpeg;base64," + retData["image"];
         appCanvas.style.backgroundImage = `url(${img.src})`;
 

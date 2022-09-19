@@ -25,16 +25,21 @@ for(let i=0; i < el_path.length; i++){
 const URL = `http://${DOMAIN}:${PORT}/task/${uuid}/stream`;
 const streamSocket = io.connect(URL);
 
-$(document).ready(function(){
+$(document).ready(async function(){
     // Setting Full Screen Event
-    setFullScreenEvent();
+    await setFullScreenEvent();
 
+    
     // Update Basic Information
-    updateBasicInfo();
+    await updateBasicInfo();
+    
     
     // Update first frame
-    getFirstFrame(uuid);
+    // await getFirstFrame(uuid);
+    document.getElementById("loader").style.display = "block";
+    document.getElementById("image").style.display = "none";
 
+    
     // Start the stream
     streamStart(uuid);
 
@@ -116,7 +121,7 @@ function streamStop(uuid){
     });
 }
 
-function setFullScreenEvent(){
+async function setFullScreenEvent(){
     
     const img       = document.getElementById('image');
     const fullPage  = document.querySelector('#fullpage');
@@ -127,7 +132,7 @@ function setFullScreenEvent(){
     });
 }
 
-function getFirstFrame(uuid){
+async function getFirstFrame(uuid){
     // Sending data via web api ( /add )
     $.ajax({
         url: SCRIPT_ROOT + `/task/${uuid}/get_frame`,
@@ -141,33 +146,55 @@ function getFirstFrame(uuid){
     })
 }
 
-function updateBasicInfo(){
+async function updateBasicInfo(){
 
-    $.ajax({  
-        type: 'GET',
-        url: SCRIPT_ROOT + `/task/${uuid}/info`,
-        dataType: "json",
-        success: function (data, textStatus, xhr) {
-            // const data = JSON.parse(data);
-            console.log(data);
-            document.getElementById("title").textContent = data['name'];
-            // document.getElementById("app_name").textContent = data['app_name'];
-            document.getElementById("model").textContent = data['model'];
-            document.getElementById("application").textContent = data['application']["name"];
-            document.getElementById("device").textContent = data['device'];
+    let data = await getAPI(`/task/${uuid}/info`);
+
+    if(!data){
+        return undefined;
+    }
+    else {
+        console.log(data);
+        document.getElementById("title").textContent = data['name'];
+        // document.getElementById("app_name").textContent = data['app_name'];
+        document.getElementById("model").textContent = data['model'];
+        document.getElementById("application").textContent = data['application']["name"];
+        document.getElementById("device").textContent = data['device'];
+        
+        document.getElementById("source").textContent = data['source'];
+        // document.getElementById("status").textContent = data['status'];
+
+        document.getElementById("input_type").textContent = getSourceType(data['source']);
+
+        gpu=data['device'];
+        updateGPUTemperature();
+    };
+
+    // $.ajax({  
+    //     type: 'GET',
+    //     url: SCRIPT_ROOT + `/task/${uuid}/info`,
+    //     dataType: "json",
+    //     success: function (data, textStatus, xhr) {
+    //         // const data = JSON.parse(data);
+    //         console.log(data);
+    //         document.getElementById("title").textContent = data['name'];
+    //         // document.getElementById("app_name").textContent = data['app_name'];
+    //         document.getElementById("model").textContent = data['model'];
+    //         document.getElementById("application").textContent = data['application']["name"];
+    //         document.getElementById("device").textContent = data['device'];
             
-            document.getElementById("source").textContent = data['source'];
-            document.getElementById("status").textContent = data['status'];
+    //         document.getElementById("source").textContent = data['source'];
+    //         document.getElementById("status").textContent = data['status'];
 
-            document.getElementById("input_type").textContent = getSourceType(data['source']);
+    //         document.getElementById("input_type").textContent = getSourceType(data['source']);
 
-            gpu=data['device'];
-            updateGPUTemperature();
-        },
+    //         gpu=data['device'];
+    //         updateGPUTemperature();
+    //     },
         // error: function (xhr, textStatus, errorThrown) {
         //     alert('err');
         // }
-    });
+    // });
 }
 
 function updateBasicInfoLegacy(){
@@ -245,7 +272,13 @@ function updateGPUTemperature(){
     })
 };
 
+let firstFrame = true
 streamSocket.on(IMG_EVENT, function(msg){  
+    if (firstFrame==true){
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("image").style.display = "block";
+    }
+    firstFrame = false
     const img=document.getElementById('image');
     img.src="data:image/jpeg;base64,"+msg;
     document.querySelector('#fullpage').style.backgroundImage = 'url(' + img.src + ')';
