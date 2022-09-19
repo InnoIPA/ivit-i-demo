@@ -266,7 +266,7 @@
     </a>
 
     <!-- Add Dialog-->
-    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog full" role="document">
             <div class="modal-content full">
 
@@ -499,7 +499,7 @@
     </div>
 
     <!-- Edit Dialog-->
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog full" role="document">
             <div class="modal-content full">
 
@@ -703,7 +703,7 @@
     </div>
 
     <!-- Err Dialog-->
-    <div class="modal fade" id="errModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="errModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static" data-keyboard="false"
         aria-hidden="true">
 
         <div class="modal-dialog full" role="document">
@@ -732,7 +732,7 @@
     </div>
 
     <!-- Del Dialog-->
-    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static" data-keyboard="false"
     aria-hidden="true">
 
         <div class="modal-dialog full" role="document">
@@ -763,8 +763,7 @@
     </div>
 
     <!-- Application Dialog-->
-    <div class="modal fade" id="appModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
+    <div class="modal fade"  id="appModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
 
         <div class="modal-dialog full" role="document">
 
@@ -783,7 +782,6 @@
 
                     <!-- Application -->
                     <div class="row">
-
 
                         <!-- <div class="col-lg-6">
                             <div class="card mb-3">
@@ -845,6 +843,11 @@
                         </div>
                     </div>
                     
+                    <!-- Loadding -->
+                    <div id="loading">
+                        <div class="loader">Loading...</div>
+                    </div>
+
                     <!-- Frame -->
                     <div id="area_div" class="row" style="display:none">
                         <div class="col">
