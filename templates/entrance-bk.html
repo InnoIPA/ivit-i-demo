@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>iVIT-I</title>
+
+    <!-- custom fonts for this template -->
+    <link href="static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    
+    <!-- google font -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+
+    <!-- custom styles for this template -->
+    <link href="static/css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- custom styles for this page -->
+    <link href="static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="static/css/switch.css" rel="stylesheet">
+    <link href="static/css/entrance.css" rel="stylesheet">
+    <link href="static/css/common.css" rel="stylesheet">
+    <link href="static/css/import-option.css" rel="stylesheet">
+
+    <!-- google font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+    </style>
+
+    <!-- others -->
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL'1,
+                'wght'700,
+                'GRAD'200,
+                'opsz'40
+        }
+
+        .material-symbols-outlined.custom {
+            color: #16272E;
+        }
+
+    </style>
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper"  style="padding-bottom: 60px;">
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light topbar mb-custom static-top shadow custom">
+                    <div class="h1 mt-4 text-gray-800 navtitle">
+                        <div>
+                            <img style="width:173px; vertical-align:baseline; margin-left: -15px;" src="/static/figures/Logo.png">
+                        </div>
+                        <!-- <h1 class="header custom">iVIT-I</h1> -->
+                    </div>
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid custom">
+
+                    <!-- DataTales Example -->
+                    <div class="card mb-3 shadow-custom">
+                        <!-- Table Title -->
+                        <div class=" card-header custom py-3 d-flex flex-row align-items-center justify-content-between">
+                            <div class="align-items-center d-flex justify-content-between">
+                                <h3 style="float: left ; margin-right: 20px; margin-bottom:0px" class=" h3 ">Tasks</h3>
+                                <h3 id="title_framework" style="float: right; margin-bottom:0px" class="h3 text-gray-300"></h3>
+                            </div>
+                            
+                            <a href="#" onclick="addModalEvent(true); return false;" class="btn btn-circle"
+                                data-toggle="modal" data-target="#addModal">
+                                <!-- <i class="fa fa-plus-circle text-gray-500 add-app"></i> -->
+                                <span class="material-symbols-outlined custom">add</span>
+                            </a>
+                        </div>
+                        <!-- Table body -->
+                        <div class="card-body">
+                            <!-- Table -->
+                            <div class="table-responsive">
+                                {% block data %}
+                                {% set ready=data['ready'] %}
+                                {% set failed=data['failed'] %}
+                                <table class="table" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th style="display:none;">Framework</th>
+                                            <th>Model</th>
+                                            <th>Application</th>
+                                            <th>Status</th>
+                                            <th>Launch</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for app in ready %}
+                                        <tr id="{{ app['uuid'] }}_block"  >
+                                            <!-- Application Name -->
+                                            <td >
+                                                <div class="scroll-contain">
+                                                    <div class="scroll-text">
+                                                        <a id="{{ app['uuid'] }}_name" style="text-transform: capitalize">{{ app['name'] }}</a>
+                                                        <!-- <br> -->
+                                                        <!-- <a class="uuid" id="{{ app['uuid'] }}_uuid">{{ app['uuid'] }}</a> -->
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td id="{{ app['uuid'] }}_model" >
+                                                <div class="scroll-contain">
+                                                    <p class="scroll-text">{{ app['model'] }}</p>
+                                                </div>
+                                            </td>
+                                            <!-- Application -->
+                                            <td id="{{ app['uuid'] }}_application" >
+                                                <div class="scroll-contain">
+                                                    <p class="scroll-text">{{ app['application']['name'] }}</p>
+                                                </div>
+                                            </td>
+                                            <!-- Status -->
+                                            {% if app['status']=='run' %}
+                                                <td >
+                                                    <span id="{{ app['uuid'] }}_status_btn" class="btn btn-green custom">
+                                                        {{ app['status'] }}
+                                                        <!-- <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span> -->
+                                                    </span>
+                                                </td>
+                                            {% elif app['status']=='error' %}
+                                                <td >
+                                                    <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom">
+                                                        {{ app['status'] }}
+                                                        <!-- <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span> -->
+                                                    </span>
+                                                </td >
+                                                {% else %}
+                                                <td>
+                                                    <span id="{{ app['uuid'] }}_status_btn" class="btn btn-gray custom">
+                                                        {{ app['status'] }}
+                                                        <!-- <span id="{{ app['uuid'] }}_status">{{ app['status'] }}</span> -->
+                                                    </span>
+                                                </td>
+                                            {% endif %}
+                                            <!-- Rounded switch -->
+                                            <td >
+                                                <label class="switch-custom">
+                                                    <input id="{{ app['uuid'] }}_switch" type="checkbox" name="checkbox" value="{{ app['uuid'] }}">
+                                                        <!-- {{ "checked" if app['status']=='run' }}> -->
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </td>
+                                            <!-- Dropdown - Messages -->
+                                            <td >
+                                                <div class="dropdown no-arrow">
+                                                    <a class="dropdown-toggle dropdown-custom" href="#" role="button"
+                                                        id="{{ app['uuid']}}_more" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                        <!-- <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-500"></i> -->
+                                                        <span class="material-symbols-outlined custom">more_horiz</span>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                                        aria-labelledby="{{ app['uuid']}}_more">
+                                                        <!-- <div class="dropdown-header">Option</div> -->
+                                                        <button id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#editModal" onclick="editModalEvent(this);return false;">edit</button>
+                                                        <button id="{{ app['uuid'] }}" value="{{ app['name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModalEvent(this);">delete</button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% for app in failed %}
+                                        <tr id="{{ app['uuid'] }}_block"  >
+                                            <!-- Application Name -->
+                                            <td>
+                                                <div class="scroll-text">
+                                                    <a id="{{ app['uuid'] }}_name" class="err-name" style="text-transform: capitalize" data-toggle="modal" data-target="#errModal" onclick="errModalEvent(this);">{{ app['name'] }}</a>
+                                                </div>
+                                            </td>
+                                            <!-- framework -->
+                                            <td id="{{ app['uuid'] }}_framework" value="{{ app['framework'] }}" style="display:none;">
+                                                <p class="scroll-text">{{ app['framework'] }}</p>
+                                            </td>
+                                            <!-- model -->
+                                            <td id="{{ app['uuid'] }}_model" >
+                                                <p class="scroll-text">{{ app['model'] }}</p>
+                                            </td>
+                                            <!-- Application -->
+                                            <td id="{{ app['uuid'] }}_application" >
+                                                <p class="scroll-text">{{ app['application']['name'] }}</p>
+                                            </td>
+                                            <!-- Status -->
+                                            <td >
+                                                <span id="{{ app['uuid'] }}_status_btn" class="btn btn-red custom">{{ app['status'] }}</span>
+                                            </td>
+                                            <!-- Rounded switch -->
+                                            <td >    
+                                                <label class="switch-custom">
+                                                    <input id="{{ app['uuid'] }}_switch" type="checkbox" name="checkbox" value="{{ app['uuid'] }}"
+                                                        {{ "checked" if app['status']=='run' }} disabled>
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </td>
+                                            <!-- Dropdown - Messages -->
+                                            <td >
+                                                <div class="dropdown no-arrow">
+                                                    <a class="dropdown-toggle dropdown-custom" href="#" role="button"
+                                                        id="{{ app['uuid']}}_more" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                        <!-- <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-500"></i> -->
+                                                        <span class="material-symbols-outlined custom">more_horiz</span>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                                        aria-labelledby="{{ app['uuid']}}_more">
+                                                        <!-- <div class="dropdown-header">Option</div> -->
+                                                        <button id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#editModal" onclick="editModalEvent(this);return false;" disabled>edit</button>
+                                                        <button id="{{ app['uuid'] }}" value="{{ app['name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModalEvent(this);return false;">delete</button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- End of Main Content -->
+        </div>
+        <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Footer -->
+    <footer class="bg-white custom">
+        <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+                <span>Copyright &copy; Innodisk Corporation</span>
+            </div>
+        </div>
+    </footer>
+    <!-- End of Footer -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Add Dialog-->
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog full" role="document">
+            <div class="modal-content full">
+
+                <!-- Header -->
+                <div class="modal-header custom">
+                    <h4 class="modal-title" id="exampleModalLabel">Add a Task</h4>
+                    
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+
+                    <!-- Name -->
+                    <div class="row">
+                        <div class="col">
+
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Name</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <input id="name" type="text" class="bg-light border-0" placeholder="">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- model and Application -->
+                    <div class="row">
+
+                        <!-- Model Source -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Model Source</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="model_source_type_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="model_source_type_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="model_source_type">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- model -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Model</h6>
+                                </div>
+                                <div class="card-body custom">
+
+                                    <!-- Default -->
+                                    <a class="btn btn-sm dropdown-toggle dropdown-custom" id="model_def" style="cursor: auto;"></a>
+                                    
+                                    <!-- Input Text -->
+                                    <div id="import_url_model" style="height:100%; display:none">
+                                        <!-- WEB URL -->
+                                        <input id="import_url_model_value" type="text" style="height:100%" class="bg-light border-0" placeholder="Press 'Enter' to extract URL ...">
+                                    </div>
+
+                                    <!-- Input File -->
+                                    <div id="import_zip_model" class="custom-file" style="height:100%; display:none">
+                                        <input type="file" class="custom-file-input" data-target="import-zip-model-uploader" id="import-zip-model-uploader">
+                                        <label id="import_zip_model_label" class="custom-file-label" style="height:100%">Choose file</label>
+                                    </div>
+                                    
+                                    
+                                    <!-- Drop down -->
+                                    <div id="model_dropdown" class="dropdown m-0" style="display: none">
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="model_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="model_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="model_menu">
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Application -->
+                        <!--
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Application</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
+                                        <div class="dropdown m-0">
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" 
+                                                id="model_app_menu" data-toggle="dropdown" aria-haspopup="true" 
+                                                aria-expanded="false" style="display: none"> Please select one </a>
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" id="model_app_menu_def" 
+                                                style="cursor: auto;"></a>
+                                            <div id="model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="model_app_menu"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        -->
+
+                    </div>
+
+                    <!-- Input type and source -->
+                    <div class="row">
+
+                        <!-- Type -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Input Type</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="source_type_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="source_type_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="source_type">
+                                            <!-- <a class="dropdown-item" href="#" id="source_type"
+                                                onclick="dropdownSelectEvent(this); return false;">V4L2</a>
+                                            <a class="dropdown-item" href="#" id="source_type"
+                                                onclick="dropdownSelectEvent(this); return false;">Video</a>
+                                            <a class="dropdown-item" href="#" id="source_type"
+                                                onclick="dropdownSelectEvent(this); return false;">RTSP</a> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Source -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Input Source</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <!-- Default -->
+                                    <a class="btn btn-sm dropdown-toggle dropdown-custom" id="source_def" style="cursor: auto;"></a>
+                                    <!-- Input Text -->
+                                    <div id="source_text" style="display: none">
+                                        <input id="source" type="text" class="bg-light border-0" placeholder="" aria-label="source">
+                                    </div>
+                                    <!-- Input File -->
+                                    <div id="source_file" class="custom-file" style="height:100%; display: none;">
+                                        <input type="file" class="custom-file-input" data-target="file-uploader" id="file-uploader">
+                                        <label id="custom_file_label" class="custom-file-label" style="height:100%">Choose file</label>
+                                    </div>
+                                    <!-- Drop down -->
+                                    <div id="source_dropdown" class="dropdown m-0" style="display: none;">
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="source_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="source_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="source_menu">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Device and Thres -->
+                    <div class="row">
+
+                        <!-- Device -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Accelerator</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="device_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="device_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="device_menu">
+                                            <!-- <a class="dropdown-item" href="#" onclick="dropdownSelectEvent();">GTX 1050 Ti</a>
+                                                <a class="dropdown-item" href="#" onclick="dropdownSelectEvent();">GTX 2070 Super</a> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thres -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Threshold</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <input id="thres" type="text" class="bg-light border-0"
+                                        placeholder="" aria-label="thres">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary-custom" type="button" data-dismiss="modal"
+                        onclick="setDefaultModal(); return false;">Cancel</button>
+                    <button id="bt_modal_app" name="bt_modal_app" class="btn btn-primary-custom" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
+                        onclick="appModalEvent(); return false;">Next</button>
+                    <!-- <a id="modal_add_submit" class="btn btn-primary-custom" href="#" data-dismiss="modal"
+                        onclick="addSubmit(); return false;">Add</a> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Dialog-->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog full" role="document">
+            <div class="modal-content full">
+
+                <!-- Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title" id="exampleModalLabel">Edit a Task</h4>
+                    <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="setEditDefaultModal(); return false;">
+                        <span aria-hidden="true">×</span>
+                    </button> -->
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+
+                    <!-- Name -->
+                    <div class="row">
+                        <div class="col">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Name</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <input id="edit_name" type="text" class="bg-light border-0 "
+                                        placeholder="">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- model and Application -->
+                    <div class="row">
+                        <!-- Model Source -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Model Source</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button id="edit_model_source_type_menu" class="btn btn-sm dropdown-toggle dropdown-custom" type="button"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="edit_model_source_type_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="edit_model_source_type">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- model -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Model</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0 scroll-contain">
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" 
+                                                type="button" 
+                                                id="edit_model_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="edit_model_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="edit_model_menu">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Application -->
+                        <!-- <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Application</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
+                                        <div class="dropdown m-0">
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" id="edit_model_app_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="display: none"> Please select one </a>
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" id="edit_model_app_menu_def" style="cursor: auto;"></a>
+                                            <div id="edit_model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="edit_model_app_menu"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+
+                    </div>
+
+                    <!-- Input type and source -->
+                    <div class="row">
+
+                        <!-- Type -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Input Type</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="edit_source_type_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="edit_source_type_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="edit_source_type_menu">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Source -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Input Source</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <!-- Default -->
+                                    <a class="btn btn-sm dropdown-toggle dropdown-custom" id="edit_source_def" style="cursor: auto;"></a>
+                                    <!-- Input Text -->
+                                    <div id="edit_source_text" style="display: none">
+                                        <input id="edit_source" type="text" class="bg-light border-0" placeholder="" aria-label="edit_source">
+                                    </div>
+                                    <!-- Input File -->
+                                    <div id="edit_source_file" class="custom-file" style="height:100%; display: none;">
+                                        <input type="file"  class="custom-file-input" data-target="edit-source-file-uploader" id="edit-source-file-uploader">
+                                        <label id="edit_source_file_label" class="custom-file-label" style="height:100%">Choose file</label>
+                                    </div>
+                                    <!-- Drop down -->
+                                    <div id="edit_source_dropdown" class="dropdown m-0" style="display: none;">
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="edit_source_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="edit_source_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="edit_source_menu">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Device and Thres -->
+                    <div class="row">
+
+                        <!-- Device -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Accelerator</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <button class="btn btn-sm dropdown-toggle dropdown-custom" type="button" id="edit_device_menu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Please select one
+                                        </button>
+                                        <div id="edit_device_list" class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="edit_device_menu">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thres -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Threshold</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <input id="edit_thres" type="text" class="bg-light border-0"
+                                        placeholder="" aria-label="edit_thres">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary-custom" type="button" data-dismiss="modal"
+                        onclick="setDefaultModal(); return false;">Cancel</button>
+                        <button id="edit_bt_modal_app" name="bt_modal_app" class="btn btn-primary-custom" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
+                        onclick="appModalEvent(self); return false;">Next</button>
+                    <!-- <a id="modal_edit_submit" class="btn btn-primary-custom" href="#" data-dismiss="modal" value=""
+                        onclick="editSubmit(this); return false;">Edit</a> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Err Dialog-->
+    <div class="modal fade" id="errModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog full" role="document">
+
+            <div class="modal-content full">
+
+                <!-- Header -->
+                <div class="modal-header custom">
+                    <h4 class="modal-title" id="exampleModalLabel">Error messages</h4>
+                    <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button> -->
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+                    <div id="errMsg"></div>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary-custom" type="button" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Del Dialog-->
+    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+
+        <div class="modal-dialog full" role="document">
+
+            <div class="modal-content full">
+
+                <!-- Header -->
+                <div class="modal-header custom">
+                    <h4 class="modal-title" id="exampleModalLabel">Ready to Delete?</h4>
+                    <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button> -->
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+                    <div id="del_uuid" style="display: none;"></div>
+                    <div id="del_content"></div>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary-custom" type="button" data-dismiss="modal">Cancel</button>
+                    <button id="modal_del_submit" class="btn btn-primary-custom" type="button" data-dismiss="modal" onclick="delSubmit(this); return false;">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Dialog-->
+    <div class="modal fade" id="appModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+
+        <div class="modal-dialog full" role="document">
+
+            <div class="modal-content full">
+
+                <!-- Header -->
+                <div class="modal-header custom">
+                    <h4 class="modal-title" id="exampleModalLabel">Application Setting</h4>
+                    <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button> -->
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+
+                    <!-- Application -->
+                    <div class="row">
+
+
+                        <!-- <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Application Name</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <input id="app_name" type="text" class="bg-light border-0 " placeholder="" disabled>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- Application -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Application</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
+                                        <div class="dropdown m-0">
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" 
+                                                id="model_app_menu" data-toggle="dropdown" aria-haspopup="true" 
+                                                aria-expanded="false" style="display: none"> Please select one </a>
+                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" id="model_app_menu_def" style="cursor: auto;"></a>
+                                            <div id="model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="model_app_menu"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Depend on -->
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="card-header custom">
+                                    <h6 class="m-0 font-weight-bold">Depend on</h6>
+                                </div>
+                                <div class="card-body custom">
+                                    <div class="dropdown m-0">
+                                        <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" id="label_list_menu" 
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Please select one </a>
+                                        <div id="label_list" class="dropdown-menu label-list" aria-labelledby="label_list_menu">
+                                            
+                                            <input class="dropdown-item app-search" type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()" >
+                                            
+                                            <div class="dropdown-item d-flex flex-row align-items-center">
+                                                <input class="app-sel-all" type="checkbox" id="sel_all_label" onclick="toggle(this)" checked>
+                                                <a class="app-opt-text" >Select All</a>
+                                            </div>
+                                            <!-- <div class="dropdown-item d-flex flex-row align-items-center">
+                                                <input class="app-opt" type="checkbox" >
+                                                <a class="app-opt-text">Test</a>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Frame -->
+                    <div id="area_div" class="row" style="display:none">
+                        <div class="col">
+                            <div class="card mb-3">
+                                <div class="card-header custom d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold">Frame</h6>
+                                    <a class="" onclick="clearCanvas()" style="cursor: pointer;">clear</a>
+                                </div>
+                                <div class="card-body custom">
+                                    <!-- <img id="app_frame" class="image"> -->
+                                    <canvas id="app_canvas" style="width: 100%; height:100%;background-size: 100% 100%; cursor: crosshair;"></canvas>
+                                    <!-- <canvas id="app_canvas" style="width: 500px"></canvas> -->
+                                    
+                                    <div>
+                                        <table class="table-custom application">
+                                            <tr>
+                                                <td class="application" >
+                                                    <label>Scale</label>
+                                                </td>
+                                                <td class="application">
+                                                    <label id="app_scale"></label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="application">
+                                                    <label>Info</label>
+                                                </td>
+                                                <td class="application">
+                                                    <label id="app_info"></label>
+                                                </td>
+                                            </tr>
+                                        </table>        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button id="modal_back_bt" class="btn btn-secondary-custom" type="button" data-dismiss="modal">Back</button>
+                    <button id="modal_app_submit" class="btn btn-primary-custom" type="button" data-dismiss="modal" onclick="">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Socket.IO 的 CDN 連結 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"
+        integrity="sha512-WL6WGKMPBiM9PnHRYIn5YEtq0Z8XP4fkVb4qy7PP4vhmYQErJ/dySyXuFIMDf1eEYCXCrQrMJfkNwKc9gsjTjA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+        <!-- Bootstrap core JavaScript-->
+    <script type="text/javascript" src="static/vendor/jquery/jquery.js"></script>
+    <script type="text/javascript" src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script type="text/javascript" src="static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script type="text/javascript" src="static/js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script type="text/javascript" src="static/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Custom JS -->
+    <script type="text/javascript" src="static/js/common.js"></script>
+    <script type="text/javascript" src="static/js/utils.js"></script>
+    <script type="text/javascript" src="static/js/entrace.js"></script>
+    <script type="text/javascript" src="static/js/setup-app.js"></script>
+    <script type="text/javascript" src="static/js/upload_file.js"></script>
+    <script type="text/javascript" src="static/js/import-model-option.js"></script>
+    
+</body>
