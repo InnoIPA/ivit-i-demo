@@ -763,7 +763,8 @@
     </div>
 
     <!-- Application Dialog-->
-    <div class="modal fade"  id="appModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
+    <div class="modal fade"  id="appModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"  data-backdrop="static" data-keyboard="false"
+        data-toggle="modal">
 
         <div class="modal-dialog full" role="document">
 
@@ -771,7 +772,7 @@
 
                 <!-- Header -->
                 <div class="modal-header custom">
-                    <h4 class="modal-title" id="exampleModalLabel">Application Setting</h4>
+                    <h4 class="modal-title" id="exampleModalLongTitle">Application Setting</h4>
                     <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button> -->
@@ -826,7 +827,7 @@
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Please select one </a>
                                         <div id="label_list" class="dropdown-menu label-list" aria-labelledby="label_list_menu">
                                             
-                                            <input class="dropdown-item app-search" type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()" >
+                                            <input class="dropdown-item app-search" type="text" placeholder="Search.." id="myInput" >
                                             
                                             <div class="dropdown-item d-flex flex-row align-items-center">
                                                 <input class="app-sel-all" type="checkbox" id="sel_all_label" onclick="toggle(this)" checked>
