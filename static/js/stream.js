@@ -169,32 +169,6 @@ async function updateBasicInfo(){
         gpu=data['device'];
         updateGPUTemperature();
     };
-
-    // $.ajax({  
-    //     type: 'GET',
-    //     url: SCRIPT_ROOT + `/task/${uuid}/info`,
-    //     dataType: "json",
-    //     success: function (data, textStatus, xhr) {
-    //         // const data = JSON.parse(data);
-    //         console.log(data);
-    //         document.getElementById("title").textContent = data['name'];
-    //         // document.getElementById("app_name").textContent = data['app_name'];
-    //         document.getElementById("model").textContent = data['model'];
-    //         document.getElementById("application").textContent = data['application']["name"];
-    //         document.getElementById("device").textContent = data['device'];
-            
-    //         document.getElementById("source").textContent = data['source'];
-    //         document.getElementById("status").textContent = data['status'];
-
-    //         document.getElementById("input_type").textContent = getSourceType(data['source']);
-
-    //         gpu=data['device'];
-    //         updateGPUTemperature();
-    //     },
-        // error: function (xhr, textStatus, errorThrown) {
-        //     alert('err');
-        // }
-    // });
 }
 
 function updateBasicInfoLegacy(){
@@ -276,7 +250,7 @@ let firstFrame = true
 streamSocket.on(IMG_EVENT, function(msg){  
     if (firstFrame==true){
         document.getElementById("loader").style.display = "none";
-        document.getElementById("image").style.display = "block";
+        document.getElementById("image").removeAttribute("style");
     }
     firstFrame = false
     const img=document.getElementById('image');
