@@ -142,24 +142,4 @@ function toggle(source) {
     atLeastOneRadio();
 }
 
-// search function
-function filterFunction() {
-    var input, filter, ul, li, a, i;
-    input = document.getElementById("myInput");
-    filter = input.value.toUpperCase();
-
-    div = document.getElementById("label_list");
-
-    a = div.getElementsByTagName("a");
-    optDiv = div.getElementsByTagName("div");
-
-    for (i = 0; i < a.length; i++) {
-        txtValue = a[i].textContent || a[i].innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-            optDiv[i].setAttribute('style', '');
-        } else {
-            optDiv[i].setAttribute('style', 'display:none !important');
-        }
-    }
-}
 

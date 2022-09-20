@@ -177,7 +177,7 @@
                                                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                                                         aria-labelledby="{{ app['uuid']}}_more">
                                                         <!-- <div class="dropdown-header">Option</div> -->
-                                                        <button id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#editModal" onclick="editModalEvent(this, true);return false;">edit</button>
+                                                        <button id="{{ app['uuid'] }}" value="{{ app['uuid'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#editModal" onclick="editModalEvent(this);return false;">edit</button>
                                                         <button id="{{ app['uuid'] }}" value="{{ app['name'] }}" class="dropdown-item" href="#" data-toggle="modal" data-target="#delModal" onclick="delModalEvent(this);">delete</button>
                                                     </div>
                                                 </div>
@@ -266,7 +266,7 @@
     </a>
 
     <!-- Add Dialog-->
-    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog full" role="document">
             <div class="modal-content full">
 
@@ -277,7 +277,7 @@
                 </div>
 
                 <!-- Body -->
-                <div class="modal-body custom">
+                <div class="modal-body">
 
                     <!-- Name -->
                     <div class="row">
@@ -426,7 +426,7 @@
                                     </div>
                                     <!-- Input File -->
                                     <div id="source_file" class="custom-file" style="height:100%; display: none;">
-                                        <input type="file" accept="image/*,video/*" class="custom-file-input" data-target="file-uploader" id="file-uploader">
+                                        <input type="file" class="custom-file-input" data-target="file-uploader" id="file-uploader">
                                         <label id="custom_file_label" class="custom-file-label" style="height:100%">Choose file</label>
                                     </div>
                                     <!-- Drop down -->
@@ -489,7 +489,7 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary-custom" type="button" data-dismiss="modal"
                         onclick="setDefaultModal(); return false;">Cancel</button>
-                    <button id="bt_modal_app" name="bt_modal_app" class="btn btn-primary-custom" href="#"
+                    <button id="bt_modal_app" name="bt_modal_app" class="btn btn-primary-custom" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
                         onclick="appModalEvent(); return false;">Next</button>
                     <!-- <a id="modal_add_submit" class="btn btn-primary-custom" href="#" data-dismiss="modal"
                         onclick="addSubmit(); return false;">Add</a> -->
@@ -499,7 +499,7 @@
     </div>
 
     <!-- Edit Dialog-->
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog full" role="document">
             <div class="modal-content full">
 
@@ -512,7 +512,7 @@
                 </div>
 
                 <!-- Body -->
-                <div class="modal-body custom">
+                <div class="modal-body">
 
                     <!-- Name -->
                     <div class="row">
@@ -632,7 +632,7 @@
                                     </div>
                                     <!-- Input File -->
                                     <div id="edit_source_file" class="custom-file" style="height:100%; display: none;">
-                                        <input type="file" accept="image/*,video/*" class="custom-file-input" data-target="edit-source-file-uploader" id="edit-source-file-uploader">
+                                        <input type="file"  class="custom-file-input" data-target="edit-source-file-uploader" id="edit-source-file-uploader">
                                         <label id="edit_source_file_label" class="custom-file-label" style="height:100%">Choose file</label>
                                     </div>
                                     <!-- Drop down -->
@@ -693,8 +693,8 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary-custom" type="button" data-dismiss="modal"
                         onclick="setDefaultModal(); return false;">Cancel</button>
-                        <button id="edit_bt_modal_app" name="bt_modal_app" class="btn btn-primary-custom" href="#"
-                        onclick="appModalEvent(); return false;">Next</button>
+                        <button id="edit_bt_modal_app" name="bt_modal_app" class="btn btn-primary-custom" href="#" data-dismiss="modal" data-toggle="modal" data-target="#appModal"
+                        onclick="appModalEvent(self); return false;">Next</button>
                     <!-- <a id="modal_edit_submit" class="btn btn-primary-custom" href="#" data-dismiss="modal" value=""
                         onclick="editSubmit(this); return false;">Edit</a> -->
                 </div>
@@ -703,7 +703,7 @@
     </div>
 
     <!-- Err Dialog-->
-    <div class="modal fade" id="errModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static" data-keyboard="false"
+    <div class="modal fade" id="errModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
 
         <div class="modal-dialog full" role="document">
@@ -719,7 +719,7 @@
                 </div>
 
                 <!-- Body -->
-                <div class="modal-body custom">
+                <div class="modal-body">
                     <div id="errMsg"></div>
                 </div>
 
@@ -732,7 +732,7 @@
     </div>
 
     <!-- Del Dialog-->
-    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static" data-keyboard="false"
+    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
 
         <div class="modal-dialog full" role="document">
@@ -748,7 +748,7 @@
                 </div>
 
                 <!-- Body -->
-                <div class="modal-body custom">
+                <div class="modal-body">
                     <div id="del_uuid" style="display: none;"></div>
                     <div id="del_content"></div>
                 </div>
@@ -763,8 +763,8 @@
     </div>
 
     <!-- Application Dialog-->
-    <div class="modal fade"  id="appModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"  data-backdrop="static" data-keyboard="false"
-        data-toggle="modal">
+    <div class="modal fade" id="appModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
 
         <div class="modal-dialog full" role="document">
 
@@ -772,17 +772,18 @@
 
                 <!-- Header -->
                 <div class="modal-header custom">
-                    <h4 class="modal-title" id="exampleModalLongTitle">Application Setting</h4>
+                    <h4 class="modal-title" id="exampleModalLabel">Application Setting</h4>
                     <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button> -->
                 </div>
 
                 <!-- Body -->
-                <div class="modal-body custom">
+                <div class="modal-body">
 
                     <!-- Application -->
                     <div class="row">
+
 
                         <!-- <div class="col-lg-6">
                             <div class="card mb-3">
@@ -827,7 +828,7 @@
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Please select one </a>
                                         <div id="label_list" class="dropdown-menu label-list" aria-labelledby="label_list_menu">
                                             
-                                            <input class="dropdown-item app-search" type="text" placeholder="Search.." id="myInput" >
+                                            <input class="dropdown-item app-search" type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()" >
                                             
                                             <div class="dropdown-item d-flex flex-row align-items-center">
                                                 <input class="app-sel-all" type="checkbox" id="sel_all_label" onclick="toggle(this)" checked>
@@ -844,11 +845,6 @@
                         </div>
                     </div>
                     
-                    <!-- Loadding -->
-                    <div id="loading">
-                        <div class="loader">Loading...</div>
-                    </div>
-
                     <!-- Frame -->
                     <div id="area_div" class="row" style="display:none">
                         <div class="col">
@@ -892,7 +888,7 @@
                 <!-- Footer -->
                 <div class="modal-footer">
                     <button id="modal_back_bt" class="btn btn-secondary-custom" type="button" data-dismiss="modal">Back</button>
-                    <button id="modal_app_submit" class="btn btn-primary-custom" type="button" onclick="">Done</button>
+                    <button id="modal_app_submit" class="btn btn-primary-custom" type="button" data-dismiss="modal" onclick="">Done</button>
                 </div>
             </div>
         </div>

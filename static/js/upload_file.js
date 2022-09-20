@@ -9,7 +9,10 @@ editSourceUploader.addEventListener("change", editSourceFileUpload);
 async function editSourceFileUpload(e) {
     try {
         const file = e.target.files[0];
+        const filename = file.name;
+        const extension = file.type;
         // setUploading(true);
+
         if (!file) return;
 
         // const beforeUploadCheck = await beforeUpload(file);
@@ -20,7 +23,8 @@ async function editSourceFileUpload(e) {
 
         // alert("File Uploaded Success");
         console.log(file);
-        document.getElementById('edit_source_file_label').textContent = file['name'];
+        document.getElementById('edit_source_file_label').textContent = filename;
+        document.getElementById('edit_source_file_label').value = filename;
         // showPreviewImage(file);
     } catch (error) {
         alert(error);
@@ -34,18 +38,12 @@ async function editSourceFileUpload(e) {
 async function sourceFileUpload(e) {
     try {
         const file = e.target.files[0];
-        // setUploading(true);
-        if (!file) return;
 
         // const beforeUploadCheck = await beforeUpload(file);
         // if (!beforeUploadCheck.isValid) throw beforeUploadCheck.errorMessages;
 
-        // const arrayBuffer = await getArrayBuffer(file);
-        // const response = await uploadFileAJAX(arrayBuffer);
-
-        // alert("File Uploaded Success");
-        
         document.getElementById('custom_file_label').textContent = file['name'];
+        document.getElementById('custom_file_label').value = file['name'];
 
     } catch (error) {
         alert(error);
@@ -71,6 +69,7 @@ async function modelFileUpload(e) {
         // alert("File Uploaded Success");
         console.log(file);
         document.getElementById('import_model_file_label').textContent = file['name'];
+        document.getElementById('import_model_file_label').value = file['name'];
         // showPreviewImage(file);
     } catch (error) {
         alert(error);
@@ -166,8 +165,23 @@ function uploadFileAJAX(arrayBuffer) {
 // ---------------------------------------------------------------------------------------------------
 // Create before upload checker if needed
 function beforeUpload(fileObject) {
+
     return new Promise(resolve => {
-        const validFileTypes = ["image/jpeg", "image/png"];
+
+        let inputTypeEleName = "source_type_menu";
+        if(window[MODE]===EDIT_MODE){
+            inputTypeEleName = `edit_${inputTypeEleName}`;
+            console.log(inputTypeEleName);
+        }
+        const inputType = document.getElementById(inputTypeEleName).value;
+
+        let validFileTypes = []
+        if(inputType==="Image"){
+            validFileTypes = ["image/jpeg", "image/png"];    
+        } else if (inputType==="Video") {
+            validFileTypes = ["image/jpeg", "image/png"];
+        }
+        
         const isValidFileType = validFileTypes.includes(fileObject.type);
         let errorMessages = [];
 
