@@ -646,12 +646,10 @@ async function editSubmit(obj) {
         alert("Not Setup Application");
         return undefined;
     };
-    debugger
+    
     // Edit TASK
     const retData = await postAPI( `/edit/${obj.value}`, formData, FORM_FMT )
 
-    console.log(retData);
-    debugger
     // if success
     if(retData) {
         hideModal("appModal");
