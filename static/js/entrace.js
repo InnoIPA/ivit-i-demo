@@ -85,15 +85,14 @@ function addErrorHref(uuid){
 }
 
 // Testing
-function atLeastOneRadio() {
+async function atLeastOneRadio() {
     var radios = document.querySelectorAll('.app-opt:checked');
     var value = radios.length>0 ? radios.length: 0;
     document.getElementById("label_list_menu").textContent = `Select ${value} Labels`
-    console.log(checkLabelFunction());
 }
 
 // check function
-function checkLabelFunction() {
+async function checkLabelFunction() {
 
     let a, i, depend_on=[], checkboxes;
     
@@ -110,6 +109,26 @@ function checkLabelFunction() {
 
     return depend_on;
 }
+
+// search function
+async function filterFunction() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    div = document.getElementById("label_list");
+    a = div.getElementsByTagName("a");
+    optDiv = div.getElementsByTagName("div");
+
+    for (i = 0; i < a.length; i++) {
+        txtValue = a[i].textContent || a[i].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            optDiv[i].setAttribute('style', '');
+        } else {
+            optDiv[i].setAttribute('style', 'display:none !important');
+        }
+    }
+}
+
 
 // Set Default Modal
 function setDefaultContent(eleName, content){
@@ -559,7 +578,9 @@ async function parseInfoToForm(){
     // Update application which on shared dialog
     let appData = {};
     appData[`${appName}`]   = document.getElementById("model_app_menu").innerText;
-    appData[`${appDepend}`] = JSON.stringify(checkLabelFunction());
+
+    const getAllLabels = await checkLabelFunction()
+    appData[`${appDepend}`] = JSON.stringify( getAllLabels );
     appData[`${appArea}`]   = `[ ${document.getElementById("app_info").innerText} ]`;
 
     // Double Check
@@ -598,13 +619,16 @@ async function addSubmit() {
     if(!formData) {
         alert("Not Setup Application");
         return undefined;
-    };
+    } else {
+        // Add data-target
+    }
 
     // Add TASK
     const retData = await postAPI( `/add`, formData, FORM_FMT, ALERT )
 
     // If success
     if(retData) {
+        hideModal("appModal");
         setDefaultModal();
         if(!DEBUG_MODE) location.reload();
         console.log(retData);
@@ -622,12 +646,15 @@ async function editSubmit(obj) {
         alert("Not Setup Application");
         return undefined;
     };
-
+    debugger
     // Edit TASK
-    const retData = postAPI( `/edit/${obj.value}`, formData, FORM_FMT )
+    const retData = await postAPI( `/edit/${obj.value}`, formData, FORM_FMT )
 
+    console.log(retData);
+    debugger
     // if success
     if(retData) {
+        hideModal("appModal");
         if(!DEBUG_MODE) location.reload();
         console.log(retData);
         setDefaultModal();
@@ -737,13 +764,12 @@ async function addModalEvent(init=false) {
     document.getElementById("model_menu").disabled      = false;
     document.getElementById("model_app_menu").disabled  = false;
     document.getElementById("device_menu").disabled     = false;
-    
     if(init) setDefaultModal();
 
     const nextBtn = document.getElementById("bt_modal_app");
     nextBtn.value = ADD_MODE;
     // nextBtn.disabled = true;
-
+    
 }
 
 // Add related information when open the EDIT modal
@@ -816,11 +842,12 @@ function delModalEvent(obj) {
 // Setup Modal Button (data-dismiss, data-toggle, data-target, onclick and text).
 function setModalButton(eleButton, targetEvent, clickEvent, buttonText, manualOpen=false) {
 
-    if(manualOpen===false){
-        eleButton.setAttribute("data-dismiss"  , "modal");
-        eleButton.setAttribute("data-toggle"   , "modal");    
-        if(targetEvent) eleButton.setAttribute("data-target"   , targetEvent);
+    
+    if(targetEvent){
+        eleButton.setAttribute("data-toggle"   , "modal");   
+        eleButton.setAttribute("data-target"   , targetEvent);
     }
+    if(manualOpen===false) eleButton.setAttribute("data-dismiss"  , "modal");
 
     eleButton.setAttribute("onclick" , clickEvent);
 
@@ -912,7 +939,7 @@ async function addAppModalEvent(self) {
     // Setup Next Button
     setModalButton( 
         eleButton   = trgButton,
-        targetEvent = "#appModal",
+        targetEvent = undefined,
         clickEvent  = "addSubmit()",
         buttonText  = curMode,
         manualOpen = true 
@@ -932,9 +959,9 @@ async function addAppModalEvent(self) {
         defaultApp  = document.getElementById("model_app_menu").textContent 
     );
 
-    showModal("appModal");
     hideModal("addModal");
-
+    showModal("appModal");
+    
 }
 
 function editAppModalEvent() {
@@ -947,9 +974,10 @@ function editAppModalEvent() {
     // Setup Next Button
     setModalButton( 
         eleButton   = trgButton,
-        targetEvent = "#appModal",
+        targetEvent = undefined,
         clickEvent  = "editSubmit(this)",
-        buttonText  = curMode );
+        buttonText  = curMode,
+        manualOpen = true  );
 
     // Setup Back Button
     setModalButton( 
@@ -957,8 +985,10 @@ function editAppModalEvent() {
         targetEvent = "#editModal", 
         clickEvent  = "" );
 
-    showModal("appModal");
     hideModal("editModal");
+    
+    showModal("appModal");
+    
 }
 
 function importAppModalEvent() {
@@ -1038,25 +1068,46 @@ async function checkNewSource(){
 async function appModalEvent(){
     
     const curMode = window[MODE];
-
+    
     const [ status, msg ] = await checkModalOption();
+
+    document.onkeydown = filterFunction;
 
     if( status === true ){
     
         // Update Button and related function : Add , Edit, Import
+        
         if ( curMode === ADD_MODE) addAppModalEvent();
         else if ( curMode === IMPORT_MODE) importAppModalEvent();
         else if ( curMode === EDIT_MODE) editAppModalEvent();
         
         // Update label
+        
         if (curMode !== IMPORT_MODE) {
-            updateLabelDropdown();
-            checkNewSource();
-        }
             
+            updateLabelDropdown();
+            
+            checkNewSource();
+            
+        }
+        
     } else {
         alert(`Capture Empty Input ( ${msg} )`);
     }
+    
+    await updateModalOpen()
+    
+}
+
+async function updateModalOpen(){
+    $('body').addClass("modal-open");
+    setTimeout(function() {
+        console.log('open');
+        // needs to be in a timeout because we wait for BG to leave
+        // keep class modal-open to body so users can scroll
+        $('body').addClass('modal-open');
+    }, 400);
+
 }
 
 function disableAppArea(){
