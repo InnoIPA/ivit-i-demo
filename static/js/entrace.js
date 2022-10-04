@@ -1003,13 +1003,17 @@ function importAppModalEvent() {
         eleButton   = trgButton,
         targetEvent = "#appModal",
         clickEvent  = "importSubmit()",
-        buttonText  = curMode );
+        buttonText  = curMode,
+        manualOpen  = true );
 
     // Setup Back Button
     setModalButton( 
         eleButton   = backButton,
         targetEvent = "#addModal", 
-        clickEvent  = "addModalEvent(); return false" );
+        clickEvent  = "" );
+
+    hideModal("addModal");
+    showModal("appModal");
 }
 
 async function updateLabelDropdown() {
