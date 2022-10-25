@@ -93,16 +93,13 @@ function getSourceType(src){
     return ret
 }
 
-function streamStart(uuid){
-    $.ajax({
-        url: SCRIPT_ROOT + `/task/${uuid}/stream/start`,
-        type: "GET",
-        dataType: "json",
-        success: function (data, textStatus, xhr) {
-            console.log(data);
-        },
-        error: alertError,
-    });
+async function streamStart(uuid){
+
+    const data = getAPI(`/task/${uuid}/stream/start`, ALERT);
+    if(!data) return undefined;
+
+    console.log(data);
+    
 }
 
 function streamStop(uuid){
