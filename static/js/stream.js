@@ -101,9 +101,7 @@ function streamStart(uuid){
         success: function (data, textStatus, xhr) {
             console.log(data);
         },
-        error: function (err) {
-            console.log(err);
-        },
+        error: alertError,
     });
 }
 

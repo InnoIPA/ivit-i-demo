@@ -1025,7 +1025,7 @@ async function updateLabelDropdown() {
     const modelName = document.getElementById(`${head}model_menu`).textContent;
 
     // Update depend_on
-    const labelList = document.getElementById("label_list");
+    
     
     // Clear dropdown-div
     let totalDropdwon = document.querySelectorAll("#dropdown-div");
@@ -1044,14 +1044,37 @@ async function updateLabelDropdown() {
     const taskLabel   = await getAPI( `/task/${taskUUID}/label` )
     if (! taskLabel) return undefined;
 
-    // Put all label on it
+    updateLabelBackground(taskLabel);
+}
+
+function updateLabelBackground(taskLabel){
+    const labelList = document.getElementById("label_list");
+
+    document.getElementById("label_list_menu").textContent = `Selected ${taskLabel.length} Labels`;
+
     for(let i=0; i<taskLabel.length; i++){
-        labelList.innerHTML += '<div id="dropdown-div" class="dropdown-item d-flex flex-row align-items-center">'+
-            '<input class="app-opt" type="checkbox" onchange="atLeastOneRadio(this)" checked>' +
-            `<a class="app-opt-text">${taskLabel[i]}</a>` +
-            '</div>'
-        document.getElementById("label_list_menu").textContent = `Select ${i+1} Labels`;
+
+        let newDiv = document.createElement("div"); 
+        let newInput = document.createElement("input");
+        let newText = document.createElement("a");
+    
+        newText.setAttribute("class", "app-opt-text");
+        newText.innerHTML = `${taskLabel[i]}`;
+    
+        newInput.setAttribute("class", "app-opt");
+        newInput.setAttribute("type", "checkbox");
+        newInput.setAttribute("onchange", "atLeastOneRadio(this)");
+        newInput.checked = true;
+    
+        newDiv.setAttribute("id", "dropdown-div");
+        newDiv.setAttribute("class", "dropdown-item d-flex flex-row align-items-center");
+        
+        newDiv.appendChild(newInput);
+        newDiv.appendChild(newText);
+
+        labelList.appendChild(newDiv);
     }
+
 }
 
 async function checkNewSource(){
