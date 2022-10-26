@@ -177,10 +177,47 @@ function updateDropdownMenu(selectElement, selectContent){
     document.getElementById(`${selectElement}_menu`).value = `${selectContent}`;
 }
 
+
 // Update Application Items
 function updateAppItem(srcType){
-    if (srcType.includes('area')) enableAppArea();
-    else disableAppArea();
+
+    disableLogic();
+    disableAppArea();
+    disableSensitive();
+    noneDisplayVector();
+    
+    if(srcType===undefined){
+        disableAlarm();
+        console.log("Unknown App Type");
+        return undefined;
+    }
+
+    if (srcType == "default") disableAlarm();
+    else enableAlarm();
+
+    if (srcType.includes('area')){
+        initCanvasParam();
+        document.getElementById('area-header').textContent = "Detected Area ( 0 ) ";
+        enableAppArea();
+        enableSensitive();
+        disableVectorMode();
+    }
+    else if (srcType.includes('counting')) {
+        enableLogic();
+    }
+    else if (srcType.includes('direction')) {
+
+        document.getElementById('area-header').textContent = "Detected Area ( 0 ) Vector ( 0 )";
+        initCanvasParam();
+        enableAppArea();
+        enableSensitive();
+        displayVector();
+        enableVector();
+        enableVectorMode();
+        enableAreaIcon();
+        
+    }
+
 }
 
 // Select dropdown object event
@@ -201,6 +238,7 @@ function dropdownSelectEvent(obj) {
     else if ( srcKey.includes("model_source_type")) updateModelSource(srcType );
     else if ( srcKey.includes("source_type")) updateSourceOption(srcType, trgKey, "");
     else if ( srcKey.includes("model_app")) updateAppItem(srcType);
+    // else if ( srcKey.includes("logic")) updateLogicItem(srcType);
 }
 
 // Clear Dropdown Item
@@ -280,7 +318,7 @@ function updateModelAppOption(eleName, modelName, defaultApp){
     // Update default text
     if (defaultApp) {
         appMenu.textContent = defaultApp;
-        if (defaultApp.includes("area")) enableAppArea()
+        updateAppItem(defaultApp);
     }
 }
 
@@ -581,7 +619,7 @@ async function parseInfoToForm(){
 
     const getAllLabels = await checkLabelFunction()
     appData[`${appDepend}`] = JSON.stringify( getAllLabels );
-    appData[`${appArea}`]   = `[ ${document.getElementById("app_info").innerText} ]`;
+    appData[`${appArea}`]   = `[ ${document.getElementById("area_info").innerText} ]`;
 
     // Double Check
     if (appData[`${appName}`]==="Please select one"){
@@ -1077,13 +1115,9 @@ function updateLabelBackground(taskLabel){
 
 async function checkNewSource(){
 
-//     let uploaderEleName = "custom_file_label"
-//     if (window[MODE]==="Edit") uploaderEleName = "edit_source_file_label"
-// textContent
-//     console.log("Double check the source is the same ...");
-//     const fileName = document.getElementById(uploaderEleName).textContent;
-    
-    if(document.getElementById("model_app_menu").textContent.includes("area")){
+    const trgApp = document.getElementById("model_app_menu").textContent;
+
+    if(trgApp.includes("area")){
         console.log("Update Area");
         disableAppArea()
         enableAppArea()
@@ -1111,9 +1145,7 @@ async function appModalEvent(){
         if (curMode !== IMPORT_MODE) {
             
             updateLabelDropdown();
-            
             checkNewSource();
-            
         }
         
     } else {
@@ -1138,20 +1170,17 @@ async function updateModalOpen(){
 function disableAppArea(){
     document.getElementById("area_div").style = "display: none";
     document.getElementById("app_scale").textContent = "";
-    document.getElementById("app_info").textContent = "";
+    document.getElementById("area_info").textContent = "";
     document.getElementById("loading").style.display = "none";
     clearCanvas();
 }
 
 async function enableAppArea(trg_mode=""){
-    document.getElementById("loading").style.display = "block";
-    console.log("Enable");
-
-    trg_mode = "";
     
-    if (window["MODE"]===EDIT_MODE){
-        trg_mode = "edit_";
-    } 
+    document.getElementById("loading").style.display = "block";
+    
+    // trg_mode = "";
+    if (window["MODE"]===EDIT_MODE) trg_mode = "edit_";
     
     console.log(`Update Area Setting, Mode: ${trg_mode}`);
 
@@ -1222,11 +1251,73 @@ async function enableAppArea(trg_mode=""){
         return undefined;
     }
 
-    // If app_info has content
-    if(document.getElementById("app_info").textContent !== ""){
-        drawPoly2();
+    // If area_info has content
+    if(document.getElementById("area_info").textContent !== ""){
+        drawPolyEvent();
     }
 
+    // Disable Area Icon
+    polyMode();
+    disableAreaIcon();
+}
+
+async function enableLogic(){
+    document.getElementById("logic_card").style.display = "";
+}
+
+async function disableLogic(){
+    document.getElementById("logic_card").style.display = "none";
+}
+
+async function enableAlarm(){
+    document.getElementById("alarm_card").style.display = "";
+}
+
+async function disableAlarm(){
+    document.getElementById("alarm_card").style.display = "none";
+}
+
+async function enableSensitive(){
+    document.getElementById("sensitive_card").style.display = "";
+}
+
+async function disableSensitive(){
+    document.getElementById("sensitive_card").style.display = "none";
+}
+
+function enableAreaIcon(){
+    document.getElementById('draw-poly-icon').style.display = "";
+    document.getElementById('draw-poly-icon').style.cursor = "pointer";
+    document.getElementById('draw-poly-icon').setAttribute("onclick", "polyMode(true)")
+}
+
+function disableAreaIcon(){
+    // document.getElementById('draw-vector-icon').style = "display: none;"
+    console.log("Disable Area Icon");
+    document.getElementById('draw-poly-icon').style.cursor = "auto";
+    document.getElementById('draw-poly-icon').removeAttribute("onclick")
+}
+
+function displayVector(){
+    document.getElementById('draw-vector-icon').style.display = ""
+    document.getElementById("vector_table").style.display = "";
+}
+
+function noneDisplayVector(){
+    document.getElementById('draw-vector-icon').style.display = "none"
+    document.getElementById("vector_table").style.display = "none";
+}
+
+function disableVector(){ 
+    document.getElementById('draw-vector-icon').style.cursor = "auto";
+    document.getElementById('draw-vector-icon').removeAttribute("onclick");
+}
+
+function enableVector(){ 
+    console.log("Enable Vector Element");
+    document.getElementById('draw-vector-icon').style.cursor = "pointer";
+    document.getElementById('draw-poly-icon').setAttribute("onclick", "polyMode(true)")
+    document.getElementById('draw-vector-icon').setAttribute("onclick", "vectorMode(true)")
 }
 
 // About Application Modal Event - END

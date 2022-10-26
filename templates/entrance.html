@@ -779,7 +779,7 @@
                 </div>
 
                 <!-- Body -->
-                <div class="modal-body custom">
+                <div class="modal-body">
 
                     <!-- Application -->
                     <div class="row">
@@ -796,21 +796,21 @@
                         </div> -->
 
                         <!-- Application -->
-                        <div class="col-lg-6">
+                        <div class="col">
                             <div class="card mb-3">
                                 <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Application</h6>
+                                    <h6 class="m-0 font-weight-bold required">Application</h6>
                                 </div>
                                 <div class="card-body custom">
-                                    <div class="d-flex flex-row align-items-center justify-content-between">
-                                        <div class="dropdown m-0">
-                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" 
-                                                id="model_app_menu" data-toggle="dropdown" aria-haspopup="true" 
-                                                aria-expanded="false" style="display: none"> Please select one </a>
-                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" id="model_app_menu_def" style="cursor: auto;"></a>
-                                            <div id="model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="model_app_menu"></div>
-                                        </div>
+
+                                    <div class="dropdown m-0">
+                                        <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" 
+                                            id="model_app_menu" data-toggle="dropdown" aria-haspopup="true" 
+                                            aria-expanded="false" style="display: none"> Please select one </a>
+                                        <a class="btn btn-sm dropdown-toggle dropdown-custom" id="model_app_menu_def" style="cursor: auto;"></a>
+                                        <div id="model_app_list" class="dropdown-menu animated--fade-in" aria-labelledby="model_app_menu"></div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -819,7 +819,7 @@
                         <div class="col-lg-6">
                             <div class="card mb-3">
                                 <div class="card-header custom">
-                                    <h6 class="m-0 font-weight-bold">Depend on</h6>
+                                    <h6 class="m-0 font-weight-bold required">Depend on</h6>
                                 </div>
                                 <div class="card-body custom">
                                     <div class="dropdown m-0">
@@ -849,22 +849,27 @@
                         <div class="loader">Loading...</div>
                     </div>
 
-                    <!-- Frame -->
+                    <!-- Draw Area -->
                     <div id="area_div" class="row" style="display:none">
                         <div class="col">
                             <div class="card mb-3">
                                 <div class="card-header custom d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold">Frame</h6>
-                                    <a class="" onclick="clearCanvas()" style="cursor: pointer;">clear</a>
+                                        <h6 id="area-header" class="m-0 font-weight-bold required">Define Area ( 0 )</h6>
+                                    <div class="draw-div" style="line-height: 1">
+                                        <span id="draw-poly-icon" class="material-symbols-outlined draw-btn" >polyline</span>
+                                        <span id="draw-vector-icon" class="material-symbols-outlined draw-btn" style="display: none">north</span>
+                                        <span id="draw-confirm-bt" class="material-symbols-outlined draw-btn">add</span>
+                                        <span id="draw-clear-bt" class="material-symbols-outlined draw-btn" onclick="clearCanvas()">keyboard_return</span>
+                                    </div>
+                                    
                                 </div>
                                 <div class="card-body custom">
                                     <!-- <img id="app_frame" class="image"> -->
                                     <canvas id="app_canvas" style="width: 100%; height:100%;background-size: 100% 100%; cursor: crosshair;"></canvas>
                                     <!-- <canvas id="app_canvas" style="width: 500px"></canvas> -->
-                                    
                                     <div>
                                         <table class="table-custom application">
-                                            <tr>
+                                            <tr style="display: none">
                                                 <td class="application" >
                                                     <label>Scale</label>
                                                 </td>
@@ -874,10 +879,18 @@
                                             </tr>
                                             <tr>
                                                 <td class="application">
-                                                    <label>Info</label>
+                                                    <label>Area</label>
                                                 </td>
                                                 <td class="application">
-                                                    <label id="app_info"></label>
+                                                    <label id="area_info" class="area-info"></label>
+                                                </td>
+                                            </tr>
+                                            <tr id="vector_table" style="display: none">
+                                                <td class="application">
+                                                    <label>Vector</label>
+                                                </td>
+                                                <td class="application">
+                                                    <label id="vector_info" class="area-info"></label>
                                                 </td>
                                             </tr>
                                         </table>        
@@ -886,6 +899,96 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Advance -->
+                    <div id="eventBlock">
+                        <div class="row">
+                            <div class="col">
+                                <div class="card mb-3">
+
+                                    <div class="card-header custom d-flex flex-row align-items-center justify-content-between"
+                                    href="#collapseCardExample" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample" >
+                                        <h6 class="m-0 font-weight-bold">Advance</h6>
+                                    </div>
+
+                                    <div class="collapse collapse-custom" id="collapseCardExample">
+
+                                        <div class="card-body advance">
+
+                                            <!-- Logic -->
+                                            <div id="logic_card" class="card mb-4">
+                                                <div class="card-header custom">
+                                                    <h9 class="m-0 font-weight">Condition</h9>
+                                                </div>
+                                                <div class="card-body custom">
+                                                    <div class="row">
+                                                        <div id="logicDropDown" class="dropdown m-0 col " >
+                                                            <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" 
+                                                                data-toggle="dropdown" aria-haspopup="true" 
+                                                                aria-expanded="false"> Logic </a>
+                                                            <div id="logic_list" class="dropdown-menu animated--fade-in" aria-labelledby="logic_menu">
+                                                                <a class="dropdown-item custom" href="#" id="logic" 
+                                                                    onclick="dropdownSelectEvent(this); return false;"> < </a>
+                                                                <a class="dropdown-item custom" href="#" id="logic" 
+                                                                    onclick="dropdownSelectEvent(this); return false;"> > </a>
+                                                                <a class="dropdown-item custom" href="#" id="logic" 
+                                                                    onclick="dropdownSelectEvent(this); return false;"> = </a>
+                                                                <a class="dropdown-item custom" href="#" id="logic" 
+                                                                    onclick="dropdownSelectEvent(this); return false;"> != </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <a id="logic_menu"> { Logic } </a>
+                                                            <input id="" type="number" min="0" max="500" class="bg-light border-0">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Alarm -->
+                                            <div id="alarm_card" class="card mb-4">
+                                                <div class="card-header custom">
+                                                    <h6 class="m-0 font-weight">Alarm</h6>
+                                                </div>
+                                                <div class="card-body custom">
+                                                    <div id="" >
+                                                        <input id="" type="text" class="bg-light border-0" placeholder="Display on left-top corner">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Sensitivity -->
+                                            <div id="sensitive_card" class="card mb-4">
+                                                <div class="card-header custom">
+                                                    <h6 class="m-0 font-weight">Sensitivity</h6>
+                                                </div>
+                                                <div class="card-body custom">
+                                                    <div id="sensitive_dropdown" class="dropdown m-0 col-lg-6 " >
+                                                        <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" 
+                                                        id="logic_menu" data-toggle="dropdown" aria-haspopup="true" 
+                                                        aria-expanded="false"> Please select one </a>
+                                                        <div id="sensitive_list" class="dropdown-menu animated--fade-in" aria-labelledby="sensitive_menu">
+                                                            <a class="dropdown-item custom" href="#" id="sensitive" 
+                                                                onclick="dropdownSelectEvent(this); return false;"> HIGH </a>
+                                                            <a class="dropdown-item custom" href="#" id="sensitive" 
+                                                                onclick="dropdownSelectEvent(this); return false;"> MEDIUM </a>
+                                                            <a class="dropdown-item custom" href="#" id="sensitive" 
+                                                                onclick="dropdownSelectEvent(this); return false;"> LOW </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-10"></div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
 
                 </div>
 
