@@ -6,6 +6,9 @@ const ENABLE_OPACITY        = 1;
 
 async function parseError(xhr){
     err = xhr.responseText;
+    
+    if(!err) return undefined;
+
     if( err.includes("[") && err.includes("]")){
         err = err.slice(err.search("\\["), -1)
     }
@@ -14,6 +17,7 @@ async function parseError(xhr){
 
 async function alertError (xhr, _textStatus, _errorThrown) {
     const errMsg = await parseError(xhr);
+    
     alert( errMsg );
     return( errMsg );
 }
