@@ -869,7 +869,7 @@
                                     <!-- <canvas id="app_canvas" style="width: 500px"></canvas> -->
                                     <div>
                                         <table class="table-custom application">
-                                            <tr style="display: none">
+                                            <tr style="display:none">
                                                 <td class="application" >
                                                     <label>Scale</label>
                                                 </td>
@@ -927,19 +927,19 @@
                                                                 data-toggle="dropdown" aria-haspopup="true" 
                                                                 aria-expanded="false"> Logic </a>
                                                             <div id="logic_list" class="dropdown-menu animated--fade-in" aria-labelledby="logic_menu">
-                                                                <a class="dropdown-item custom" href="#" id="logic" 
+                                                                <a class="dropdown-item custom" href="#" id="logic" value="<"
                                                                     onclick="dropdownSelectEvent(this); return false;"> < </a>
-                                                                <a class="dropdown-item custom" href="#" id="logic" 
+                                                                <a class="dropdown-item custom" href="#" id="logic" value=">"
                                                                     onclick="dropdownSelectEvent(this); return false;"> > </a>
-                                                                <a class="dropdown-item custom" href="#" id="logic" 
+                                                                <a class="dropdown-item custom" href="#" id="logic" value="="
                                                                     onclick="dropdownSelectEvent(this); return false;"> = </a>
-                                                                <a class="dropdown-item custom" href="#" id="logic" 
+                                                                <a class="dropdown-item custom" href="#" id="logic" value="!="
                                                                     onclick="dropdownSelectEvent(this); return false;"> != </a>
                                                             </div>
                                                         </div>
                                                         <div class="col">
                                                             <a id="logic_menu"> { Logic } </a>
-                                                            <input id="" type="number" min="0" max="500" class="bg-light border-0">
+                                                            <input id="logic_thres" type="number" min="0" max="500" class="bg-light border-0">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -952,7 +952,7 @@
                                                 </div>
                                                 <div class="card-body custom">
                                                     <div id="" >
-                                                        <input id="" type="text" class="bg-light border-0" placeholder="Display on left-top corner">
+                                                        <input id="app_alarm" type="text" class="bg-light border-0" placeholder="Display on left-top corner">
                                                     </div>
                                                 </div>
                                             </div>
@@ -965,15 +965,15 @@
                                                 <div class="card-body custom">
                                                     <div id="sensitive_dropdown" class="dropdown m-0 col-lg-6 " >
                                                         <a class="btn btn-sm dropdown-toggle dropdown-custom" type="a" 
-                                                        id="logic_menu" data-toggle="dropdown" aria-haspopup="true" 
+                                                        id="sensitive_menu" data-toggle="dropdown" aria-haspopup="true"
                                                         aria-expanded="false"> Please select one </a>
                                                         <div id="sensitive_list" class="dropdown-menu animated--fade-in" aria-labelledby="sensitive_menu">
-                                                            <a class="dropdown-item custom" href="#" id="sensitive" 
-                                                                onclick="dropdownSelectEvent(this); return false;"> HIGH </a>
-                                                            <a class="dropdown-item custom" href="#" id="sensitive" 
-                                                                onclick="dropdownSelectEvent(this); return false;"> MEDIUM </a>
-                                                            <a class="dropdown-item custom" href="#" id="sensitive" 
-                                                                onclick="dropdownSelectEvent(this); return false;"> LOW </a>
+                                                            <a class="dropdown-item custom" href="#" id="sensitive" value="high"
+                                                                onclick="dropdownSelectEvent(this); return false;"> high </a>
+                                                            <a class="dropdown-item custom" href="#" id="sensitive" value="medium"
+                                                                onclick="dropdownSelectEvent(this); return false;"> medium </a>
+                                                            <a class="dropdown-item custom" href="#" id="sensitive" value="low"
+                                                                onclick="dropdownSelectEvent(this); return false;"> low </a>
                                                         </div>
                                                     </div>
                                                 </div>
