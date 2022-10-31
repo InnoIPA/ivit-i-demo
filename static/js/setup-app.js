@@ -37,13 +37,6 @@ let appRatio;
 let penMode = "poly";
 let vectorModeFlag = false;
 
-
-$(document).ready(function () {
-
-    initCanvasParam();
-
-});
-
 function enableVectorMode() { 
     vectorModeFlag = true; 
     console.log("Set Vector Mode Flag: ", vectorModeFlag);
@@ -562,6 +555,7 @@ async function enableAppArea(trg_mode=""){
     // Disable Area Icon
     polyMode();
     disableAreaIcon();
+    startDrawTips();
 }
 
 function enableLogic(){
@@ -622,12 +616,14 @@ function enableVectorIcon(){
 
 
 function appAreaEvent(){
+    
     enableAlarm();
     initCanvasParam();
     document.getElementById('area-header').textContent = "Detected Area ( 0 ) ";
     enableAppArea();
     enableSensitive();
     disableVectorMode();
+
 }
 
 function appCountingEvent(){
@@ -644,6 +640,7 @@ function appDirectionEvent(){
     enableVectorIcon();
     enableVectorMode();
     enableAreaIcon();
+    
 }
 
 function initAppItem(){
@@ -652,11 +649,13 @@ function initAppItem(){
     disableAppArea();
     disableSensitive();
     blockVector();
+    
 }
 
 // Update Application Items
 function updateAppItem(srcType){
     
+    console.log('Update Application Item', srcType);
     initAppItem();
 
     if (srcType.includes('area')) appAreaEvent();
@@ -664,3 +663,105 @@ function updateAppItem(srcType){
     else if (srcType.includes('direction')) appDirectionEvent();
     else { console.log("Unknown App Type"); return undefined; }
 }
+
+var createPopover = function (item, title) {
+                        
+    var $pop = $(item);
+    
+    $pop.popover({
+        placement: 'bottom',
+        trigger: 'click',
+        html: true,
+        tabindex: -1,
+        content: function () {
+            $('#popup-content').text(`${title}`);
+            
+            return $('#custom-popup').html();
+        }
+    }).on('shown.bs.popover', function(e) {
+        //console.log('shown triggered');
+        // 'aria-describedby' is the id of the current popover
+        var current_popover = '#' + $(e.target).attr('aria-describedby');
+        var $cur_pop = $(current_popover);
+    
+        $cur_pop.find('.close').click(function(){
+            //console.log('close triggered');
+            $pop.popover('hide');
+        });
+    
+        $cur_pop.find('.OK').click(function(){
+            //console.log('OK triggered');
+            $pop.popover('hide');
+        });
+    });
+
+    return $pop;
+};
+
+var createNextPopover = function (item, content, next) {
+    let $pop = $(item);
+    let borderColor = 'gray';
+    $pop.popover({
+        placement: 'bottom',
+        trigger: 'focus',
+        html: true,
+        content: function () {
+            $('#popup-content').text(content);
+            $pop.css('border-color', borderColor);
+            
+            return $('#custom-popup').html();
+        }
+    }).on('show.bs.popover', function(e){
+        $('.draw-btn').css('z-index', '1050');
+        $('#popover-bg').css('display', 'block');  
+
+    }).on('shown.bs.popover', function(e) {
+        // 'aria-describedby' is the id of the current popover
+        var current_popover = '#' + $(e.target).attr('aria-describedby');
+        var $cur_pop = $(current_popover);
+        $cur_pop.find('.OK').click(function(){
+            //console.log('OK triggered');
+            $pop.css('border-color', '');
+            
+            $('#popover-bg').css('display', 'block');
+            $pop.popover('hide');
+            
+            if(next!==undefined){
+                $(next).popover('show');
+            }
+        });
+    }).on('hide.bs.popover', function(e){
+        $('#popover-bg').css('display', 'none');
+        $('.draw-btn').css('z-index', '');
+    });
+    return $pop;
+}
+
+function appDrawTips(){
+    
+    
+    try{
+        createNextPopover('#draw-poly-icon'     , 'Click on canvas to draw detect area ( polygon ).', '#draw-confirm-bt');
+        createNextPopover('#draw-confirm-bt'    , 'Click Button to draw another area or vector', '#draw-clear-bt');
+        
+        if (vectorModeFlag) createNextPopover('#draw-clear-bt'      , 'Recovery the last action', '#draw-vector-icon');
+        else createNextPopover('#draw-clear-bt'      , 'Recovery the last action');
+
+        createNextPopover('#draw-vector-icon'   , 'Click two point to define the moving direction ( vector ) of the object.');
+    } catch (e) {
+        console.log(e);
+    }
+    // $('#draw-poly-icon').popover('show');
+}
+
+function startDrawTips(){
+    console.log('Show Tips');
+    $('#draw-poly-icon').popover('show');
+}
+
+$(document).ready(function () {
+    appDrawTips();
+    initCanvasParam();
+    createPopover('#showPopover', 'Demo popover!');
+
+});

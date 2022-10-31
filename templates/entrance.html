@@ -856,10 +856,14 @@
                                 <div class="card-header custom d-flex flex-row align-items-center justify-content-between">
                                         <h6 id="area-header" class="m-0 font-weight-bold required">Define Area ( 0 )</h6>
                                     <div class="draw-div" style="line-height: 1">
-                                        <span id="draw-poly-icon" class="material-symbols-outlined draw-btn" >polyline</span>
-                                        <span id="draw-vector-icon" class="material-symbols-outlined draw-btn" style="display: none">north</span>
-                                        <span id="draw-confirm-bt" class="material-symbols-outlined draw-btn">add</span>
-                                        <span id="draw-clear-bt" class="material-symbols-outlined draw-btn" onclick="clearCanvas()">keyboard_return</span>
+                                        <span id="draw-poly-icon" class="material-symbols-outlined draw-btn fa-border" 
+                                                data-html="true" data-toggle="popover" >polyline</span>
+                                        <span id="draw-vector-icon" class="material-symbols-outlined draw-btn fa-border" style="display: none"
+                                                data-html="true" data-toggle="popover">north</span>
+                                        <span id="draw-confirm-bt" class="material-symbols-outlined draw-btn fa-border"
+                                                data-html="true" data-toggle="popover">add</span>
+                                        <span id="draw-clear-bt" class="material-symbols-outlined draw-btn fa-border" onclick="clearCanvas()"
+                                                data-html="true" data-toggle="popover">keyboard_return</span>
                                     </div>
                                     
                                 </div>
@@ -1001,6 +1005,19 @@
         </div>
     </div>
 
+
+    <!-- <button class="btn btn-primary" data-html="true" data-toggle="popover" id="showPopover">Show</button> -->
+
+    <!-- Custom Popover -->
+    <div id="popover-bg" class="popover-bg " style="display: none" ></div>
+    <div id="custom-popup" class="card border-bottom-primary" style="display: none" data-backdrop="static">
+        <p id="popup-content"></p>
+        <a href="#" class="btn btn-secondary-custom OK">NEXT</a>
+    </div>
+    
+
+    <!-- ######################################################################## -->
+
     <!-- Socket.IO 的 CDN 連結 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"
         integrity="sha512-WL6WGKMPBiM9PnHRYIn5YEtq0Z8XP4fkVb4qy7PP4vhmYQErJ/dySyXuFIMDf1eEYCXCrQrMJfkNwKc9gsjTjA=="
@@ -1015,7 +1032,7 @@
 
     <!-- Custom scripts for all pages-->
     <script type="text/javascript" src="static/js/sb-admin-2.min.js"></script>
-
+    
     <!-- Page level plugins -->
     <script type="text/javascript" src="static/vendor/datatables/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="static/vendor/datatables/dataTables.bootstrap4.min.js"></script>

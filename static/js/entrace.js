@@ -275,7 +275,7 @@ function updateModelAppOption(eleName, modelName, defaultApp){
     // Update default text
     if (defaultApp) {
         appMenu.textContent = defaultApp;
-        updateAppItem(defaultApp);
+        // updateAppItem(defaultApp);
     }
 }
 
@@ -957,6 +957,7 @@ async function checkModalOption(){
 
 function showModal(name){
     $(`#${name}`).modal('show');
+    updateAppItem(document.getElementById('model_app_menu').text)   
 }
 
 function hideModal(name){
@@ -996,7 +997,6 @@ async function addAppModalEvent(self) {
 
     hideModal("addModal");
     showModal("appModal");
-    
 }
 
 function editAppModalEvent() {
@@ -1269,4 +1269,6 @@ $(document).ready( async function () {
     // Define the launch Switch Button
     defineLaunchButton();
 
+    // create popover
+    // appDrawTips();
 });
