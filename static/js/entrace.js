@@ -1155,16 +1155,6 @@ function updateLabelBackground(taskLabel){
 
 }
 
-async function checkNewSource(){
-
-    const trgApp = document.getElementById("model_app_menu").textContent;
-
-    if(trgApp.includes("area")){
-        console.log("Update Area");
-        disableAppArea()
-        enableAppArea()
-    }
-}
 
 async function appModalEvent(){
     
@@ -1185,9 +1175,7 @@ async function appModalEvent(){
         // Update label
         
         if (curMode !== IMPORT_MODE) {
-            
             updateLabelDropdown();
-            checkNewSource();
         }
         
     } else {
