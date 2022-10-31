@@ -4,6 +4,9 @@ let areaIndex = 0;
 let vecPoints = {};
 let vecIndex = 0;
 
+let retAreaPoints = {};
+let retVecPoints = {};
+
 let areaAlpha = 0.2;
 let areaPalette = [ 
     `rgba(255, 0 , 0, ${areaAlpha})`, 
@@ -33,6 +36,7 @@ let vecInfo = document.getElementById("vector_info");
 let appRatio;
 let penMode = "poly";
 let vectorModeFlag = false;
+
 
 $(document).ready(function () {
 
@@ -94,7 +98,10 @@ function vectorEvent(event){
 
     // Vector only need two point to draw
     curIndex = vecPoints[vecIndex].length%2
-    if (curIndex==0) vecPoints[vecIndex] = [];
+    if (curIndex==0){
+        vecPoints[vecIndex] = [];
+        retVecPoints[vecIndex] = [];
+    }
 
     vecPoints[vecIndex][curIndex] = [ trg_x, trg_y];
         
@@ -103,8 +110,9 @@ function vectorEvent(event){
 
     correct_x = Math.round(trg_x/scale);
     correct_y = Math.round(trg_y/scale);
+
+    retVecPoints[vecIndex][curIndex] = [ correct_x, correct_y ];
     
-    if ( vecInfo.innerHTML!=="" ) vecInfo.innerHTML += ", ";
     vecInfo.innerHTML = JSON.stringify(vecPoints);
 
     drawVecEvent()
@@ -119,23 +127,62 @@ function areaEvent(event) {
     
     let trg_x = (org_x * scaledX).toFixed(2);
     let trg_y = (org_y * scaledY).toFixed(2);
-
-    
+   
     areaPoints[areaIndex].push( [ trg_x, trg_y ] );
-    // clickPoints.push([trg_x, trg_y]);
     
-    const scale = parseFloat(document.getElementById("app_scale").textContent);
-
-    correct_x = Math.round(trg_x/scale);
-    correct_y = Math.round(trg_y/scale);
-    
-    if ( areaInfo.innerHTML!=="" ){
-        areaInfo.innerHTML += ", "    
-    }
     areaInfo.innerHTML = JSON.stringify(areaPoints);
 
     drawPolyEvent(areaIndex);
+}
 
+async function getRescaleAreaPoint(){
+
+    const scale = parseFloat(document.getElementById("app_scale").textContent);
+    let retAreaPoints = {};
+    
+    for( let areaID=0; areaID<=areaIndex; areaID++){
+        
+        retAreaPoints[areaID] = [];
+        for ( let ptID=0; ptID<areaPoints[areaID].length;ptID++){
+            
+            orgX = areaPoints[areaID][ptID][0];
+            orgY = areaPoints[areaID][ptID][1];
+
+            trgX = Math.round(orgX/scale);
+            trgY = Math.round(orgY/scale);
+            
+            retAreaPoints[areaID].push( [ trgX, trgY ] );
+        }
+    }
+    
+    // areaInfo.innerHTML = JSON.stringify(retAreaPoints);
+    return retAreaPoints
+}
+
+async function getRescaleVectorPoint(){
+
+    const scale = parseFloat(document.getElementById("app_scale").textContent);
+    let retVecPoints = {};
+    
+    for( let vecID=0; vecID<=vecIndex; vecID++){
+        
+        retVecPoints[vecID] = [];
+
+        for ( let ptID=0; ptID<vecPoints[vecID].length;ptID++){
+            
+            orgX = vecPoints[vecID][ptID][0];
+            orgY = vecPoints[vecID][ptID][1];
+
+            trgX = Math.round(orgX/scale);
+            trgY = Math.round(orgY/scale);
+            
+            retVecPoints[vecID].push( [ trgX, trgY ] );
+        }
+    }
+        
+    console.log(retVecPoints);
+    // vecInfo.innerHTML = JSON.stringify(retVecPoints);
+    return retVecPoints
 }
 
 function drawPreview(){
