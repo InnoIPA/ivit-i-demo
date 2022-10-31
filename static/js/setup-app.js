@@ -59,7 +59,7 @@ function polyMode(confirm){
 
     penMode = "poly";
     disableAreaIcon();
-    enableVector();
+    enableVectorIcon();
 
     document.getElementById("draw-poly-icon").style.color = "red";
     document.getElementById("draw-vector-icon").style.color = "gray";
@@ -74,7 +74,7 @@ function vectorMode(confirm){
     if (confirm === true) confirmCanvas();
 
     penMode = "vector";
-    disableVector();
+    disableVectorIcon();
     enableAreaIcon();
     
 
@@ -468,3 +468,199 @@ function toggle(source) {
 }
 
 
+// Application
+
+function disableAppArea(){
+    document.getElementById("area_div").style = "display: none";
+    document.getElementById("app_scale").textContent = "";
+    document.getElementById("area_info").textContent = "";
+    document.getElementById("loading").style.display = "none";
+    clearCanvas();
+}
+
+async function enableAppArea(trg_mode=""){
+    
+    document.getElementById("loading").style.display = "block";
+    
+    // trg_mode = "";
+    if (window["MODE"]===EDIT_MODE) trg_mode = "edit_";
+    
+    console.log(`Update Area Setting, Mode: ${trg_mode}`);
+
+    // Element Behaviour
+    document.getElementById("loading").style.display = "block";
+    
+    document.getElementById("modal_app_submit").disabled = true;
+    document.getElementById("modal_back_bt").disabled = true;
+    
+    let appCanvas = document.getElementById("app_canvas");
+    let appFrame = document.getElementById("app_frame");
+    let appCtx = appCanvas.getContext("2d");
+    let appScale = document.getElementById("app_scale");
+    let img = new Image();
+    let imgHeight;
+    let imgWidth;
+    let imgScale;
+    let imgRate;
+
+    // Define parameters
+    let data        = {};
+    let formData    = new FormData();
+    dSrc            = "source";
+    dSrcType        = "source_type";
+    
+    const { sourceType, sourceContent } = await getSourceContent();
+    data[dSrcType] = sourceType;
+    data[dSrc]     = sourceContent;
+
+    // Define Form Data
+    for ( let key in data ){
+        console.log(key, data[key]);
+        formData.append(key, data[key]);
+    }
+
+    // Display the key/value pairs
+    for (var pair of formData.entries()) {
+        console.log(pair[0]+ ', ' + pair[1]); 
+    }
+
+    // Update Source
+    const retData = await postAPI(`/update_src`, formData, FORM_FMT, ALERT)
+    if(retData){
+        
+        imgHeight   = retData["height"];
+        imgWidth    = retData["width"];
+
+        // setup canvas width and height
+        imgRate             = imgHeight/imgWidth;
+        appCanvas.height    = appCanvas.width*imgRate;
+
+        // load image
+        document.getElementById("area_div").style.display = "block";
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("modal_app_submit").disabled = false;
+        document.getElementById("modal_back_bt").disabled = false;
+
+        img.src = "data:image/jpeg;base64," + retData["image"];
+        appCanvas.style.backgroundImage = `url(${img.src})`;
+
+        // calculate scale
+        console.log(`Canvas width: ${appCanvas.style.width}`);
+        appScale.textContent = appCanvas.width/imgWidth;
+
+        console.log(`H:${imgHeight}, W:${imgWidth}, Ratio:${imgRate}`);   
+        
+    } else {
+        return undefined;
+    }
+
+    // If area_info has content
+    if(document.getElementById("area_info").textContent !== ""){
+        drawPolyEvent();
+    }
+
+    // Disable Area Icon
+    polyMode();
+    disableAreaIcon();
+}
+
+function enableLogic(){
+    document.getElementById("logic_card").style.display = "";
+}
+
+function disableLogic(){
+    document.getElementById("logic_card").style.display = "none";
+}
+
+function enableAlarm(){
+    document.getElementById("alarm_card").style.display = "";
+}
+
+function disableAlarm(){
+    document.getElementById("alarm_card").style.display = "none";
+}
+
+function enableSensitive(){
+    document.getElementById("sensitive_card").style.display = "";
+}
+
+function disableSensitive(){
+    document.getElementById("sensitive_card").style.display = "none";
+}
+
+function enableAreaIcon(){
+    document.getElementById('draw-poly-icon').style.display = "";
+    document.getElementById('draw-poly-icon').style.cursor = "pointer";
+    document.getElementById('draw-poly-icon').setAttribute("onclick", "polyMode(true)")
+}
+
+function disableAreaIcon(){
+    document.getElementById('draw-poly-icon').style.cursor = "auto";
+    document.getElementById('draw-poly-icon').removeAttribute("onclick")
+}
+
+function displayVector(){
+    document.getElementById('draw-vector-icon').style.display = ""
+    document.getElementById("vector_table").style.display = "";
+}
+
+function blockVector(){
+    document.getElementById('draw-vector-icon').style.display = "none"
+    document.getElementById("vector_table").style.display = "none";
+}
+
+function disableVectorIcon(){ 
+    document.getElementById('draw-vector-icon').style.cursor = "auto";
+    document.getElementById('draw-vector-icon').removeAttribute("onclick");
+}
+
+function enableVectorIcon(){ 
+    document.getElementById('draw-vector-icon').style.cursor = "pointer";
+    document.getElementById('draw-poly-icon').setAttribute("onclick", "polyMode(true)")
+    document.getElementById('draw-vector-icon').setAttribute("onclick", "vectorMode(true)")
+}
+
+
+function appAreaEvent(){
+    enableAlarm();
+    initCanvasParam();
+    document.getElementById('area-header').textContent = "Detected Area ( 0 ) ";
+    enableAppArea();
+    enableSensitive();
+    disableVectorMode();
+}
+
+function appCountingEvent(){
+    enableAlarm();
+    enableLogic();
+}
+
+function appDirectionEvent(){
+    enableAlarm();
+    initCanvasParam();
+    enableAppArea();
+    enableSensitive();
+    displayVector();
+    enableVectorIcon();
+    enableVectorMode();
+    enableAreaIcon();
+}
+
+function initAppItem(){
+    disableAlarm();
+    disableLogic();
+    disableAppArea();
+    disableSensitive();
+    blockVector();
+}
+
+// Update Application Items
+function updateAppItem(srcType){
+    
+    initAppItem();
+
+    if (srcType.includes('area')) appAreaEvent();
+    else if (srcType.includes('counting')) appCountingEvent();
+    else if (srcType.includes('direction')) appDirectionEvent();
+    else { console.log("Unknown App Type"); return undefined; }
+}
