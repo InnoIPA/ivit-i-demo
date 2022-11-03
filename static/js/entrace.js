@@ -602,9 +602,9 @@ async function parseInfoToForm(){
     }
     
     // Area Information
-    if( appData[appName] === 'area_detection' ){
-        appData[appArea]   = await getRescaleAreaPoint();
-    } 
+    ret   = await getRescaleAreaPoint();
+    if(ret) appData[appArea] = ret;
+
     // Moving Direction
     else if ( appData[appName] === 'moving_direction' ){
         appData[appArea]   = await getRescaleAreaPoint();
@@ -838,7 +838,6 @@ async function editModalEvent(obj, init=false) {
     // updateModelAppOption("model", data["model"], data["application"]["name"]);
     updateApplication(data)
     
-
     // update device information 
     document.getElementById("edit_device_menu").textContent = data['device'];
     document.getElementById("edit_device_menu").disabled = true;
@@ -957,6 +956,14 @@ function buttonKeyEvent(e){
 function showModal(name){
     $(`#${name}`).modal('show')
 
+    // Bind drawTips Event when edit mode
+    if(name==='appModal' && window[MODE] === EDIT_MODE ){
+        console.log("Show Application Modal");
+        $(`#${name}`).on('shown.bs.modal', function(){ 
+            if($('#area_div').is(':visible')) startDrawTips();
+        })
+    }
+    
     updateAppItem(document.getElementById('model_app_menu').text)
     
 }
@@ -1206,6 +1213,4 @@ $(document).ready( async function () {
     // Define the launch Switch Button
     defineLaunchButton();
 
-    // create popover
-    // appDrawTips();
 });
