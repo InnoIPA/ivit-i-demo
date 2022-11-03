@@ -58,7 +58,7 @@ function updateApplication(data){
 
     // area_points
     if (appAreaPoints) {
-        document.getElementById('area_info').textContent = JSON.stringify(appAreaPoints);
+        areaInfo.textContent = JSON.stringify(appAreaPoints);
     }
     
     // area_vector
@@ -168,8 +168,8 @@ function drawDot(x, y){ appCtx.arc(x, y, 2, 0, 2*Math.PI); }
 
 function drawPreview(){
     appCtx.clearRect(0, 0, appCanvas.width, appCanvas.height);
-    drawPrePoly(areaIndex);
-    drawPreVec(vecIndex);
+    drawPrePoly();
+    drawPreVec();
 }
 
 function drawArrow(fromx, fromy, tox, toy, arrowWidth){
@@ -218,6 +218,9 @@ function drawCurVec(inVectorIndex){
     appCtx.fillStyle = vecPalette[inVectorIndex%vecPalette.length];
     appCtx.strokeStyle = vecPalette[inVectorIndex%vecPalette.length];
 
+    if ( inVectorIndex === undefined ) inVectorIndex = vecIndex;
+    if(vecPoints[inVectorIndex].length===0) return undefined;
+
     // Check recent area is not null
     appCtx.beginPath()
 
@@ -231,16 +234,18 @@ function drawCurVec(inVectorIndex){
     appCtx.closePath()
 }
 
-function drawPreVec(inVectorIndex){
-    
-    for(let vecID=0; vecID<inVectorIndex; vecID++){
+function drawPreVec(){
 
-        if(vecPoints[vecID].length===0) return undefined;
-        for(let idx=0; idx<vecPoints[vecID].length; idx++){
-            drawCurVec(vecID)
-        }
+    const vecIndexList = Object.keys(vecPoints)
+    const vecNum   = vecIndexList.length
+
+    for(let i=0; i<vecNum; i++){
+        vecKey = vecIndexList[i];
         
+        if(vecPoints[vecKey].length===0) return undefined;    
+        drawCurVec(vecKey);
     }
+
 }
 
 function drawVecEvent(inVectorIndex) {
@@ -296,12 +301,16 @@ function drawCurPoly(inAreaIndex){
     
 }
 
-function drawPrePoly(inAreaIndex){
+function drawPrePoly(){
 
-    for(let areaID=0; areaID<inAreaIndex; areaID++){
-        // console.log(`Draw Poly ${areaID}`);
-        if(areaPoints[areaID].length===0) return undefined;    
-        drawCurPoly(areaID);
+    const areaIndexList = Object.keys(areaPoints)
+    const areaNum   = areaIndexList.length
+
+    for(let i=0; i<areaNum; i++){
+        areaKey = areaIndexList[i];
+        
+        if(areaPoints[areaKey].length===0) return undefined;    
+        drawCurPoly(areaKey);
     }
 }
 
@@ -406,7 +415,7 @@ function recoveryAreaPoint(){
     else if (areaIndex !== 0 && areaPoints[areaIndex].length === 0) {
         // console.log(`pop ${areaIndex}`);
         delete areaPoints[areaIndex];
-        drawPrePoly(areaIndex);
+        drawPrePoly();
         areaIndex = areaIndex - 1;
         updateHeader();
     }
@@ -503,9 +512,10 @@ function initCanvasParam(){
     }
     else if ( window[MODE]===EDIT_MODE ) {
         
-        const scale = parseFloat(document.getElementById("app_scale").textContent);
-        if(scale) console.log(`Get image scale ... (${scale})`);
+        console.log('Rescale area point');
 
+        const scale = parseFloat(document.getElementById("app_scale").textContent);
+        
         if(areaInfo.textContent){
             areaPoints = JSON.parse(areaInfo.textContent);
 
@@ -740,37 +750,24 @@ async function enableAppArea(trg_mode=""){
         drawPolyEvent();
     }
 
-    // Disable Area Icon
-    startDrawTips();
-
     polyMode();
-    disableAreaIcon();
-    
+    disableAreaIcon();      
+    startDrawTips();
 }
 
-function enableLogic(){
-    document.getElementById("logic_card").style.display = "";
-}
+// Application Custom Event
 
-function disableLogic(){
-    document.getElementById("logic_card").style.display = "none";
-}
+function enableLogic(){ document.getElementById("logic_card").style.display = ""; }
 
-function enableAlarm(){
-    document.getElementById("alarm_card").style.display = "";
-}
+function disableLogic(){ document.getElementById("logic_card").style.display = "none"; }
 
-function disableAlarm(){
-    document.getElementById("alarm_card").style.display = "none";
-}
+function enableAlarm(){ document.getElementById("alarm_card").style.display = ""; }
 
-function enableSensitive(){
-    document.getElementById("sensitive_card").style.display = "";
-}
+function disableAlarm(){ document.getElementById("alarm_card").style.display = "none"; }
 
-function disableSensitive(){
-    document.getElementById("sensitive_card").style.display = "none";
-}
+function enableSensitive(){ document.getElementById("sensitive_card").style.display = ""; }
+
+function disableSensitive(){ document.getElementById("sensitive_card").style.display = "none"; }
 
 function enableAreaIcon(){
     document.getElementById('draw-poly-icon').style.display = "";
@@ -810,6 +807,7 @@ function enableVectorIcon(){
     document.getElementById("draw-vector-icon").style.color = "gray";
 }
 
+// ----------
 
 function appAreaEvent(){
     
@@ -825,6 +823,11 @@ function appAreaEvent(){
 function appCountingEvent(){
     enableAlarm();
     enableLogic();
+    enableAppArea();
+}
+
+function appTrackingEvent(){
+    enableAppArea();
 }
 
 function appDirectionEvent(){
@@ -855,6 +858,7 @@ function updateAppItem(srcType){
     if (srcType.includes('area')) appAreaEvent();
     else if (srcType.includes('counting')) appCountingEvent();
     else if (srcType.includes('direction')) appDirectionEvent();
+    else if (srcType.includes('tracking')) appTrackingEvent();
     else { console.log("Unknown App Type"); return undefined; }
 }
 
@@ -925,7 +929,9 @@ var createNextPopover = function (item, content, next) {
             $('#popover-bg').css('display', 'block');
             $pop.popover('hide');
             
-            if(next!==undefined) $(next).popover('show');
+            try { if(next!==undefined) $(next).popover('show'); } 
+            catch(e) { console.log('popover error, might trying to open vector popover'); };
+
         });
 
         document.addEventListener('keydown', popoverKeyEvent);
@@ -942,37 +948,23 @@ var createNextPopover = function (item, content, next) {
     return $pop;
 }
 
-function appDrawTips(){
-    
+async function createAppDrawTips(){
     
     try{
-        createNextPopover('#draw-poly-icon'     , 'Click on canvas to draw detect area ( polygon ).', '#draw-confirm-bt');
-        createNextPopover('#draw-confirm-bt'    , 'Click Button to draw another area or vector', '#draw-clear-bt');
-        
-        if (vectorModeFlag) createNextPopover('#draw-clear-bt'      , 'Recovery the last action', '#draw-vector-icon');
-        else createNextPopover('#draw-clear-bt'      , 'Recovery the last action');
 
-        createNextPopover('#draw-vector-icon'   , 'Click two point to define the moving direction ( vector ) of the object.');
-    } catch (e) {
-        console.log(e);
-    }
-    // $('#draw-poly-icon').popover('show');
+        let p1 = createNextPopover('#draw-poly-icon'     , 'Click on canvas to draw detect area ( polygon ).', '#draw-confirm-bt');
+        let p2 = createNextPopover('#draw-confirm-bt'    , 'Click Button to draw another area or vector', '#draw-clear-bt');
+        let p3 = createNextPopover('#draw-clear-bt'      , 'Recovery the last action', '#draw-vector-icon');
+        let p4 = createNextPopover('#draw-vector-icon'   , 'Click two point to define the moving direction ( vector ) of the object.');
+
+    } catch (e) { console.log(e);}
 }
 
-function startDrawTips(){
-    console.log('Show Tips');
-    appDrawTips();
-    $('#draw-poly-icon').popover('show');
-}
+async function startDrawTips(){ $('#draw-poly-icon').popover('show'); }
 
-function popoverKeyEvent(e){
-    if(e.keyCode === 13) $('.OK').click();
-}
-
+function popoverKeyEvent(e){ if(e.keyCode === 13) $('.OK').click(); }
 
 $(document).ready(function () {
-    // appDrawTips();
     // initCanvasParam();
-    // createPopover('#showPopover', 'Demo popover!');
-    
+    createAppDrawTips();
 });
