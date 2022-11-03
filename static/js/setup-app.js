@@ -101,18 +101,24 @@ function polyMode(confirm){
 }
 
 // The event of poly mode 
+let scale;
 function areaEvent(event) {
+    scale = parseFloat(document.getElementById("app_scale").textContent);
     
-    let org_x = event.offsetX, org_y = event.offsetY ;
-
+    let orgX = event.offsetX, orgY = event.offsetY ;
     let scaledX = appCanvas.width/ appCanvas.offsetWidth;
     let scaledY = appCanvas.height/ appCanvas.offsetHeight;
-    let trg_x = (org_x * scaledX).toFixed(2);
-    let trg_y = (org_y * scaledY).toFixed(2);
+    let trgX = (orgX * scaledX).toFixed(2);
+    let trgY = (orgY * scaledY).toFixed(2);
 
-    areaPoints[areaIndex].push( [ trg_x, trg_y ] );
+    areaPoints[areaIndex].push( [ trgX, trgY ] );
     
-    areaInfo.innerHTML = JSON.stringify(areaPoints);
+    let retX = Math.round(orgX/scale);
+    let retY = Math.round(orgY/scale);
+
+    getRescaleAreaPoint();
+    // retAreaPoints[areaIndex].push( [ retX, retY ] );
+    // areaInfo.innerHTML = JSON.stringify(retAreaPoints);
 
     drawPolyEvent(areaIndex);
 
@@ -334,22 +340,17 @@ async function getRescaleAreaPoint(){
     const scale = parseFloat(document.getElementById("app_scale").textContent);
     let retAreaPoints = {};
     
-    for( let areaID=0; areaID<=areaIndex; areaID++){
-        
-        retAreaPoints[areaID] = [];
-        for ( let ptID=0; ptID<areaPoints[areaID].length;ptID++){
-            
-            orgX = areaPoints[areaID][ptID][0];
-            orgY = areaPoints[areaID][ptID][1];
+    for( const key in areaPoints){
 
-            trgX = Math.round(orgX/scale);
-            trgY = Math.round(orgY/scale);
-            
-            retAreaPoints[areaID].push( [ trgX, trgY ] );
+        retAreaPoints[key] = [];
+        for( const pts in areaPoints[key] ){
+            retAreaPoints[key].push( 
+                [ Math.round(areaPoints[key][pts][0]/scale), Math.round(areaPoints[key][pts][1]/scale) ]
+            )
         }
     }
     
-    // areaInfo.innerHTML = JSON.stringify(retAreaPoints);
+    areaInfo.innerHTML = JSON.stringify(retAreaPoints);
     return retAreaPoints
 }
 
@@ -357,25 +358,35 @@ async function getRescaleVectorPoint(){
 
     const scale = parseFloat(document.getElementById("app_scale").textContent);
     let retVecPoints = {};
-    
-    for( let vecID=0; vecID<=vecIndex; vecID++){
-        
-        retVecPoints[vecID] = [];
 
-        for ( let ptID=0; ptID<vecPoints[vecID].length;ptID++){
-            
-            orgX = vecPoints[vecID][ptID][0];
-            orgY = vecPoints[vecID][ptID][1];
+    for( const key in vecPoints){
 
-            trgX = Math.round(orgX/scale);
-            trgY = Math.round(orgY/scale);
-            
-            retVecPoints[vecID].push( [ trgX, trgY ] );
+        retAreaPoints[key] = [];
+        for( const pts in vecPoints[key] ){
+            retAreaPoints[key].push( 
+                [ Math.round(vecPoints[key][pts][0]/scale), Math.round(vecPoints[key][pts][1]/scale) ]
+            )
         }
     }
+
+    // for( let vecID=0; vecID<=vecIndex; vecID++){
+        
+    //     retVecPoints[vecID] = [];
+
+    //     for ( let ptID=0; ptID<vecPoints[vecID].length;ptID++){
+            
+    //         orgX = vecPoints[vecID][ptID][0];
+    //         orgY = vecPoints[vecID][ptID][1];
+
+    //         trgX = Math.round(orgX/scale);
+    //         trgY = Math.round(orgY/scale);
+            
+    //         retVecPoints[vecID].push( [ trgX, trgY ] );
+    //     }
+    // }
         
     console.log(retVecPoints);
-    // vecInfo.innerHTML = JSON.stringify(retVecPoints);
+    vecInfo.innerHTML = JSON.stringify(retVecPoints);
     return retVecPoints
 }
 
@@ -420,7 +431,8 @@ function recoveryAreaPoint(){
         updateHeader();
     }
 
-    areaInfo.innerHTML = JSON.stringify(areaPoints);
+    getRescaleAreaPoint();
+    
 }
 
 // Recovery Vector Point
@@ -472,7 +484,7 @@ function confirmArea(){
 
     areaIndex = areaIndex + 1;
     areaPoints[areaIndex] = [] ;
-    areaInfo.innerHTML = JSON.stringify(areaPoints);
+    getRescaleAreaPoint()
     updateHeader();
     return true;
 }
@@ -486,7 +498,8 @@ function confirmVector(){
     
     vecIndex = vecIndex + 1;
     vecPoints[vecIndex] = [] ;
-    vecInfo.innerHTML = JSON.stringify(vecPoints);
+    // vecInfo.innerHTML = JSON.stringify(vecPoints);
+    getRescaleVectorPoint();
     updateHeader();
     return true;
 }
@@ -499,16 +512,24 @@ function initCanvasParam(){
     console.log(`Init Canvas Parameter ( ${window[MODE]} )`);
 
     areaPoints = {};
+    retAreaPoints = {};
     areaIndex = 0;
     
     vecPoints = {};
+    retVecPoints = {};
     vecIndex = 0;
-    areaPoints[areaIndex] = [];
-    vecPoints[vecIndex] = [];
+    
 
     if ( window[MODE]===ADD_MODE ){
+        areaPoints[areaIndex] = [];
+        retAreaPoints[areaIndex] = [];
+
+        vecPoints[vecIndex] = [];
+        retAreaPoints[vecIndex] = [];
+
         areaInfo.innerHTML = "";
         vecInfo.innerHTML = "";
+        
     }
     else if ( window[MODE]===EDIT_MODE ) {
         
@@ -517,32 +538,41 @@ function initCanvasParam(){
         const scale = parseFloat(document.getElementById("app_scale").textContent);
         
         if(areaInfo.textContent){
-            areaPoints = JSON.parse(areaInfo.textContent);
+            _areaPoints = JSON.parse(areaInfo.textContent);
 
             // rescale
-            for ( const key in areaPoints ) {
-                for ( const pts in areaPoints[key] ){
-                    areaPoints[key][pts][0] = areaPoints[key][pts][0]*scale
-                    areaPoints[key][pts][1] = areaPoints[key][pts][1]*scale
+            for ( const key in _areaPoints ) {
+                let intKey = parseInt(key);
+                areaPoints[intKey] = [];
+                retAreaPoints[intKey] = [];
+                for ( const pts in _areaPoints[key] ){
+                    retAreaPoints[intKey].push( _areaPoints[key][pts] )
+                    areaPoints[intKey].push( [ _areaPoints[key][pts][0]*scale, _areaPoints[key][pts][1]*scale] )
                 }
             }
-
-            areaIndex = Object.keys(areaPoints).length-1;
+            
+            // areaIndex = Object.keys(areaPoints).length-1;
+            areaKeys = Object.keys(areaPoints)
+            areaIndex = parseInt(areaKeys[ areaKeys.length-1 ]);
             console.log("Get Area Info Data: ", areaPoints, areaIndex);
+
         }
 
         if (vecInfo.textContent) {
-            vecPoints = JSON.parse(vecInfo.textContent);
+            _vecPoints = JSON.parse(vecInfo.textContent);
 
             // rescale
-            for ( const key in vecPoints ) {
-                for ( const pts in vecPoints[key] ){
-                    vecPoints[key][pts][0] = vecPoints[key][pts][0]*scale
-                    vecPoints[key][pts][1] = vecPoints[key][pts][1]*scale
+            for ( const key in _vecPoints ) {
+                let intKey = parseInt(key);
+                vecPoints[intKey] = [];
+                for ( const pts in _vecPoints[key] ){
+                    vecPoints[intKey].push( [_vecPoints[key][pts][0]*scale, _vecPoints[key][pts][1]*scale] )
                 }
             }
 
-            vecIndex = Object.keys(vecPoints).length-1;
+            // vecIndex = Object.keys(vecPoints).length-1;
+            vecKeys = Object.keys(vecPoints)
+            vecIndex = parseInt(vecKeys[ vecPoints.length-1 ]);
             console.log("Get Vector Info Data: ", vecPoints, vecIndex);
         }
 
