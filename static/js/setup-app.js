@@ -86,7 +86,9 @@ function polyMode(confirm){
             2. 開放 Vector Icon 點選
             3. 將 Canvas 事件設定成 areaEvent
      */
-    if (confirm === true) confirmCanvas();
+    let ret ;
+    if (confirm === true) ret = confirmCanvas();
+    if ( ret === false ) return undefined;
 
     penMode = "poly";
     disableAreaIcon();
@@ -95,6 +97,7 @@ function polyMode(confirm){
     appCanvas.removeEventListener("mousedown", vectorEvent);
     appCanvas.addEventListener("mousedown", areaEvent);
     
+    console.log("Poly Mode");
 }
 
 // The event of poly mode 
@@ -112,11 +115,16 @@ function areaEvent(event) {
     areaInfo.innerHTML = JSON.stringify(areaPoints);
 
     drawPolyEvent(areaIndex);
+
+    console.log("Poly Mode");
 }
 
 function vectorMode(confirm){
+    
+    let ret ;
+    if (confirm === true) ret = confirmCanvas();
+    if ( ret === false ) return undefined;
 
-    if (confirm === true) confirmCanvas();
 
     penMode = "vector";
     disableVectorIcon();
@@ -124,8 +132,9 @@ function vectorMode(confirm){
     
     appCanvas.removeEventListener("mousedown", areaEvent);
     appCanvas.addEventListener("mousedown", vectorEvent);
-}
 
+    console.log("Vector Mode");
+}
 
 function vectorEvent(event){
     // Got Mouse Down Position
@@ -433,34 +442,44 @@ function recoveryVectorPoint(){
 }
 
 // Confirm Canvas: the entrance of confirmCanvas and confirmArea
+// function confirmCanvas() {
+//     return (( penMode === "vector" ) ? confirmVector : confirmArea )
+// }
 function confirmCanvas() {
+    
+    let trgFunc = penMode === "vector" ? confirmVector : confirmArea;
+    let ret = trgFunc();
 
-    if ( penMode === "vector" ) confirmVector();
-    else confirmArea();
+    console.log(`Confirm Canvas: ${ret} (${penMode} )`);
+    return ret
 }
 
 function confirmArea(){
+
     if(areaPoints[areaIndex].length < 3){
         alert("The area point is empty, please at least select three points...");
-        return undefined;
+        return false;
     }
 
     areaIndex = areaIndex + 1;
     areaPoints[areaIndex] = [] ;
     areaInfo.innerHTML = JSON.stringify(areaPoints);
     updateHeader();
+    return true;
 }
 
 function confirmVector(){
+    
     if(vecPoints[vecIndex].length !== 2){
         alert("The vector point excepted length is 2, please check again ...");
-        return undefined;
+        return false;
     }
     
     vecIndex = vecIndex + 1;
     vecPoints[vecIndex] = [] ;
     vecInfo.innerHTML = JSON.stringify(vecPoints);
     updateHeader();
+    return true;
 }
 
 function initCanvasParam(){
@@ -581,13 +600,21 @@ async function updateLabelDropdown(dependOn) {
 
 function updateLabelBackground(taskLabel, dependOn){
     const labelList = document.getElementById("label_list");
-    let needCheck;
+    let needCheck, selectedNum;
+    const noDefaultValue = (dependOn===undefined);
 
-    if (dependOn!==undefined) document.querySelector('.app-sel-all').checked = false
-    else document.querySelector('.app-sel-all').checked = true
+    if (noDefaultValue){
+        document.querySelector('.app-sel-all').checked = true;
+        selectedNum = taskLabel.length;
+    } else {
+        document.querySelector('.app-sel-all').checked = false;
+        selectedNum = dependOn.length;
+    }
+    
+    // Update Title
+    document.getElementById("label_list_menu").textContent = `Select ${selectedNum} Labels`;
 
-    document.getElementById("label_list_menu").textContent = `Select ${dependOn.length} Labels`;
-
+    // Generate Option and Check
     for(let i=0; i<taskLabel.length; i++){
 
         let newDiv = document.createElement("div"); 
@@ -753,6 +780,7 @@ function enableAreaIcon(){
 }
 
 function disableAreaIcon(){
+    console.log("Disable Area Icon");
     document.getElementById('draw-poly-icon').style.cursor = "auto";
     document.getElementById('draw-poly-icon').removeAttribute("onclick")
     document.getElementById("draw-poly-icon").style.color = "red";
@@ -769,16 +797,17 @@ function blockVector(){
 }
 
 function disableVectorIcon(){ 
+    console.log("Disable Vector Icon");
     document.getElementById('draw-vector-icon').style.cursor = "auto";
     document.getElementById('draw-vector-icon').removeAttribute("onclick");
-    document.getElementById("draw-poly-icon").style.color = "red";
+    document.getElementById("draw-vector-icon").style.color = "red";
 }
 
 function enableVectorIcon(){ 
     document.getElementById('draw-vector-icon').style.cursor = "pointer";
     document.getElementById('draw-poly-icon').setAttribute("onclick", "polyMode(true)")
     document.getElementById('draw-vector-icon').setAttribute("onclick", "vectorMode(true)")
-    document.getElementById("draw-poly-icon").style.color = "gray";
+    document.getElementById("draw-vector-icon").style.color = "gray";
 }
 
 
