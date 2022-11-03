@@ -84,12 +84,6 @@ function addErrorHref(uuid){
     ele.setAttribute("onclick"      , "errModalEvent(this);");
 }
 
-// Testing
-async function atLeastOneRadio() {
-    var radios = document.querySelectorAll('.app-opt:checked');
-    var value = radios.length>0 ? radios.length: 0;
-    document.getElementById("label_list_menu").textContent = `Select ${value} Labels`
-}
 
 // check function
 async function checkLabelFunction() {
@@ -154,7 +148,7 @@ async function setDefaultModal(){
     document.getElementById(`model_app_menu`).setAttribute("style", "display: none");
     document.getElementById(`model_app_menu_def`).setAttribute("style", "cursor: auto");    
     document.getElementById("custom_file_label").textContent = "Choose file";
-    disableAppArea();
+    clearAppArea();
 
     // Other
     const defaultContent = "Please select one"
@@ -812,7 +806,7 @@ async function editModalEvent(obj, init=false) {
     
 
     console.log(`Open "EDIT" modal`);
-    if (init) setDefaultModal();
+    // if (init) setDefaultModal();
 
     window[MODE] = EDIT_MODE;
     const task_uuid = obj.value;
@@ -822,40 +816,40 @@ async function editModalEvent(obj, init=false) {
     const data = await getAPI(`/task/${task_uuid}/info`)
     
     if(!data) return(undefined);
-    else {
+    
+    console.log(task_uuid, data);
+    document.getElementById("edit_name").value = data["name"];
+    
+    // update source type and source
+    updateSourceType("edit_source_type", data["source_type"]);
+    updateSourceOption(data["source_type"], "edit_source", data["source"]);
 
-        document.getElementById("edit_name").value = data["name"];
-        
-        // update source type and source
-        updateSourceType("edit_source_type", data["source_type"]);
-        updateSourceOption(data["source_type"], "edit_source", data["source"]);
+    // fix model source
+    document.getElementById("edit_model_source_type_menu").textContent = "From Exist Model";
+    document.getElementById("edit_model_source_type_menu").value = "From Exist Model";
+    document.getElementById("edit_model_source_type_menu").disabled = true;
 
-        // fix model source
-        document.getElementById("edit_model_source_type_menu").textContent = "From Exist Model";
-        document.getElementById("edit_model_source_type_menu").value = "From Exist Model";
-        document.getElementById("edit_model_source_type_menu").disabled = true;
+    // update model information and disable it
+    document.getElementById("edit_model_menu").textContent = data["model"];
+    document.getElementById("edit_model_menu").value = data["model"];
+    document.getElementById("edit_model_menu").disabled = true;
+    
+    // update model_app and setup default value
+    // updateModelAppOption("model", data["model"], data["application"]["name"]);
+    updateApplication(data)
+    
 
-        // update model information and disable it
-        document.getElementById("edit_model_menu").textContent = data["model"];
-        document.getElementById("edit_model_menu").value = data["model"];
-        document.getElementById("edit_model_menu").disabled = true;
-        
-        // update model_app and setup default value
-        updateModelAppOption("model", data["model"], data["application"]["name"]);
-
-        // update device information 
-        document.getElementById("edit_device_menu").textContent = data['device'];
-        document.getElementById("edit_device_menu").disabled = true;
-        
-        // update threshold
-        document.getElementById("edit_thres").value = data['thres'];
-        
-        // set the value of the submit button to uuid
-        // document.getElementById("modal_edit_submit").value = obj.id;
-        document.getElementById("modal_app_submit").value = task_uuid;
-        
-    }
-
+    // update device information 
+    document.getElementById("edit_device_menu").textContent = data['device'];
+    document.getElementById("edit_device_menu").disabled = true;
+    
+    // update threshold
+    document.getElementById("edit_thres").value = data['thres'];
+    
+    // set the value of the submit button to uuid
+    // document.getElementById("modal_edit_submit").value = obj.id;
+    document.getElementById("modal_app_submit").value = task_uuid;
+    
     document.getElementById("modal_back_bt").value = task_uuid;
 
     const nextBtn = document.getElementById("edit_bt_modal_app");
@@ -955,9 +949,16 @@ async function checkModalOption(){
 
 }
 
+function buttonKeyEvent(e){
+    if(e.keyCode === 13) $('.btn-primary-custom').click()
+    else if(e.keyCode === 27) $('.btn-secondary-custom').click()
+}
+
 function showModal(name){
-    $(`#${name}`).modal('show');
-    updateAppItem(document.getElementById('model_app_menu').text)   
+    $(`#${name}`).modal('show')
+
+    updateAppItem(document.getElementById('model_app_menu').text)
+    
 }
 
 function hideModal(name){
@@ -997,6 +998,8 @@ async function addAppModalEvent(self) {
 
     hideModal("addModal");
     showModal("appModal");
+
+    updateLabelDropdown()
 }
 
 function editAppModalEvent() {
@@ -1023,6 +1026,9 @@ function editAppModalEvent() {
     hideModal("editModal");
     
     showModal("appModal");
+
+    // Update in editModalEvent
+    // updateLabelDropdown()
     
 }
 
@@ -1051,67 +1057,6 @@ function importAppModalEvent() {
     showModal("appModal");
 }
 
-async function updateLabelDropdown() {
-
-    // Get target model name
-    let head = "";
-    if ( window[MODE] === EDIT_MODE) head = "edit_";
-
-    const modelName = document.getElementById(`${head}model_menu`).textContent;
-
-    // Update depend_on
-    
-    
-    // Clear dropdown-div
-    let totalDropdwon = document.querySelectorAll("#dropdown-div");
-
-    totalDropdwon.forEach( function(ele, idx){
-        console.log("Clean label dropdown");
-        ele.remove();
-    })
-
-    // Get the task uuid randomly which use the same model
-    const modelWithUUID = await getAPI( "/model" );
-    if (! modelWithUUID) return undefined;
-
-    // Get task label according the task
-    const taskUUID    = modelWithUUID[modelName][0];
-    const taskLabel   = await getAPI( `/task/${taskUUID}/label` )
-    if (! taskLabel) return undefined;
-
-    updateLabelBackground(taskLabel);
-}
-
-function updateLabelBackground(taskLabel){
-    const labelList = document.getElementById("label_list");
-
-    document.getElementById("label_list_menu").textContent = `Selected ${taskLabel.length} Labels`;
-
-    for(let i=0; i<taskLabel.length; i++){
-
-        let newDiv = document.createElement("div"); 
-        let newInput = document.createElement("input");
-        let newText = document.createElement("a");
-    
-        newText.setAttribute("class", "app-opt-text");
-        newText.innerHTML = `${taskLabel[i]}`;
-    
-        newInput.setAttribute("class", "app-opt");
-        newInput.setAttribute("type", "checkbox");
-        newInput.setAttribute("onchange", "atLeastOneRadio(this)");
-        newInput.checked = true;
-    
-        newDiv.setAttribute("id", "dropdown-div");
-        newDiv.setAttribute("class", "dropdown-item d-flex flex-row align-items-center");
-        
-        newDiv.appendChild(newInput);
-        newDiv.appendChild(newText);
-
-        labelList.appendChild(newDiv);
-    }
-
-}
-
 
 async function appModalEvent(){
     
@@ -1129,15 +1074,8 @@ async function appModalEvent(){
         else if ( curMode === IMPORT_MODE) importAppModalEvent();
         else if ( curMode === EDIT_MODE) editAppModalEvent();
         
-        // Update label
+    } else alert(`Capture Empty Input ( ${msg} )`);
         
-        if (curMode !== IMPORT_MODE) {
-            updateLabelDropdown();
-        }
-        
-    } else {
-        alert(`Capture Empty Input ( ${msg} )`);
-    }
     
     await updateModalOpen()
     
@@ -1146,7 +1084,6 @@ async function appModalEvent(){
 async function updateModalOpen(){
     $('body').addClass("modal-open");
     setTimeout(function() {
-        console.log('open');
         // needs to be in a timeout because we wait for BG to leave
         // keep class modal-open to body so users can scroll
         $('body').addClass('modal-open');

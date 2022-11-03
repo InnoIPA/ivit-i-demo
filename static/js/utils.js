@@ -84,7 +84,6 @@ async function getAPI(api, errType=LOG, log=false) {
     const data = await $.ajax({
         url: SCRIPT_ROOT + api,
         type: "GET",
-        dataType: "json",
         error: errEvent
     });
     // Return Data
