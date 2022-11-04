@@ -84,7 +84,6 @@ function addErrorHref(uuid){
     ele.setAttribute("onclick"      , "errModalEvent(this);");
 }
 
-
 // check function
 async function checkLabelFunction() {
 
@@ -122,7 +121,6 @@ async function filterFunction() {
         }
     }
 }
-
 
 // Set Default Modal
 function setDefaultContent(eleName, content){
@@ -538,105 +536,97 @@ async function getSourceContent(){
     return { sourceType, sourceContent }
 }
 
-async function parseInfoToForm(){
+// Parsing Application Information For Add, Edit Form
+async function parseAppInfo(){
+    console.log("Parsing Application Infomation from Website");
 
-    let uploader    = "file-uploader";
-    let head        = "";
-    let data        = {};
-    let formData    = new FormData();
-    // let sourceContent, sourceType;
-
-    if (window[MODE] === EDIT_MODE) {
-        head        = "edit_";
-        uploader    = "edit-source-file-uploader";
-    }
-
-    // Define Data Key
-    dName       = "name";
-    dThres      = "thres"
-    dModel      = "model"
-    dApp        = "application"
-    dSrc        = "source"
-    dSrcType    = "source_type"
-    dDevice     = "device"
-
-    appName     = "name";
-    appDepend   = "depend_on";
-    appSens     = "sensitivity"
-    appArea     = "area_points";
-    appVector   = "area_vector";
-
-    appLogic    = "logic";
-    appThres    = "logic_thres";
-    
-    appAlarm    = "alarm";
+    const appName     = "name";
+    const appDepend   = "depend_on";
+    const appSens     = "sensitivity"
+    const appArea     = "area_points";
+    const appVector   = "area_vector";
+    const appLogic    = "logic";
+    const appThres    = "logic_thres";
+    const appAlarm    = "alarm";
+    let appData     = {};
 
     // Update application which on shared dialog
-    let appData = {};
-    appData[appName]   = document.getElementById("model_app_menu").innerText;
+    appData[appName] = document.getElementById("model_app_menu").innerText;
 
     // Double Check
-    if (appData[appName]==="Please select one"){
-        return undefined;
-    }
+    if (appData[appName]==="Please select one") return undefined;
 
     const getAllLabels = await checkLabelFunction()
     appData[`${appDepend}`] = JSON.stringify( getAllLabels );
 
     // Condition ( Counting )
-    let _logic      = document.getElementById('logic_menu').value,
-        _logicThres = document.getElementById('logic_thres').value;
-        _alarm      = document.getElementById('app_alarm').value;
-    
-    // Logic
+    const _logic      = document.getElementById('logic_menu').value;
+    const _logicThres = document.getElementById('logic_thres').value;
     if ( _logic !== undefined && _logicThres !== '' ){
-        console.log(_logic, _logicThres);
-        appData[appLogic]   = _logic;
-        appData[appThres]   = _logicThres;
-    }
+            appData[appLogic]   = _logic;
+            appData[appThres]   = _logicThres; }
 
     // Alarm
-    if ( _alarm ){
-        console.log('Add Alarm : ', _alarm);
-        appData[appAlarm]   = _alarm;
-    }
+    const _alarm = document.getElementById('app_alarm').value;
+    if ( _alarm ) appData[appAlarm]   = _alarm;
     
     // Area Information
-    ret   = await getRescaleAreaPoint();
-    if(ret) appData[appArea] = ret;
+    const _retArea = await getRescaleAreaPoint();
+    if(_retArea) appData[appArea] = _retArea;
 
-    // Moving Direction
-    else if ( appData[appName] === 'moving_direction' ){
-        appData[appArea]   = await getRescaleAreaPoint();
-        appData[appVector]   = await getRescaleVectorPoint();
-        
-    }
+    // Moving Direction 
+    const _retVec = await getRescaleVectorPoint();
+    if(_retVec) appData[appVector] = _retVec;
 
     // Sensitivity
-    let _sens = document.getElementById('sensitive_menu').value;
-    if ( _sens !== undefined && _sens !== '' ){
-        console.log(appSens, _sens);
-        appData[appSens] = _sens;
+    const _retSens = document.getElementById('sensitive_menu').value;
+    if ( _retSens !== undefined && _retSens !== '' ){
+        appData[appSens] = _retSens;
     }
 
-    // // Check and append source data
-    const { sourceType, sourceContent } = await getSourceContent();
+    return JSON.stringify(appData)
+}
+
+// Parsing Information For Add, Edit Form
+async function parseInfoToForm(){
+    console.log("Parsing Information from Website");
+    let head        = "";
+    let uploader    = "file-uploader";
+    
+    if (window[MODE] === EDIT_MODE) {
+        head        = "edit_";
+        uploader    = "edit-source-file-uploader";
+    }
+
+    let data        = {};
+    let formData    = new FormData();
+    
+    // Define Data Key
+    const dName     = "name"
+    const dThres    = "thres"
+    const dModel    = "model"
+    const dApp      = "application"
+    const dSrc      = "source"
+    const dSrcType  = "source_type"
+    const dDevice   = "device"
 
     // Collection the related data from ADD modal
     data[dName]     = document.getElementById(`${head}name`).value;
     data[dThres]    = document.getElementById(`${head}thres`).value;
     data[dModel]    = document.getElementById(`${head}model_menu`).innerText;
-    data[dApp]      = JSON.stringify( appData );
-    data[dSrc]      = sourceContent;
-    data[dSrcType]  = sourceType;
     data[dDevice]   = document.getElementById(`${head}device_menu`).innerText;
 
+    // Check and append source data
+    let { sourceType, sourceContent } = await getSourceContent();
+    data[dSrc]      = sourceContent;
+    data[dSrcType]  = sourceType;
+
+    // Application
+    data[dApp]      = await parseAppInfo();
+
     // Create and append information
-    for ( let key in data ) {
-        console.log(key, data[key]);
-        formData.append(key, data[key]);
-    }
-    
+    console.log(data); 
+    for ( const key in data ) { formData.append(key, data[key]); }
     return formData;
 }
 
@@ -656,20 +646,17 @@ async function addSubmit() {
 
     // Add TASK
     const retData = await postAPI( `/add`, formData, FORM_FMT, ALERT )
-
-    // If success
     if(!retData) return(undefined);
 
+    // If success
     hideModal("appModal");
-    setDefaultModal();
-    if(!DEBUG_MODE) location.reload();
+    if(!DEBUG_MODE) await location.reload();
     console.log(retData);
-
+    setDefaultModal();        
 }
 
 // Edit Task
 async function editSubmit(obj) {
-
     console.log(`EDIT a task ${obj.value}`);
 
     // Get formData from each element
@@ -681,15 +668,17 @@ async function editSubmit(obj) {
     // Edit TASK
     // postAPI(api, inData, inType=JSON_FMT, errType=LOG)
     const retData = await postAPI( `/edit/${obj.value}`, formData, FORM_FMT, ALERT )
-
-    // if success
     if(!retData) return(undefined);
 
+    // if success
     hideModal("appModal");
-    if(!DEBUG_MODE) location.reload();
+    debugger
+    if(!DEBUG_MODE) await location.reload();
+    debugger
     console.log(retData);
+    debugger
     setDefaultModal();        
-
+    debugger
 }
 
 // import task

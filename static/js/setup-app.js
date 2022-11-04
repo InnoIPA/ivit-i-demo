@@ -4,8 +4,6 @@ let areaIndex = 0;
 let vecPoints = {};
 let vecIndex = 0;
 
-let retAreaPoints = {};
-let retVecPoints = {};
 
 let areaAlpha = 0.2;
 let areaPalette = [ 
@@ -117,8 +115,6 @@ function areaEvent(event) {
     let retY = Math.round(orgY/scale);
 
     getRescaleAreaPoint();
-    // retAreaPoints[areaIndex].push( [ retX, retY ] );
-    // areaInfo.innerHTML = JSON.stringify(retAreaPoints);
 
     drawPolyEvent(areaIndex);
 
@@ -146,13 +142,10 @@ function vectorEvent(event){
     // Got Mouse Down Position
     let org_x = event.offsetX, org_y = event.offsetY ;
 
+    
     // Vector only need two point to draw, %2 -> 0, 1, 0, 1
     curIndex = vecPoints[vecIndex].length%2
-    if (curIndex==0){
-        vecPoints[vecIndex] = [];
-        retVecPoints[vecIndex] = [];
-    }
-
+    
     // Get canvas scale 
     let scaledX = appCanvas.width / appCanvas.offsetWidth
     let scaledY = appCanvas.height / appCanvas.offsetHeight;
@@ -161,7 +154,8 @@ function vectorEvent(event){
     
     vecPoints[vecIndex][curIndex] = [ trg_x, trg_y];
 
-    vecInfo.innerHTML = JSON.stringify(vecPoints);
+    // vecInfo.innerHTML = JSON.stringify(vecPoints);
+    getRescaleVectorPoint();
 
     drawVecEvent()
 
@@ -221,15 +215,16 @@ function drawArrow(fromx, fromy, tox, toy, arrowWidth){
 
 function drawCurVec(inVectorIndex){
 
-    appCtx.fillStyle = vecPalette[inVectorIndex%vecPalette.length];
-    appCtx.strokeStyle = vecPalette[inVectorIndex%vecPalette.length];
-
     if ( inVectorIndex === undefined ) inVectorIndex = vecIndex;
     if(vecPoints[inVectorIndex].length===0) return undefined;
 
+    console.log('Draw Current Poly, ', inVectorIndex);
+    
+    appCtx.fillStyle = vecPalette[inVectorIndex%vecPalette.length];
+    appCtx.strokeStyle = vecPalette[inVectorIndex%vecPalette.length];
+
     // Check recent area is not null
     appCtx.beginPath()
-
     drawArrow(  
         vecPoints[inVectorIndex][0][0], 
         vecPoints[inVectorIndex][0][1],
@@ -246,12 +241,11 @@ function drawPreVec(){
     const vecNum   = vecIndexList.length
 
     for(let i=0; i<vecNum; i++){
-        vecKey = vecIndexList[i];
+        vecKey = parseFloat(vecIndexList[i]);
         
-        if(vecPoints[vecKey].length===0) return undefined;    
+        if(vecPoints[vecKey].length!==2) return undefined;    
         drawCurVec(vecKey);
     }
-
 }
 
 function drawVecEvent(inVectorIndex) {
@@ -270,6 +264,7 @@ function drawVecEvent(inVectorIndex) {
         appCtx.fill()
         appCtx.closePath()
     } else if (vecPoints[inVectorIndex].length === 2) {
+        console.log("Draw arrow");
         drawCurVec(inVectorIndex);
     }
 
@@ -277,16 +272,18 @@ function drawVecEvent(inVectorIndex) {
 
 
 function drawCurPoly(inAreaIndex){
+    
+    if ( inAreaIndex === undefined ) inAreaIndex = areaIndex;
+    if(areaPoints[inAreaIndex].length===0) return undefined;
+
+    console.log('Draw Current Poly, ', inAreaIndex);
 
     appCtx.fillStyle = areaPalette[inAreaIndex%areaPalette.length];
     appCtx.strokeStyle = areaPalette[inAreaIndex%areaPalette.length];
     // new path to draw
 
     appCtx.beginPath()
-
-    if ( inAreaIndex === undefined ) inAreaIndex = areaIndex;
-    if(areaPoints[inAreaIndex].length===0) return undefined;
-
+    
     // Draw current area
     for(let idx=0; idx<areaPoints[inAreaIndex].length; idx++){
 
@@ -338,60 +335,42 @@ function drawPolyEvent(inAreaIndex){
 async function getRescaleAreaPoint(){
 
     const scale = parseFloat(document.getElementById("app_scale").textContent);
-    let retAreaPoints = {};
+    let _retAreaPoints = {};
     
     for( const key in areaPoints){
 
-        retAreaPoints[key] = [];
+        _retAreaPoints[key] = [];
         for( const pts in areaPoints[key] ){
-            retAreaPoints[key].push( 
+            _retAreaPoints[key].push( 
                 [ Math.round(areaPoints[key][pts][0]/scale), Math.round(areaPoints[key][pts][1]/scale) ]
             )
         }
     }
     
-    areaInfo.innerHTML = JSON.stringify(retAreaPoints);
-    return retAreaPoints
+    areaInfo.innerHTML = JSON.stringify(_retAreaPoints);
+    return _retAreaPoints
 }
 
 async function getRescaleVectorPoint(){
 
     const scale = parseFloat(document.getElementById("app_scale").textContent);
-    let retVecPoints = {};
+    let _retVecPoints = {};
 
     for( const key in vecPoints){
 
-        retAreaPoints[key] = [];
+        _retVecPoints[key] = [];
         for( const pts in vecPoints[key] ){
-            retAreaPoints[key].push( 
+            _retVecPoints[key].push( 
                 [ Math.round(vecPoints[key][pts][0]/scale), Math.round(vecPoints[key][pts][1]/scale) ]
             )
         }
     }
 
-    // for( let vecID=0; vecID<=vecIndex; vecID++){
-        
-    //     retVecPoints[vecID] = [];
-
-    //     for ( let ptID=0; ptID<vecPoints[vecID].length;ptID++){
-            
-    //         orgX = vecPoints[vecID][ptID][0];
-    //         orgY = vecPoints[vecID][ptID][1];
-
-    //         trgX = Math.round(orgX/scale);
-    //         trgY = Math.round(orgY/scale);
-            
-    //         retVecPoints[vecID].push( [ trgX, trgY ] );
-    //     }
-    // }
-        
-    console.log(retVecPoints);
-    vecInfo.innerHTML = JSON.stringify(retVecPoints);
-    return retVecPoints
+    vecInfo.innerHTML = JSON.stringify(_retVecPoints);
+    return _retVecPoints
 }
 
 // Canvas Helper Function
-
 
 // Update Area & Vector Block Title
 function updateHeader(){
@@ -459,18 +438,16 @@ function recoveryVectorPoint(){
         updateHeader();
     }
 
-    vecInfo.innerHTML = JSON.stringify(vecPoints);
+    // vecInfo.innerHTML = JSON.stringify(vecPoints);
+    getRescaleVectorPoint();
 }
 
 // Confirm Canvas: the entrance of confirmCanvas and confirmArea
-// function confirmCanvas() {
-//     return (( penMode === "vector" ) ? confirmVector : confirmArea )
-// }
+
 function confirmCanvas() {
     
     let trgFunc = penMode === "vector" ? confirmVector : confirmArea;
     let ret = trgFunc();
-
     console.log(`Confirm Canvas: ${ret} (${penMode} )`);
     return ret
 }
@@ -511,77 +488,65 @@ function initCanvasParam(){
     */
     console.log(`Init Canvas Parameter ( ${window[MODE]} )`);
 
-    areaPoints = {};
-    retAreaPoints = {};
-    areaIndex = 0;
-    
-    vecPoints = {};
-    retVecPoints = {};
-    vecIndex = 0;
-    
+    // Init point object
+    areaPoints  = {};
+    vecPoints   = {};
 
+    // Add mode need to initial to zero
     if ( window[MODE]===ADD_MODE ){
-        areaPoints[areaIndex] = [];
-        retAreaPoints[areaIndex] = [];
-
-        vecPoints[vecIndex] = [];
-        retAreaPoints[vecIndex] = [];
-
-        areaInfo.innerHTML = "";
-        vecInfo.innerHTML = "";
-        
+        areaIndex = 0, vecIndex = 0;
+        areaInfo.innerHTML = "", vecInfo.innerHTML = "";
     }
     else if ( window[MODE]===EDIT_MODE ) {
-        
-        console.log('Rescale area point');
 
-        const scale = parseFloat(document.getElementById("app_scale").textContent);
-        
-        if(areaInfo.textContent){
-            _areaPoints = JSON.parse(areaInfo.textContent);
-
-            // rescale
-            for ( const key in _areaPoints ) {
-                let intKey = parseInt(key);
-                areaPoints[intKey] = [];
-                retAreaPoints[intKey] = [];
-                for ( const pts in _areaPoints[key] ){
-                    retAreaPoints[intKey].push( _areaPoints[key][pts] )
-                    areaPoints[intKey].push( [ _areaPoints[key][pts][0]*scale, _areaPoints[key][pts][1]*scale] )
+        function _rescaleHelper(points, scale){
+            if(!points || !scale) return undefined;
+            let tempData = {};
+            for ( const idx in points ){
+                tempData[ parseInt(idx) ] = [];
+                for ( const pts in points[idx] ){
+                    tempData[ parseInt(idx) ].push([
+                        points[idx][pts][0]*scale,
+                        points[idx][pts][1]*scale
+                    ])
                 }
             }
-            
-            // areaIndex = Object.keys(areaPoints).length-1;
-            areaKeys = Object.keys(areaPoints)
-            areaIndex = parseInt(areaKeys[ areaKeys.length-1 ]);
-            console.log("Get Area Info Data: ", areaPoints, areaIndex);
-
+            return tempData;
         }
 
-        if (vecInfo.textContent) {
-            _vecPoints = JSON.parse(vecInfo.textContent);
+        const scale     = parseFloat(document.getElementById("app_scale").textContent);
+        const hasArea   = Boolean(areaInfo.textContent);
+        const hasVec    = Boolean(vecInfo.textContent);
 
-            // rescale
-            for ( const key in _vecPoints ) {
-                let intKey = parseInt(key);
-                vecPoints[intKey] = [];
-                for ( const pts in _vecPoints[key] ){
-                    vecPoints[intKey].push( [_vecPoints[key][pts][0]*scale, _vecPoints[key][pts][1]*scale] )
-                }
-            }
+        let areaMinIndex    = 0; 
+        let vecMinIndex     = 0; 
 
-            // vecIndex = Object.keys(vecPoints).length-1;
-            vecKeys = Object.keys(vecPoints)
-            vecIndex = parseInt(vecKeys[ vecPoints.length-1 ]);
-            console.log("Get Vector Info Data: ", vecPoints, vecIndex);
+        if(hasArea){
+            let _areaPoints = JSON.parse(areaInfo.textContent);
+            areaPoints      = _rescaleHelper(_areaPoints, scale);
+            areaKeys        = Object.keys(areaPoints).map(function(x){ return parseInt(x) });
+            areaMinIndex    = areaKeys[0];
+            areaIndex       = areaKeys[ areaKeys.length-1 ];
         }
+
+        if (hasVec) {
+            let _vecPoints = JSON.parse(vecInfo.textContent);
+            vecPoints       = _rescaleHelper(_vecPoints, scale);
+            vecKeys         = Object.keys(vecPoints).map(function(x){ return parseInt(x) });
+            vecMinIndex     = vecKeys[0];
+            vecIndex        = vecKeys[ vecKeys.length-1 ];
+        }
+
+        if(!hasArea) areaIndex = vecMinIndex;            
+        if(!hasVec) vecIndex = areaMinIndex;
 
     }
 
+    areaPoints[areaIndex]   = [];
+    vecPoints[vecIndex]     = [];
+
     document.getElementById('draw-confirm-bt').onclick = confirmCanvas;
-
     document.getElementById('draw-clear-bt').onclick = clearCanvas;
-
 }
 
 // Search Engine
@@ -690,8 +655,6 @@ function updateLabelBackground(taskLabel, dependOn){
 
 function showLoading(){ document.getElementById("loading").style.display = "block"; }
 function hideLoading(){ document.getElementById("loading").style.display = "none"; }
-
-
 
 function disableAppArea(){
     document.getElementById("area_div").style = "display: none";
