@@ -481,7 +481,23 @@ function confirmVector(){
     return true;
 }
 
-function initCanvasParam(){
+async function _rescaleHelper(points, scale){
+    if(!points || !scale) return undefined;
+    let tempData = {};
+    for ( const idx in points ){
+        let intID = parseInt(idx)
+        tempData[ intID ] = [];
+        for ( const pts in points[intID] ){
+            let pt = [ points[intID][pts][0]*scale, points[intID][pts][1]*scale ];
+            tempData[ intID ].push(pt)
+        }
+    }
+    console.log('Rescale points, Scale:', scale ,'\n', points, tempData);
+    return tempData;
+}
+
+
+async function initCanvasParam(){
     /*
     初始畫 Canvas 的相關資料
         - 當 Edit Mode 不清空資料
@@ -499,21 +515,6 @@ function initCanvasParam(){
     }
     else if ( window[MODE]===EDIT_MODE ) {
 
-        function _rescaleHelper(points, scale){
-            if(!points || !scale) return undefined;
-            let tempData = {};
-            for ( const idx in points ){
-                tempData[ parseInt(idx) ] = [];
-                for ( const pts in points[idx] ){
-                    tempData[ parseInt(idx) ].push([
-                        points[idx][pts][0]*scale,
-                        points[idx][pts][1]*scale
-                    ])
-                }
-            }
-            return tempData;
-        }
-
         const scale     = parseFloat(document.getElementById("app_scale").textContent);
         const hasArea   = Boolean(areaInfo.textContent);
         const hasVec    = Boolean(vecInfo.textContent);
@@ -522,29 +523,32 @@ function initCanvasParam(){
         let vecMinIndex     = 0; 
 
         if(hasArea){
+            
             let _areaPoints = JSON.parse(areaInfo.textContent);
-            areaPoints      = _rescaleHelper(_areaPoints, scale);
+            areaPoints      = await _rescaleHelper(_areaPoints, scale);
             areaKeys        = Object.keys(areaPoints).map(function(x){ return parseInt(x) });
             areaMinIndex    = areaKeys[0];
-            areaIndex       = areaKeys[ areaKeys.length-1 ];
+            areaIndex       = areaKeys[ areaKeys.length-1 ] + 1;
         }
 
         if (hasVec) {
+            
             let _vecPoints = JSON.parse(vecInfo.textContent);
-            vecPoints       = _rescaleHelper(_vecPoints, scale);
+            vecPoints       = await _rescaleHelper(_vecPoints, scale);
             vecKeys         = Object.keys(vecPoints).map(function(x){ return parseInt(x) });
             vecMinIndex     = vecKeys[0];
-            vecIndex        = vecKeys[ vecKeys.length-1 ];
+            vecIndex        = vecKeys[ vecKeys.length-1 ] + 1;
         }
 
         if(!hasArea) areaIndex = vecMinIndex;            
         if(!hasVec) vecIndex = areaMinIndex;
 
     }
-
+    
+    // Init New Area or Vector Index
     areaPoints[areaIndex]   = [];
     vecPoints[vecIndex]     = [];
-
+    
     document.getElementById('draw-confirm-bt').onclick = confirmCanvas;
     document.getElementById('draw-clear-bt').onclick = clearCanvas;
 }
@@ -734,13 +738,13 @@ async function enableAppArea(trg_mode=""){
     
     // calculate scale
     appScale.textContent = imgScale;
-    console.log(`H:${imgHeight}, W:${imgWidth}, Ratio:${imgScale}`);
+    // console.log(`H:${imgHeight}, W:${imgWidth}, Ratio:${imgScale}`);
 
+    // Init Canvas
+    await initCanvasParam();
     // If area_info has content
-    initCanvasParam();
-    if(document.getElementById("area_info").textContent !== ""){   
-          
-        drawPolyEvent();
+    if(document.getElementById("area_info").textContent !== ""){
+        drawPreview();
     }
 
     polyMode();
