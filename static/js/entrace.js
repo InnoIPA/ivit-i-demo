@@ -627,6 +627,7 @@ async function parseInfoToForm(){
     // Create and append information
     console.log(data); 
     for ( const key in data ) { formData.append(key, data[key]); }
+    console.log(formData);
     return formData;
 }
 
@@ -650,7 +651,7 @@ async function addSubmit() {
 
     // If success
     hideModal("appModal");
-    if(!DEBUG_MODE) await location.reload();
+    if(!DEBUG_MODE) location.reload();
     console.log(retData);
     setDefaultModal();        
 }
@@ -672,13 +673,10 @@ async function editSubmit(obj) {
 
     // if success
     hideModal("appModal");
-    debugger
-    if(!DEBUG_MODE) await location.reload();
-    debugger
+    if(!DEBUG_MODE) location.reload(); 
     console.log(retData);
-    debugger
     setDefaultModal();        
-    debugger
+    
 }
 
 // import task
@@ -694,7 +692,6 @@ async function importSubmit() {
         alert("Not Setup Application");
         return undefined;
     };
-
 
     // Add other information: capture from /import_proc, it's the same with the return infor of /import_zip (web api)
     const eleZipDiv = document.getElementById('import_zip_model')
@@ -724,19 +721,18 @@ async function importSubmit() {
     formData.append( "tag"          , trg_data["tag"] );
 
     // Log
-    // console.log("/import \n", "********");
-    // for(var pair of formData.entries()) console.log(pair[0]+ ', '+ pair[1]);
+    console.log("/import \n", "********");
+    for(var pair of formData.entries()) console.log(pair[0]+ ', '+ pair[1]);
 
     // Import Event
     const retData = await postAPI( `/import`, formData, FORM_FMT, ALERT )
-
+    if(!retData) return undefined;
+    
     // if success
-    if(retData) {
-        console.log(retData);
-        location.reload();
-        setDefaultModal();
+    console.log(retData);
+    location.reload();
+    setDefaultModal();
         
-    } else return(undefined);
 }
 
 // Delete Task
