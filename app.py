@@ -62,7 +62,6 @@ def home():
     # for status, task_list in task_info.items():
     #     for idx, task in enumerate(task_list):
     #         task_info[status][idx]["name"]=task["name"].replace("_", " ")
-        
     
     # logging.info('Container status: {}'.format(webapi(['status'], 'GET')))
     return render_template('entrance.html', data=task_info)
@@ -120,7 +119,6 @@ def test():
             file_path = os.path.join(temp_root, file_name)
             file.save(file_path)
             data['source'] = file_path
-        print('Final way')
         print(data)
 
     else:
