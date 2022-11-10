@@ -46,7 +46,7 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 # ------------
 # app.config['AF']='intel'
 app.config['HOST']='172.16.92.130'
-app.config['PORT']='818'
+app.config['PORT']='819'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 def webapi(cmds:list, method:str='GET', data=None):
