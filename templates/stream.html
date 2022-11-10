@@ -91,8 +91,10 @@
                                     <h6 class="h5 m-0 font-weight-bold card-title">Live Stream</h6>
                                 </div>
                                 <div class="card-body custom image">
-                                    <div class="loader" id="loader">Loading</div>
-                                    <img id="image" class="image">
+                                    <div class="loader" id="loader" style="display:block">Loading</div>
+                                    <!-- <img id="image" class="image" style="display:none"> -->
+                                    <video id="webrtc-video" autoplay muted playsinline controls="false"
+                                            style="height:100%; display: none" ></video>
                                 </div>
                             </div>
 
@@ -231,6 +233,10 @@
     <!-- Page level plugins -->
     <script src="{{ url_for('static', filename='vendor/chart.js/Chart.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/demo/temperature.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/webrtc.js') }}"></script>
+
+    <!-- Loading -->
+    <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
 
 </body>
 

@@ -42,7 +42,8 @@ async function rmStramHref(uuid){
 }
 
 // Control the status button
-function statusEvent(uuid, stats, debug=false){
+let statusDict = [];
+async function statusEvent(uuid, stats, debug=false){
 
     const name    = document.getElementById(`${uuid}_name`).textContent;
 
@@ -56,6 +57,12 @@ function statusEvent(uuid, stats, debug=false){
         
         statsButton.innerText = RUN;
         statsButton.setAttribute("class", "btn btn-green custom");
+        
+        // Start the stream
+        streamStart(uuid);
+        await addWebRTC(uuid, `rtsp://127.0.0.1:8554/${uuid}`);
+        statusDict.push(uuid);
+
         addStreamHref(uuid);
         disableButton(optionButton);
 
@@ -63,6 +70,13 @@ function statusEvent(uuid, stats, debug=false){
         
         statsButton.innerText = STOP;
         statsButton.setAttribute("class", "btn btn-gray custom");
+
+        if(statusDict.includes(uuid) ){
+            
+            delWebRTC(uuid);
+            statusDict.pop[uuid];
+        }
+
         rmStramHref(uuid);
         enableButton(optionButton);
 

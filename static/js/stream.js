@@ -26,22 +26,17 @@ const URL = `http://${DOMAIN}:${PORT}/task/${uuid}/stream`;
 const streamSocket = io.connect(URL);
 
 $(document).ready(async function(){
-    // Setting Full Screen Event
-    await setFullScreenEvent();
 
-    
+    // Start the stream
+    connectWebRTC(uuid);
+
     // Update Basic Information
-    await updateBasicInfo();
-    
+    updateBasicInfo();
     
     // Update first frame
     // await getFirstFrame(uuid);
-    document.getElementById("loader").style.display = "block";
-    document.getElementById("image").style.display = "none";
-
-    
-    // Start the stream
-    streamStart(uuid);
+    // document.getElementById("loader").style.display = "block";
+    // document.getElementById("image").style.display = "none";
 
     // Seting Interval: Update GPU temperature every 5 seconds
     window.setInterval(updateGPUTemperature, intervalTime);
@@ -243,10 +238,11 @@ function updateGPUTemperature(){
 
 let firstFrame = true
 streamSocket.on(IMG_EVENT, function(msg){  
-    if (firstFrame==true){
-        document.getElementById("loader").style.display = "none";
-        document.getElementById("image").removeAttribute("style");
-    }
+    
+    // if (firstFrame==true){
+    //     document.getElementById("loader").style.display = "none";
+    //     document.getElementById("image").removeAttribute("style");
+    // }
     firstFrame = false
     const img=document.getElementById('image');
     img.src="data:image/jpeg;base64,"+msg;
