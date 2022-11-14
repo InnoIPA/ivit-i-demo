@@ -60,7 +60,9 @@ async function statusEvent(uuid, stats, debug=false){
         
         // Start the stream
         streamStart(uuid);
-        await addWebRTC(uuid, `rtsp://127.0.0.1:8554/${uuid}`);
+        if(!statusDict.includes(uuid) ){
+            await addWebRTC(uuid, `rtsp://127.0.0.1:8554/${uuid}`);
+        }
         statusDict.push(uuid);
 
         addStreamHref(uuid);
@@ -74,7 +76,9 @@ async function statusEvent(uuid, stats, debug=false){
         if(statusDict.includes(uuid) ){
             
             delWebRTC(uuid);
-            statusDict.pop[uuid];
+            // Delete
+            const index = statusDict.indexOf(uuid);
+            if(index > -1) statusDict.splice(index, 1);
         }
 
         rmStramHref(uuid);
