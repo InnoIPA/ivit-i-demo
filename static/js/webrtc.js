@@ -1,17 +1,58 @@
 // Create P2P Service
 let webrtc;
+let connectTime;
+let connectedWebrtc = false;
 
 const videoEl = document.querySelector('#webrtc-video')
 
+async function setWebRTC(streamID){
+    
+    console.log('Ask for setting webrtc');
+
+    // Check URL
+    let ret = undefined;
+    let trg_url = `http://${DOMAIN}:8083/stream/${streamID}/channel/0/webrtc`;
+    try{
+        await $.post(trg_url, { data: btoa(webrtc.localDescription.sdp) })
+        .done(async function (data) {
+            // 如果同意的話就會回傳資訊，透過該資訊設定 WebRTC Remote 端的資訊
+            // 當雙方都 setRemoteDescription 就可以開始連線
+            webrtc.setRemoteDescription(
+                new RTCSessionDescription({
+                    type: 'answer',
+                    sdp: atob(data)
+                }))
+            ret = true; 
+        })
+        .fail(async function(xhr, textStatus, errorThrown){
+            console.log('Error: ', JSON.parse(xhr.responseText)['payload']);
+        })
+
+    } catch(e){ }
+
+    return ret;
+}
+
+async function setWebRTCInterval(streamID){
+    const ret = await setWebRTC(streamID)
+    if(!ret){
+        let interval = setInterval( async function(){
+            const retInterval = await setWebRTC(streamID)
+            if(retInterval){
+                clearInterval(interval);
+                console.log('Clear SetWebRTC Interval');
+            }
+        }, 2000);
+    }
+}
+
 // Connect to RTSPtoWeb Project
 async function connectWebRTC(streamID) {
-
+    
     if(!streamID){
         alert('Empty Stream ID');  
         return undefined; 
     }
-
-    console.log("Start to connect WebRTC");
 
     // Create RTCPeerConnection
     console.log("Create Peer Connection");
@@ -21,9 +62,6 @@ async function connectWebRTC(streamID) {
         }],
         sdpSemantics: 'unified-plan'
     })
-
-    // Check URL
-    let trg_url = `http://${DOMAIN}:8083/stream/${streamID}/channel/0/webrtc`;
 
     // Add Track or Transceiver to capture the video
     // 建立 RTP Stream 每次隨機產生 SSRC， 在 createOffer 的 SDP 當中會帶入
@@ -36,45 +74,29 @@ async function connectWebRTC(streamID) {
     console.log("Define Negotiation");
     webrtc.onnegotiationneeded = async function handleNegotiationNeeded() {
 
+        console.log('Create Offer');
         // 建立請求
         const offer = await webrtc.createOffer()
 
         // 提供本地端的資訊
         await webrtc.setLocalDescription(offer)
-
+        
+        console.log('Trying to Get Remote Request');
         // 使用 http 與 remote 進行請求，需要透過 sdp 去請求
-        $.post(trg_url, {
-            data: btoa(webrtc.localDescription.sdp)
-        }, function (data) {
-            try {
+        
+        setWebRTCInterval(streamID);
 
-                // 如果同意的話就會回傳資訊，透過該資訊設定 WebRTC Remote 端的資訊
-                // 當雙方都 setRemoteDescription 就可以開始連線
-                webrtc.setRemoteDescription(
-
-                    new RTCSessionDescription({
-                        type: 'answer',
-                        sdp: atob(data)
-                    })
-                )
-            } catch (e) {
-                console.warn(e);
-            }
-        })
     }
 
     // ontrack
     // 完成連線後，透過該事件能夠在發現遠端傳輸的多媒體檔案時觸發，來處理/接收多媒體數據。
     console.log("Define Track Event");
     webrtc.ontrack = function (event) {
-        
         document.getElementById('webrtc-video').style.display = '';
         document.getElementById('loader').style.display = 'none';
-
-        console.log(event.streams.length + ' track is delivered')
+        // console.log(event.streams.length + ' track is delivered')
         videoEl.srcObject = event.streams[0]
         videoEl.play()
-        
     }
 
     // 建立 P2P 中雙向資料傳輸的通道
@@ -94,7 +116,6 @@ async function connectWebRTC(streamID) {
     // 呼叫 send() 並且兩邊都連接上的時候
     webrtcSendChannel.onmessage = event => console.log(event.data)
     
-    
 }
 
 // Play Video Element
@@ -105,13 +126,13 @@ async function startStream() {
 }
 
 // Pause Video Element
-function pauseStream() {
+async function pauseStream() {
     console.log("Pause Video");
     videoEl.pause();
 }
 
 // Stop WebRTC Connection
-function stopStream() {
+async function stopStream() {
     console.log("Stop Stream");
     videoEl.pause();
     webrtc.close();
@@ -122,12 +143,11 @@ async function delWebRTC(streamID){
     
     if(!streamID) { alert("Unknown streamID ... " ); return undefined; };
 
-    let url = `http://172.16.92.130:8083/stream/${streamID}/delete`;
-    url = `http://${DOMAIN}:8083/stream/${streamID}/delete`
-
+    let url = `http://${DOMAIN}:8083/stream/${streamID}/delete`;
+    
     let data = await getAPI( url, LOG, true, "demo:demo");
     if(!data) return undefined;
-    console.log(data);
+    
     getStreamList();
 }
 
@@ -179,16 +199,11 @@ async function getStreamList(){
     let data = await getAPI( url, LOG, true, "demo:demo");
     if(!data) return undefined;
 
-    console.log(data);
+    // get data
+    data = data['payload'];
+    for ( const key in data){
+        console.log(data[key]['name']);
+    }
 
-    // const steamList = document.getElementById("stream-list");
-    // steamList.innerHTML = "";
-    // data = data["payload"];
-    // for ( const key in data ){
-    //     var option = document.createElement("option");
-    //     option.value = key;
-    //     option.text = key;
-    //     steamList.appendChild(option);
-    // }
-
+    return data;
 }
