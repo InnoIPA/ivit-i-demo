@@ -84,3 +84,13 @@ The web demo site for ivit-i
     </summary>
     <img src="./docs/images/iVIT-I-Stream.png">
 </details>
+
+# Log
+* r1.0.2
+    * Support new applications ( r1.0.2+ )
+        1. let each application could draw the area.
+        2. let user could draw the vector on application modal canvas.
+
+
+* r1.0.3
+    * Improve AI inference stream by changing stream method from socket to webrtc.
