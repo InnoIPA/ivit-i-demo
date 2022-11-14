@@ -152,11 +152,11 @@ async function getAPI(api, errType=LOG, log=false, author) {
             beforeSend: function(xhr) {
                 if(author){
                     xhr.setRequestHeader("Authorization", "Basic " + btoa('demo' + ":" + 'demo'));
-                } else console.log("None authorize");
+                }
             }
         });
     } catch (e) {
-        
+        errEvent(e);
     }
 
     // $.LoadingOverlay("hide");
@@ -194,7 +194,7 @@ async function postAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, aut
                 beforeSend: function(xhr) {
                     if(author){
                         xhr.setRequestHeader("Authorization", "Basic " + btoa('demo' + ":" + 'demo'));
-                    } else console.log("None authorize");
+                    }
                 }
             });    
         }
@@ -210,7 +210,7 @@ async function postAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, aut
                 beforeSend: function(xhr) {
                     if(author){
                         xhr.setRequestHeader("Authorization", "Basic " + btoa('demo' + ":" + 'demo'));
-                    } else console.log("None authorize");
+                    }
                 }
             });    
         }
