@@ -23,7 +23,8 @@ for(let i=0; i < el_path.length; i++){
 
 // Set up the socketio address
 const URL = `http://${DOMAIN}:${PORT}/task/${uuid}/stream`;
-const streamSocket = io.connect(URL);
+
+const socketStream = new WebSocket('ws://' + `${DOMAIN}:${PORT}` + '/results');
 
 $(document).ready(async function(){
 
@@ -40,6 +41,53 @@ $(document).ready(async function(){
 
     // Seting Interval: Update GPU temperature every 5 seconds
     window.setInterval(updateGPUTemperature, intervalTime);
+
+    
+    socketStream.addEventListener('message', ev => {
+        
+        let data = JSON.parse(ev.data);
+        // console.log(data);
+        data = JSON.parse(data[uuid])
+        
+        let dets = data["detections"];
+        let frameID = data["idx"];
+        let inferTime = data["inference"];
+        let fps = data["fps"];
+        let liveTime = data["live_time"];
+
+        // 更新 Information
+        document.getElementById("fps").textContent = fps;
+        document.getElementById("live_time").textContent = `${convertTime(liveTime)}`;
+        
+        // 更新 LOG
+        const result_element=document.getElementById('result');
+    
+        detsList += `<p> Frame ID: ${frameID} </p>`;
+        if (Array.isArray(dets)) {
+    
+            for(let i=0; i<dets.length; i++){
+                detsList += `[ ${i} ] \t`;
+                
+                let detail = Object.keys(dets[i]);
+                detail.forEach(function(key, index){
+                    detsList += `${key}: ${dets[i][key]} \t`;
+                })
+                detsList += "</p>";
+            }
+            detsList += "<hr>";
+        }
+        info.push(detsList);
+        if(info.length>10){ 
+            detsList = "";
+            info.shift(); 
+        }
+        result_element.innerHTML = info;
+        result_element.scrollTop = result_element.scrollHeight;
+    });
+
+    socketStream.addEventListener('close', ev => {
+        console.log('The connection has been closed successfully.');
+    });
 
 });
 
@@ -236,55 +284,56 @@ function updateGPUTemperature(){
     })
 };
 
-let firstFrame = true
-streamSocket.on(IMG_EVENT, function(msg){  
+// const streamSocket = io.connect(URL);
+// let firstFrame = true
+// streamSocket.on(IMG_EVENT, function(msg){  
     
-    // if (firstFrame==true){
-    //     document.getElementById("loader").style.display = "none";
-    //     document.getElementById("image").removeAttribute("style");
-    // }
-    firstFrame = false
-    const img=document.getElementById('image');
-    img.src="data:image/jpeg;base64,"+msg;
-    document.querySelector('#fullpage').style.backgroundImage = 'url(' + img.src + ')';
-});
+//     // if (firstFrame==true){
+//     //     document.getElementById("loader").style.display = "none";
+//     //     document.getElementById("image").removeAttribute("style");
+//     // }
+//     firstFrame = false
+//     const img=document.getElementById('image');
+//     img.src="data:image/jpeg;base64,"+msg;
+//     document.querySelector('#fullpage').style.backgroundImage = 'url(' + img.src + ')';
+// });
 
-streamSocket.on(RES_EVENT, function(msg){
+// streamSocket.on(RES_EVENT, function(msg){
 
-    // 解析資料
-    const data = JSON.parse(msg);
-    let dets = data["detections"];
-    let frameID = data["idx"];
-    let inferTime = data["inference"];
-    let fps = data["fps"];
-    let liveTime = data["live_time"];
+//     // 解析資料
+//     const data = JSON.parse(msg);
+//     let dets = data["detections"];
+//     let frameID = data["idx"];
+//     let inferTime = data["inference"];
+//     let fps = data["fps"];
+//     let liveTime = data["live_time"];
     
-    // 更新 Information
-    document.getElementById("fps").textContent = fps;
-    document.getElementById("live_time").textContent = `${convertTime(liveTime)}`;
+//     // 更新 Information
+//     document.getElementById("fps").textContent = fps;
+//     document.getElementById("live_time").textContent = `${convertTime(liveTime)}`;
     
-    // 更新 LOG
-    const result_element=document.getElementById('result');
+//     // 更新 LOG
+//     const result_element=document.getElementById('result');
 
-    detsList += `<p> Frame ID: ${frameID} </p>`;
-    if (Array.isArray(dets)) {
+//     detsList += `<p> Frame ID: ${frameID} </p>`;
+//     if (Array.isArray(dets)) {
 
-        for(let i=0; i<dets.length; i++){
-            detsList += `[ ${i} ] \t`;
+//         for(let i=0; i<dets.length; i++){
+//             detsList += `[ ${i} ] \t`;
             
-            let detail = Object.keys(dets[i]);
-            detail.forEach(function(key, index){
-                detsList += `${key}: ${dets[i][key]} \t`;
-            })
-            detsList += "</p>";
-        }
-        detsList += "<hr>";
-    }
-    info.push(detsList);
-    if(info.length>10){ 
-        detsList = "";
-        info.shift(); 
-    }
-    result_element.innerHTML = info;
-    result_element.scrollTop = result_element.scrollHeight;
-});
+//             let detail = Object.keys(dets[i]);
+//             detail.forEach(function(key, index){
+//                 detsList += `${key}: ${dets[i][key]} \t`;
+//             })
+//             detsList += "</p>";
+//         }
+//         detsList += "<hr>";
+//     }
+//     info.push(detsList);
+//     if(info.length>10){ 
+//         detsList = "";
+//         info.shift(); 
+//     }
+//     result_element.innerHTML = info;
+//     result_element.scrollTop = result_element.scrollHeight;
+// });

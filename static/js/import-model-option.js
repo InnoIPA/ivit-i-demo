@@ -139,7 +139,6 @@ async function updateTagApp(eleKey, tagKey) {
 
     // Update content
     const data = await getAPI(`/tag_app`)
-
     data[tagKey].forEach(function (item, i) {
         appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
     });
@@ -156,7 +155,6 @@ async function updateTagApp(eleKey, tagKey) {
     //         console.log("Error in tag_app");
     //     },
     // });
-
     // Display
     document.getElementById(appDefNmae).style.display = "none";
     document.getElementById(appMenuName).removeAttribute("style");
@@ -197,9 +195,9 @@ async function importZipFileUpload(e) {
         }
     
         console.log(zipData);
-    
+        
         await updateTagApp("model", zipData["tag"]);
-    
+
         await getConvertStatus(zipData["name"]);
         if (convertStatus === false) {
             let intervalTime = 5000;
@@ -219,16 +217,16 @@ async function importZipFileUpload(e) {
             await resetNextButton();
             return undefined;
         } 
-    
+
         // Update depend_on
         const appOptList = document.getElementById("label_list");
-        
+
         // Clear dropdown-div
         document.querySelectorAll("#dropdown-div").forEach( function(ele, idx){
             ele.remove();
         })
     
-        // Add New Dropdown Item
+        // Add New Label
         for(let i=0; i<data.length; i++){
             appOptList.innerHTML += '<div id="dropdown-div" class="dropdown-item d-flex flex-row align-items-center">'+
                 '<input class="app-opt" type="checkbox" onchange="atLeastOneRadio(this)" checked>' +
@@ -236,6 +234,8 @@ async function importZipFileUpload(e) {
                 '</div>'
             document.getElementById("label_list_menu").textContent = `Select ${i+1} Labels`;
         }
+
+
     } catch {
         await resetNextButton();
     }
