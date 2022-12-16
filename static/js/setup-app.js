@@ -856,7 +856,7 @@ function updateAppItem(srcType){
     else if (srcType.includes('counting')) appCountingEvent();
     else if (srcType.includes('direction')) appDirectionEvent();
     else if (srcType.includes('tracking')) appTrackingEvent();
-    else { console.log("Unknown App Type"); return undefined; }
+    else { console.log("Unknown App Type: ", srcType); return undefined; }
 }
 
 var createPopover = function (item, title) {

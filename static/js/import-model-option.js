@@ -117,7 +117,6 @@ async function resetNextButton(){
         ele.textContent = "Next";
         ele.disabled = false;
     });
-
     document.getElementById("import_zip_model_label").textContent = "Choose file";
 }
 
@@ -139,23 +138,10 @@ async function updateTagApp(eleKey, tagKey) {
 
     // Update content
     const data = await getAPI(`/tag_app`)
+    console.log('Get application: ', data[tagKey]);
     data[tagKey].forEach(function (item, i) {
         appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
     });
-    // $.ajax({
-    //     url: SCRIPT_ROOT + `/tag_app`,
-    //     type: "GET",
-    //     dataType: "json",
-    //     success: function (data, textStatus, xhr) {
-    //         data[tagKey].forEach(function (item, i) {
-    //             appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
-    //         });
-    //     },
-    //     error: function (xhr, textStatus, errorThrown) {
-    //         console.log("Error in tag_app");
-    //     },
-    // });
-    // Display
     document.getElementById(appDefNmae).style.display = "none";
     document.getElementById(appMenuName).removeAttribute("style");
 }
@@ -180,36 +166,38 @@ async function importZipFileUpload(e) {
         // Check and append source data
         form_data.append("source", ele.files[0])
     
-        // Close Next button
-        document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
-            ele.textContent = "Converting ...";
-            ele.disabled = true;
-        })
-    
+        // Close Next Button
+        const appNextBT = document.getElementById("bt_modal_app")
+        appNextBT.disabled = true;
+        appNextBT.textContent = "Extracting ...";
+        
         // Sending data via web api ( /import_zip )
         const zipData = await postAPI(`/import_zip`, form_data, FORM_FMT, ALERT);
+        if(!zipData) { return undefined; }
         
-        if(!zipData) {
-            await resetNextButton();
-            return undefined;
-        }
-    
+        // Reset Next Button
         console.log(zipData);
+        appNextBT.disabled = false;
+        appNextBT.textContent = "Next";
         
-        await updateTagApp("model", zipData["tag"]);
+        // Freeze Submit Button
+        document.getElementById("modal_app_submit").disabled = true;
 
+        // Update Application
+        await updateTagApp("model", zipData["tag"]);
+        
+        // Keep Checking Status
         await getConvertStatus(zipData["name"]);
         if (convertStatus === false) {
             let intervalTime = 5000;
             timer = window.setInterval(function () { getConvertStatus(zipData["name"]) }, intervalTime);
         }
-    
+        
         // update application label in depend_on
         const labelPath = { "path": zipData["label_path"] };
-        
         // Check File Status /read_file
         const data = await postAPI(`/read_file/`, labelPath, JSON_FMT, ALERT);
-        
+    
         // If no data reset Next button
         if(!data){
             console.log("Error");
@@ -219,13 +207,14 @@ async function importZipFileUpload(e) {
         } 
 
         // Update depend_on
+        
         const appOptList = document.getElementById("label_list");
 
         // Clear dropdown-div
         document.querySelectorAll("#dropdown-div").forEach( function(ele, idx){
             ele.remove();
         })
-    
+        
         // Add New Label
         for(let i=0; i<data.length; i++){
             appOptList.innerHTML += '<div id="dropdown-div" class="dropdown-item d-flex flex-row align-items-center">'+
@@ -234,9 +223,9 @@ async function importZipFileUpload(e) {
                 '</div>'
             document.getElementById("label_list_menu").textContent = `Select ${i+1} Labels`;
         }
-
-
-    } catch {
+        
+    } catch(e) {
+        alert(e);
         await resetNextButton();
     }
 
@@ -251,34 +240,16 @@ async function getConvertStatus(task_name) {
         convertStatus = true;
         window.clearInterval(timer);
         // Open Button
-        document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
-            ele.textContent = "Next";
-            ele.disabled = false;
-        })
+        // document.getElementById("modal_app_submit").textContent = `${MODE}`;
+        document.getElementById('modal_app_submit').disabled = false;
+        
     } else {
+
+        // document.getElementById("modal_app_submit").textContent = `Converting ..`;
+        document.getElementById("modal_app_submit").disabled = true;
         console.log("Converting model to tensorrt engine ... ");
     }
     
-    // $.ajax({
-    //     type: 'GET',
-    //     url: SCRIPT_ROOT + `/import_proc/${task_name}/status`,
-    //     dataType: "json",
-    //     success: function (data) {
-    //         if (data === "done") {
-    //             // alert("Convert finished !!!");
-    //             console.log("Convert finished !!!")
-    //             convertStatus = true;
-    //             window.clearInterval(timer);
-    //             // Open Button
-    //             document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
-    //                 ele.textContent = "Next";
-    //                 ele.disabled = false;
-    //             })
-    //         } else {
-    //             console.log("Converting model to tensorrt engine ... ");
-    //         }
-    //     }
-    // })
 }
 
 window.onload = function(){
