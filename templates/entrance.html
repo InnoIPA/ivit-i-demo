@@ -67,8 +67,18 @@
                     <div class="h1 mt-4 text-gray-800 navtitle">
                         <div>
                             <img style="width:173px; vertical-align:baseline; margin-left: -15px;" src="/static/figures/Logo.png">
+                        
                         </div>
+
                         <!-- <h1 class="header custom">iVIT-I</h1> -->
+                    </div>
+                    <div class="navbar-nav ml-auto">
+                        <a href="#" class="d-none d-sm-inline-block" data-dismiss="modal" 
+                            style="color: white;" onclick="logEvent()">
+                            <span class="material-symbols-outlined">
+                                terminal
+                            </span>
+                        </a>
                     </div>
                 </nav>
                 <!-- End of Topbar -->
@@ -1003,10 +1013,34 @@
                 </div>
             </div>
         </div>
+    </div>    
+
+    <!-- Log Dialog-->
+    <div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-keyboard="false"
+    aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered" role="document" >
+
+            <div class="modal-content" style="min-height: 400px; max-height: 800px" >
+
+                <!-- Header -->
+                <div class="modal-header custom" >
+                    <h4 class="modal-title" id="exampleModalLabel">Log</h4>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body custom" style="overflow-y:auto;">
+                    <div id="log" style="overflow:auto;"></div>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">                    
+                    <button class="btn btn-secondary-custom" type="button" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-
-    <!-- <button class="btn btn-primary" data-html="true" data-toggle="popover" id="showPopover">Show</button> -->
 
     <!-- Custom Popover -->
     <div id="popover-bg" class="popover-bg " style="display: none" ></div>
@@ -1041,6 +1075,7 @@
     <script type="text/javascript" src="static/js/common.js"></script>
     <script type="text/javascript" src="static/js/utils.js"></script>
     <script type="text/javascript" src="static/js/entrace.js"></script>
+    <script type="text/javascript" src="static/js/socket.js"></script>
     <script type="text/javascript" src="static/js/setup-app.js"></script>
     <script type="text/javascript" src="static/js/upload_file.js"></script>
     <script type="text/javascript" src="static/js/import-model-option.js"></script>

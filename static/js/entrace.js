@@ -8,6 +8,7 @@ Parameters from common.js
 
 */
 
+
 // Start streaming when press the name superlink
 async function streamStart(uuid){
     const data = await getAPI(`/task/${uuid}/stream/start`, errType=ALERT);
@@ -1195,6 +1196,21 @@ async function checkTaskStatus() {
             statusEvent(uuid, stats, debug=true); 
         }
     }
+}
+
+
+async function logEvent(){
+    showModal('logModal');
+
+    const logData = await getAPI('/log');
+    if(!logData){ return undefined };
+
+    let newline = "\r\n";
+    let newCnt = "";
+    logData.forEach(function(e){
+        newCnt = newCnt + e + newline
+    });
+    document.getElementById('log').innerText = newCnt;
 }
 
 // Setting up when start the web demo up
