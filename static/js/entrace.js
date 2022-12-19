@@ -686,8 +686,8 @@ async function editSubmit(obj) {
         return undefined;
     };
     // Edit TASK
-    // postAPI(api, inData, inType=JSON_FMT, errType=LOG)
-    const retData = await postAPI( `/edit/${obj.value}`, formData, FORM_FMT, ALERT )
+    // putAPI(api, inData, inType=JSON_FMT, errType=LOG)
+    const retData = await putAPI( `/edit/${obj.value}`, formData, FORM_FMT, ALERT )
     if(!retData) return(undefined);
 
     // if success
@@ -712,7 +712,7 @@ async function importSubmit() {
         return undefined;
     };
 
-    // Add other information: capture from /import_proc, it's the same with the return infor of /import_zip (web api)
+    // Add other information: capture from /import_proc, it's the same with the return infor of /extract_zip (web api)
     const eleZipDiv = document.getElementById('import_zip_model')
     const eleUrlDiv = document.getElementById('import_url_model')
     
@@ -762,7 +762,7 @@ async function delSubmit(obj) {
 
     console.log(`Remove application ${uuid}`);
 
-    const retData = await postAPI( "/remove/", data, JSON_FMT, ALERT );
+    const retData = await delAPI( "/remove/", data, JSON_FMT, ALERT );
 
     if(retData) { console.log(retData); location.reload(); }
     else return undefined;

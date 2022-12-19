@@ -717,7 +717,7 @@ async function enableAppArea(trg_mode=""){
     // for (var pair of formData.entries()) console.log(pair[0]+ ', ' + pair[1]); 
 
     // Update Source
-    const retData = await postAPI(`/update_src`, formData, FORM_FMT, ALERT)
+    const retData = await postAPI(`/add_src`, formData, FORM_FMT, ALERT)
     if(!retData) return undefined;
 
     imgHeight   = retData["height"];

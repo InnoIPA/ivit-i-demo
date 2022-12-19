@@ -40,7 +40,7 @@ function importURL(){
 
     // Send to Server
     $.ajax({
-        url: SCRIPT_ROOT + "/import_url/",
+        url: SCRIPT_ROOT + "/extract_url/",
         data: JSON.stringify( data ),
         type: 'POST',
         dataType: 'json',
@@ -171,8 +171,8 @@ async function importZipFileUpload(e) {
         appNextBT.disabled = true;
         appNextBT.textContent = "Extracting ...";
         
-        // Sending data via web api ( /import_zip )
-        const zipData = await postAPI(`/import_zip`, form_data, FORM_FMT, ALERT);
+        // Sending data via web api ( /extract_zip )
+        const zipData = await postAPI(`/extract_zip`, form_data, FORM_FMT, ALERT);
         if(!zipData) { return undefined; }
         
         // Reset Next Button

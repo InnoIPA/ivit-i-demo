@@ -165,6 +165,7 @@ async function getAPI(api, errType=LOG, log=false, author) {
     else return(undefined);
 }
 
+
 async function postAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, author) {
     
     // Concate API
@@ -203,6 +204,124 @@ async function postAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, aut
             retData = await $.ajax({
                 url: trg_api,
                 type: "POST",
+                data: JSON.stringify(inData),
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                error: errEvent,
+                beforeSend: function(xhr) {
+                    if(author){
+                        xhr.setRequestHeader("Authorization", "Basic " + btoa('demo' + ":" + 'demo'));
+                    }
+                }
+            });    
+        }
+    } catch (e) {
+        errEvent(e);
+    }
+
+    // Return Data
+    // $.LoadingOverlay("hide");
+    if (retData) return retData;
+    else return(undefined);
+}
+
+async function putAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, author) {
+    
+    // Concate API
+    // $.LoadingOverlay("show");
+    let trg_api;
+    if(api.includes("http")) trg_api = api;
+    else trg_api = SCRIPT_ROOT + api;
+
+    if(log) console.log(`[POST] Called API: ${trg_api}`);
+
+    // Setup error event
+    let errEvent
+    let retData;
+    if (errType === ALERT) errEvent = alertError;
+    else errEvent = logError;
+
+    // Call API
+    try {
+        if(inType===FORM_FMT){
+            retData = await $.ajax({
+                url: trg_api,
+                type: "PUT",
+                data: inData,
+                processData: false,
+                contentType: false,
+                error: errEvent,
+                beforeSend: function(xhr) {
+                    if(author){
+                        xhr.setRequestHeader("Authorization", "Basic " + btoa('demo' + ":" + 'demo'));
+                    }
+                }
+            });    
+        }
+
+        if(inType===JSON_FMT){
+            retData = await $.ajax({
+                url: trg_api,
+                type: "PUT",
+                data: JSON.stringify(inData),
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                error: errEvent,
+                beforeSend: function(xhr) {
+                    if(author){
+                        xhr.setRequestHeader("Authorization", "Basic " + btoa('demo' + ":" + 'demo'));
+                    }
+                }
+            });    
+        }
+    } catch (e) {
+        errEvent(e);
+    }
+
+    // Return Data
+    // $.LoadingOverlay("hide");
+    if (retData) return retData;
+    else return(undefined);
+}
+
+async function delAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, author) {
+    
+    // Concate API
+    // $.LoadingOverlay("show");
+    let trg_api;
+    if(api.includes("http")) trg_api = api;
+    else trg_api = SCRIPT_ROOT + api;
+
+    if(log) console.log(`[POST] Called API: ${trg_api}`);
+
+    // Setup error event
+    let errEvent
+    let retData;
+    if (errType === ALERT) errEvent = alertError;
+    else errEvent = logError;
+
+    // Call API
+    try {
+        if(inType===FORM_FMT){
+            retData = await $.ajax({
+                url: trg_api,
+                type: "DELETE",
+                data: inData,
+                processData: false,
+                contentType: false,
+                error: errEvent,
+                beforeSend: function(xhr) {
+                    if(author){
+                        xhr.setRequestHeader("Authorization", "Basic " + btoa('demo' + ":" + 'demo'));
+                    }
+                }
+            });    
+        }
+
+        if(inType===JSON_FMT){
+            retData = await $.ajax({
+                url: trg_api,
+                type: "DELETE",
                 data: JSON.stringify(inData),
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
