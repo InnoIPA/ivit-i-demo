@@ -228,3 +228,29 @@ function updateGPUTemperature(){
         }
     })
 };
+
+let inferFlag = true, inferOpacity = 30;
+async function inferController(){
+    inferFlag = !inferFlag;
+    inferOpacity = inferFlag===true ? 0.5 : 0.2
+    document.getElementById('inferIcon').style.opacity = inferOpacity;
+    let jsonData = { "data": inferFlag }; 
+    const retData = await putAPI( `/task/${uuid}/stream/infer`, jsonData, JSON_FMT, ALERT )
+    if(!retData) return(undefined);
+
+    console.log(retData);
+}
+
+let drawResultFlag = true, drawOpacity = 30;
+async function inferResultController(){
+    
+    drawResultFlag = !drawResultFlag;
+    drawOpacity = drawResultFlag===true ? 0.5 : 0.2
+    document.getElementById('drawIcon').style.opacity = drawOpacity;
+
+    let jsonData = { "data": drawResultFlag }; 
+    const retData = await putAPI( `/task/${uuid}/stream/draw`, jsonData, JSON_FMT, ALERT )
+    if(!retData) return(undefined);
+
+    console.log(retData);
+}
