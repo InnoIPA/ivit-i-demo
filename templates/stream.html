@@ -36,6 +36,13 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/switch.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stream.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/common.css') }}">
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,200,1,0" />
+
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,200,1,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,200,1,0" />
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
     </style>    
@@ -87,8 +94,13 @@
 
                             <!-- Live Stream -->
                             <div id="live_stream" class="card shadow-custom mb-3 custom">
-                                <div class="card-header py-3 custom">
+                                <!-- <div class="card-header py-3 custom"> -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between custom">
                                     <h6 class="h5 m-0 font-weight-bold card-title">Live Stream</h6>
+                                    <div>
+                                        <a id="inferIcon" class="material-symbols-outlined custom" href="#" onclick="inferController()">developer_board</a>
+                                        <a id="drawIcon" class="material-symbols-outlined custom" href="#" onclick="inferResultController()">draw</a>
+                                    </div>
                                 </div>
                                 <div class="card-body custom image">
                                     <div class="loader" id="loader" style="display:block">Loading</div>
