@@ -234,7 +234,7 @@ async function putAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, auth
     else trg_api = SCRIPT_ROOT + api;
 
     if(log) console.log(`[POST] Called API: ${trg_api}`);
-
+    
     // Setup error event
     let errEvent
     let retData;
@@ -244,18 +244,15 @@ async function putAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, auth
     // Call API
     try {
         if(inType===FORM_FMT){
+            console.log('PUT, FORM DATA');
             retData = await $.ajax({
                 url: trg_api,
                 type: "PUT",
                 data: inData,
+                mimeType: 'multipart/form-data',
                 processData: false,
-                contentType: false,
-                error: errEvent,
-                beforeSend: function(xhr) {
-                    if(author){
-                        xhr.setRequestHeader("Authorization", "Basic " + btoa('demo' + ":" + 'demo'));
-                    }
-                }
+                contentType: false, //required,
+                error: errEvent
             });    
         }
 
@@ -266,12 +263,7 @@ async function putAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, auth
                 data: JSON.stringify(inData),
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
-                error: errEvent,
-                beforeSend: function(xhr) {
-                    if(author){
-                        xhr.setRequestHeader("Authorization", "Basic " + btoa('demo' + ":" + 'demo'));
-                    }
-                }
+                error: errEvent
             });    
         }
     } catch (e) {
