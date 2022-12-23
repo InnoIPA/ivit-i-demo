@@ -6,7 +6,7 @@ const SOCK_SYS = "sys";
 const SOCK_RES = "result";
 
 // Define Socket Event Timeout
-const SOCK_RES_TIMEOUT = 1;
+const SOCK_RES_TIMEOUT = 1000;
 
 // Send Socket Key to get the inference result
 function sendSocketInferResult(){ 
