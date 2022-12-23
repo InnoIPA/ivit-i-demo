@@ -687,7 +687,7 @@ async function editSubmit(obj) {
     };
     // Edit TASK
     // putAPI(api, inData, inType=JSON_FMT, errType=LOG)
-    const retData = await putAPI( `/edit/${obj.value}`, formData, FORM_FMT, ALERT )
+    const retData = await putAPI( `/task/${obj.value}`, formData, FORM_FMT, ALERT )
     if(!retData) return(undefined);
 
     // if success
