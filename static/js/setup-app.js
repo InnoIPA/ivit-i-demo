@@ -851,11 +851,12 @@ function initAppItem(){
 function updateAppItem(srcType){
     console.log('Update Application Item', srcType);
     initAppItem();
-
-    if (srcType.includes('area')) appAreaEvent();
-    else if (srcType.includes('counting')) appCountingEvent();
+    srcType = srcType.toLowerCase()
+    
+    if (srcType.includes('counting')) appCountingEvent();
     else if (srcType.includes('direction')) appDirectionEvent();
     else if (srcType.includes('tracking')) appTrackingEvent();
+    else if (srcType.includes('area')) appAreaEvent();
     else { console.log("Unknown App Type: ", srcType); return undefined; }
 }
 
