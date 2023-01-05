@@ -712,13 +712,13 @@ async function importSubmit() {
     };
 
     // Add other information: capture from /import_proc, it's the same with the return infor of /import_zip (web api)
-    const eleZipDiv = document.getElementById('import_zip_model')
-    const eleUrlDiv = document.getElementById('import_url_model')
+    const eleZipDiv = document.getElementById('import_zip_model_label')
+    const eleUrlDiv = document.getElementById('import_url_model_value')
     
     // Show the file name on ZIP div
     if ( eleZipDiv.style.display==='block' ) fileName = eleZipDiv.textContent.trim().split(".")[0];
     else fileName = eleUrlDiv.value;
-    
+    console.log(`Checking import process: ${fileName}`);
     // Get extracted information from /import_porc
     const importProcData = await getAPI( `/import_proc`, ALERT);
 
