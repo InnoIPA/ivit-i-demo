@@ -11,7 +11,6 @@
 
     <title>Stream</title>
 
-    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
     <!-- Custom fonts for this template-->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}">
     
@@ -26,13 +25,6 @@
     
     <!-- Custom styles for this template-->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/sb-admin-2.css') }}">
-    
-
-    <!-- Custom Javscript -->
-    <script type="text/javascript" src="{{ url_for('static', filename='js/common.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/utils.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/stream.js') }}"></script>
-
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/switch.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stream.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/common.css') }}">
@@ -65,7 +57,7 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid custom" >
+                <div class="container-fluid custom style="overflow: hidden" >
 
                     <!-- Page Heading -->
                     <div class="mb-2 d-sm-flex align-items-center justify-content-between m-0">
@@ -216,13 +208,10 @@
         <i class="fas fa-angle-up"></i>
     </a>
 
-    <!-- Full Page Image -->
-    <div id="fullpage" onclick="this.style.display='none';"></div>
 
     <!-- Bootstrap core JavaScript-->
     <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
 
     <!-- Core plugin JavaScript-->
     <script src="{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}"></script>
@@ -235,6 +224,11 @@
     <script src="{{ url_for('static', filename='js/demo/temperature.js') }}"></script>
     <script src="{{ url_for('static', filename='js/webrtc.js') }}"></script>
 
+    <!-- Custom Javscript -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/stream.js') }}"></script>
+    
     <!-- Loading -->
     <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
 
