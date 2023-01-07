@@ -8,7 +8,6 @@ const videoEl = document.querySelector('#webrtc-video')
 async function setWebRTC(streamID){
     
     console.log('Ask for setting webrtc');
-
     // Check URL
     let ret = undefined;
     let trg_url = `http://${DOMAIN}:8083/stream/${streamID}/channel/0/webrtc`;
@@ -51,7 +50,7 @@ async function connectWebRTC(streamID) {
     
     if(!streamID){
         alert('Empty Stream ID');  
-        return undefined; 
+        return undefined;
     }
 
     // Create RTCPeerConnection
@@ -75,15 +74,14 @@ async function connectWebRTC(streamID) {
     webrtc.onnegotiationneeded = async function handleNegotiationNeeded() {
 
         console.log('Create Offer');
+
         // 建立請求
         const offer = await webrtc.createOffer()
 
         // 提供本地端的資訊
         await webrtc.setLocalDescription(offer)
         
-        console.log('Trying to Get Remote Request');
         // 使用 http 與 remote 進行請求，需要透過 sdp 去請求
-        
         setWebRTCInterval(streamID);
 
     }
