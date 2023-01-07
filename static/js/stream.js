@@ -20,49 +20,18 @@ for(let i=0; i < el_path.length; i++){
         uuid = el_path[i+1]; 
     };
 };
-
+ 
 // Set up the socketio address
 const URL = `http://${DOMAIN}:${PORT}/task/${uuid}/stream`;
 
-const socketStream = new WebSocket('ws://' + `${DOMAIN}:${PORT}` + '/results');
+let socketStream
 
-$(document).ready(async function(){
+function get_detection_data(frameID, dets){
 
-    // Start the stream
-    connectWebRTC(uuid);
-
-    // Update Basic Information
-    updateBasicInfo();
-    
-    // Update first frame
-    // await getFirstFrame(uuid);
-    // document.getElementById("loader").style.display = "block";
-    // document.getElementById("image").style.display = "none";
-
-    // Seting Interval: Update GPU temperature every 5 seconds
-    window.setInterval(updateGPUTemperature, intervalTime);
-
-    
-    socketStream.addEventListener('message', ev => {
-        
-        let data = JSON.parse(ev.data);
-        // console.log(data);
-        data = JSON.parse(data[uuid])
-        
-        let dets = data["detections"];
-        let frameID = data["idx"];
-        let inferTime = data["inference"];
-        let fps = data["fps"];
-        let liveTime = data["live_time"];
-
-        // 更新 Information
-        document.getElementById("fps").textContent = fps;
-        document.getElementById("live_time").textContent = `${convertTime(liveTime)}`;
-        
         // 更新 LOG
         const result_element=document.getElementById('result');
-    
-        detsList += `<p> Frame ID: ${frameID} </p>`;
+   
+        let detsList = `<p> Frame ID: ${frameID} </p>`;
         if (Array.isArray(dets)) {
     
             for(let i=0; i<dets.length; i++){
@@ -76,6 +45,7 @@ $(document).ready(async function(){
             }
             detsList += "<hr>";
         }
+    
         info.push(detsList);
         if(info.length>10){ 
             detsList = "";
@@ -83,6 +53,71 @@ $(document).ready(async function(){
         }
         result_element.innerHTML = info;
         result_element.scrollTop = result_element.scrollHeight;
+}
+
+function get_application_data(frameID, dets){
+
+    // 更新 LOG
+    const result_element=document.getElementById('result');
+    let detsList = `<p> [ Frame ID: ${frameID} ] </p>`;
+    
+    if (dets.constructor == Object){
+        for( const key in dets){
+            detsList += `<p> ${key}: ${dets[key]} </p>`;
+        }    
+    } else {
+        detsList = dets;
+    }
+    
+    info.push(detsList);
+    if(info.length>10){ info.shift(); }
+    result_element.innerHTML = info;
+    result_element.scrollTop = result_element.scrollHeight;
+}
+
+$(document).ready(async function(){
+    
+    try{
+        socketStream = new WebSocket('ws://' + `${DOMAIN}:${PORT}` + '/results');
+        // socketStream = new WebSocket('ws://' + `${DOMAIN}:${PORT}` + '/results');
+
+    } catch(e){ console.warn(e) }
+
+    console.log('...');
+    // Update Basic Information
+    updateBasicInfo();
+
+    // Start the stream
+    connectWebRTC(uuid);
+
+    
+    // Update first frame
+    // await getFirstFrame(uuid);
+    // document.getElementById("loader").style.display = "block";
+    // document.getElementById("image").style.display = "none";
+
+    // Seting Interval: Update GPU temperature every 5 seconds
+    // window.setInterval(updateGPUTemperature, intervalTime);
+
+    
+    socketStream.addEventListener('message', ev => {
+        
+        let data = JSON.parse(ev.data);
+        // console.log(data);
+        data = JSON.parse(data[uuid])
+        
+        let dets = data["detections"];
+        let frameID = data["idx"];
+        let inferTime = data["inference"];
+        let fps = data["fps"];
+        let liveTime = data["live_time"];
+        // 更新 Information
+        document.getElementById("fps").textContent = fps;
+        document.getElementById("live_time").textContent = `${convertTime(liveTime)}`;
+        
+        // get_detection_data(frameID, dets)
+        get_application_data(frameID, dets)
+
     });
 
     socketStream.addEventListener('close', ev => {
