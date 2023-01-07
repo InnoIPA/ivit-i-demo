@@ -70,63 +70,6 @@ async function enableButtonParent(ele){
     enableElement(eleParent);
 }
 
-// async function getAPI(api, errType=LOG, log=false) {
-
-//     if(log) console.log(`[GET] Called API: ${api}`);
-
-//     // Setup error event
-//     let errEvent;
-//     if (errType === ALERT) errEvent = alertError;
-//     else errEvent = logError;
-
-//     // Call API
-//     const data = await $.ajax({
-//         url: SCRIPT_ROOT + api,
-//         type: "GET",
-//         error: errEvent
-//     });
-//     // Return Data
-//     if (data) return data;
-//     else return(undefined);
-// }
-
-// async function postAPI(api, inData, inType=JSON_FMT, errType=LOG) {
-    
-//     // Setup error event
-//     let errEvent
-//     let retData;
-//     if (errType === ALERT) errEvent = alertError;
-//     else errEvent = logError;
-
-//     // Call API
-//     if(inType===FORM_FMT){
-//         retData = await $.ajax({
-//             url: SCRIPT_ROOT + api,
-//             type: "POST",
-//             data: inData,
-//             processData: false,
-//             contentType: false,
-//             error: errEvent
-//         });    
-//     }
-
-//     if(inType===JSON_FMT){
-//         retData = await $.ajax({
-//             url: SCRIPT_ROOT + api,
-//             type: "POST",
-//             data: JSON.stringify(inData),
-//             dataType: "json",
-//             contentType: "application/json;charset=utf-8",
-//             error: errEvent
-//         });    
-//     }
-
-//     // Return Data
-//     if (retData) return retData;
-//     else return(undefined);
-// }
-
-
 async function getAPI(api, errType=LOG, log=false, author) {
 
     // Concate API
