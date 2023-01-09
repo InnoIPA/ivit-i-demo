@@ -50,7 +50,14 @@ function get_detection_data(frameID, dets){
         result_element.scrollTop = result_element.scrollHeight;
 }
 
-function get_application_data(frameID, dets){
+async function app_alarm_event(val){
+    // No Alarm
+    if(val==="") return undefined;
+
+    alert(dets[key]);
+}
+
+async function get_application_data(frameID, dets){
 
     // 更新 LOG
     const result_element=document.getElementById('result');
@@ -58,6 +65,12 @@ function get_application_data(frameID, dets){
     
     if (dets.constructor == Object){
         for( const key in dets){
+            
+            if(key==='alarm'){
+                const alarm = await app_alarm_event(dets[key]);
+                if(!alarm) continue;
+            }
+
             detsList += `<p> ${key}: ${dets[key]} </p>`;
         }    
     } else {
