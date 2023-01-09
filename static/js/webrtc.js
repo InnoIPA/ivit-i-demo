@@ -1,12 +1,15 @@
+/*
+    Reference:
+         [RTSPtoWeb](https://github.com/deepch/RTSPtoWeb)
+ */
+
 // Create P2P Service
 let webrtc;
-let connectTime;
-let connectedWebrtc = false;
 
 const videoEl = document.querySelector('#webrtc-video')
 
+// Setup WebRTC: Asking for remote
 async function setWebRTC(streamID){
-    
     console.log('Ask for setting webrtc');
     // Check URL
     let ret = undefined;
@@ -32,25 +35,11 @@ async function setWebRTC(streamID){
     return ret;
 }
 
-async function setWebRTCInterval(streamID){
-    const ret = await setWebRTC(streamID)
-    if(!ret){
-        let interval = setInterval( async function(){
-            const retInterval = await setWebRTC(streamID)
-            if(retInterval){
-                clearInterval(interval);
-                console.log('Clear SetWebRTC Interval');
-            }
-        }, 2000);
-    }
-}
-
 // Connect to RTSPtoWeb Project
 async function connectWebRTC(streamID) {
     
     if(!streamID){
-        alert('Empty Stream ID');  
-        return undefined;
+        alert('Empty Stream ID'); return undefined;
     }
 
     // Create RTCPeerConnection
@@ -82,8 +71,8 @@ async function connectWebRTC(streamID) {
         await webrtc.setLocalDescription(offer)
         
         // 使用 http 與 remote 進行請求，需要透過 sdp 去請求
-        setWebRTCInterval(streamID);
-
+        // setWebRTCInterval(streamID);
+        setWebRTC(streamID);
     }
 
     // ontrack
@@ -109,7 +98,7 @@ async function connectWebRTC(streamID) {
     // 當呼叫 close() method 的時候
     webrtcSendChannel.onclose = (_event) => {
         console.log(`${webrtcSendChannel.label} has closed`);
-        // startPlay(videoEl, url)
+        connectWebRTC(streamID);
     }
     // 呼叫 send() 並且兩邊都連接上的時候
     webrtcSendChannel.onmessage = event => console.log(event.data)
