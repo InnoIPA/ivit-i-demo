@@ -61,12 +61,19 @@ function get_application_data(frameID, dets){
             detsList += `<p> ${key}: ${dets[key]} </p>`;
         }    
     } else {
-        detsList = dets;
+        // detsList += ("<p>"+dets+"</p>") 
+        detsList += `<p>${dets}</p>`;
     }
     
+    // Keep Information in 10 Lines
     info.push(detsList);
     if(info.length>10){ info.shift(); }
-    result_element.innerHTML = info;
+
+    // Parse the inforamtion into HTML format and replace comma to <hr>
+    html_info = ""
+    info.forEach((line) => { html_info += (line+'<hr>'); });
+
+    result_element.innerHTML = html_info;
     result_element.scrollTop = result_element.scrollHeight;
 }
 
@@ -87,7 +94,7 @@ function sockMessageEvent(ev){
     get_application_data(frameID, dets)
 }
 
-function sockCloseEvent(){
+function ㄋsockCloseEvent(){
     console.log('The connection has been closed successfully.');
 }
 
