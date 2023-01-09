@@ -94,7 +94,7 @@ function sockMessageEvent(ev){
     get_application_data(frameID, dets)
 }
 
-function ㄋsockCloseEvent(){
+function sockCloseEvent(){
     console.log('The connection has been closed successfully.');
 }
 
