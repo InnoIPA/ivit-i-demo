@@ -16,11 +16,11 @@ const videoEl = document.querySelector('#webrtc-video')
 async function setWebRTC(streamID){
     console.log('Ask for setting webrtc');
     // Check URL
-    let ret = undefined;
     let trg_url = `http://${DOMAIN}:8083/stream/${streamID}/channel/0/webrtc`;
     try{
         await $.post(trg_url, { data: btoa(webrtc.localDescription.sdp) })
         .done(async function (data) {
+            // console.log(data);
             // 如果同意的話就會回傳資訊，透過該資訊設定 WebRTC Remote 端的資訊
             // 當雙方都 setRemoteDescription 就可以開始連線
             webrtc.setRemoteDescription(
@@ -28,15 +28,17 @@ async function setWebRTC(streamID){
                     type: 'answer',
                     sdp: atob(data)
                 }))
-            ret = true; 
+            return true
         })
         .fail(async function(xhr, textStatus, errorThrown){
-            console.log('Error: ', JSON.parse(xhr.responseText)['payload']);
+            if(!xhr) console.log('Error: ', JSON.parse(xhr.responseText)['payload']);
+            else alert('WebRTC Server has been crashed, please restart ivit-i !')
+            return false
         })
 
     } catch(e){ }
 
-    return ret;
+    return false;
 }
 
 // Connect to RTSPtoWeb Project
@@ -76,7 +78,7 @@ async function connectWebRTC(streamID) {
         
         // 使用 http 與 remote 進行請求，需要透過 sdp 去請求
         // setWebRTCInterval(streamID);
-        setWebRTC(streamID);
+        await setWebRTC(streamID);
     }
 
     // ontrack
@@ -183,8 +185,11 @@ async function getStreamList(){
     url = `http://${DOMAIN}:8083/streams`;
 
     let data = await getAPI( url, LOG, true, "demo:demo");
-    if(!data) return undefined;
-
+    if(!data){
+        alert('webrtc server is crash !!')
+        return undefined;
+    }
+    
     // get data
     data = data['payload'];
     const logData = [];
