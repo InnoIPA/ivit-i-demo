@@ -71,12 +71,13 @@ async function stopEvent(uuid, statsButton, optionButton){
 }
 
 // Error AI Task
-async function errEvent(uuid, statsButton, launchButton){
+async function errEvent(uuid, statsButton, optionButton, launchButton){
     
     statsButton.innerText = ERROR;
     statsButton.setAttribute("class", "btn btn-red custom");
 
     addErrorHref(uuid);
+    enableButton(optionButton);
     disableButtonParent(launchButton);
 }
 
@@ -94,7 +95,7 @@ async function statusEvent(uuid, stats, debug=false){
     } 
     else if ( stats === ERROR ) {
         const launchButton = document.getElementById(`${uuid}_switch`);
-        await errEvent(uuid, statsButton, launchButton);
+        await errEvent(uuid, statsButton, optionButton, launchButton);
     };
 }
 
@@ -1120,7 +1121,7 @@ async function getPlatform(){
 async function defineLaunchButton(){
 
     // When switch change
-    $('.switch-custom :checkbox').change(function(){
+    $('.switch-custom :checkbox').change(async function(){
         
         const eventTarget = this;
         let stats = ( eventTarget.checked ? 'run' : 'stop' )
@@ -1139,31 +1140,22 @@ async function defineLaunchButton(){
         disableButton(document.getElementById(`${uuid}_more`));
 
         // run app or stop appdefineLaunchButton
-        $.ajax({  
-            type: 'GET',
-            url: SCRIPT_ROOT + `/task/${uuid}/${stats}`,
-            dataType: "json",
-            success: function (data, textStatus, xhr) {
-                console.log(`${data}`);
-                eventTarget.disabled = false;
-        
-                parentTarget.style = `pointer-events: all; opacity: ${ENABLE_OPACITY};`;
-                statusEvent(uuid, stats);
-                
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                
-                document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-red custom")
-                document.getElementById(`${uuid}_switch`).checked = false;
-                rmStramHref(uuid);
-                
-                console.log('Run application error ... stop application')
-                const err = xhr.responseJSON;
-                console.log(err);
-                stopTask(uuid);
-                statusEvent(uuid, 'error');
-            },
-        });
+        const data = await getAPI(`/task/${uuid}/${stats}`);
+        if(data){
+            parentTarget.style = `pointer-events: all; opacity: ${ENABLE_OPACITY};`;
+            await statusEvent(uuid, stats);
+            eventTarget.disabled = false;
+        }
+        else{
+            document.getElementById( `${uuid}_status_btn`).setAttribute("class", "btn btn-red custom")
+            document.getElementById(`${uuid}_switch`).checked = false;
+            rmStramHref(uuid);
+            
+            console.log('Run application error ... stop application')
+            stopTask(uuid);
+            await statusEvent(uuid, 'error');
+        }
+
     });
 }
 
