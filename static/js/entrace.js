@@ -35,61 +35,66 @@ async function addStreamHref(uuid){
     eleTaskName.setAttribute("onclick", `streamStart("${uuid}");`);
 }
 
+// Remove superlink
 async function rmStramHref(uuid){
     const eleTaskName = document.getElementById(`${uuid}_name`);
     eleTaskName.removeAttribute("href");
     eleTaskName.removeAttribute("onclick");
 }
 
-// Control the status button
-let statusDict = [];
-async function statusEvent(uuid, stats, debug=false){
+// Run AI Task Event
+async function runEvent(uuid, statsButton, optionButton){
+    
+    // UI
+    statsButton.innerText = RUN;
+    statsButton.setAttribute("class", "btn btn-green custom");
+    disableButton(optionButton);
 
-    const name    = document.getElementById(`${uuid}_name`).textContent;
+    // Start the stream
+    streamStart(uuid);
+    await addWebRTC(uuid, `rtsp://127.0.0.1:8554/${uuid}`);
+    
+    // Add hyperlink
+    addStreamHref(uuid);
+
+}
+
+// Stop AI Task
+async function stopEvent(uuid, statsButton, optionButton){
+
+    statsButton.innerText = STOP;
+    statsButton.setAttribute("class", "btn btn-gray custom");
+
+    await delWebRTC(uuid);
+    rmStramHref(uuid);
+    enableButton(optionButton);
+}
+
+// Error AI Task
+async function errEvent(uuid, statsButton, launchButton){
+    
+    statsButton.innerText = ERROR;
+    statsButton.setAttribute("class", "btn btn-red custom");
+
+    addErrorHref(uuid);
+    disableButtonParent(launchButton);
+}
+
+// Control the status button and the further event
+async function statusEvent(uuid, stats, debug=false){
 
     const statsButton = document.getElementById( `${uuid}_status_btn`);
     const optionButton = document.getElementById(`${uuid}_more`);
-    const launchButton = document.getElementById(`${uuid}_switch`);
-    
-    if (debug === true) console.log(`- ${name} (${uuid}) is ${stats}`);
     
     if(stats === RUN){
-        
-        statsButton.innerText = RUN;
-        statsButton.setAttribute("class", "btn btn-green custom");
-        
-        // Start the stream
-        streamStart(uuid);
-        if(!statusDict.includes(uuid) ){
-            await addWebRTC(uuid, `rtsp://127.0.0.1:8554/${uuid}`);
-        }
-        statusDict.push(uuid);
-
-        addStreamHref(uuid);
-        disableButton(optionButton);
-
-    } else if ( stats === STOP ) {
-        
-        statsButton.innerText = STOP;
-        statsButton.setAttribute("class", "btn btn-gray custom");
-
-        if(statusDict.includes(uuid) ){
-            
-            delWebRTC(uuid);
-            // Delete
-            const index = statusDict.indexOf(uuid);
-            if(index > -1) statusDict.splice(index, 1);
-        }
-
-        rmStramHref(uuid);
-        enableButton(optionButton);
-
-    } else if ( stats === ERROR ) {
-        
-        statsButton.innerText = ERROR;
-        statsButton.setAttribute("class", "btn btn-red custom");
-        addErrorHref(uuid);
-        disableButtonParent(launchButton);
+        await runEvent(uuid, statsButton, optionButton);
+    } 
+    else if ( stats === STOP ) {
+        await stopEvent(uuid, statsButton, optionButton);
+    } 
+    else if ( stats === ERROR ) {
+        const launchButton = document.getElementById(`${uuid}_switch`);
+        await errEvent(uuid, statsButton, launchButton);
     };
 }
 
@@ -1104,21 +1109,16 @@ async function updateModalOpen(){
 
 // About Application Modal Event - END
 
+// Get the platform of the backend
 async function getPlatform(){
-    
-    const data = await $.ajax({  
-        type: "GET",
-        url: SCRIPT_ROOT + "/platform",
-        dataType: "json",
-        error: logError
-    });
-
+    const data = await getAPI('/platform')
     if (data) return data.toUpperCase();
-    else return undefined;
-    
+    else return undefined;    
 }
 
+// Define Launch Button Behaviour
 async function defineLaunchButton(){
+
     // When switch change
     $('.switch-custom :checkbox').change(function(){
         
@@ -1147,7 +1147,6 @@ async function defineLaunchButton(){
                 console.log(`${data}`);
                 eventTarget.disabled = false;
         
-                
                 parentTarget.style = `pointer-events: all; opacity: ${ENABLE_OPACITY};`;
                 statusEvent(uuid, stats);
                 
@@ -1162,16 +1161,15 @@ async function defineLaunchButton(){
                 const err = xhr.responseJSON;
                 console.log(err);
                 stopTask(uuid);
-                
                 statusEvent(uuid, 'error');
-                // errNameEvent(uuid);
-                // alert(err);
             },
         });
     });
 }
 
+// Check each AI Task status, because the AI Task maybe already started when web start.
 async function checkTaskStatus() {
+
     // Get all check box of AI task
     let ele = Array.from(document.querySelectorAll('input[type=checkbox]'));
     
@@ -1192,7 +1190,7 @@ async function checkTaskStatus() {
             let stats = data;
             if ( stats==='run') ele[i].checked = true;
             else ele[i].checked = false;
-            statusEvent(uuid, stats, debug=true); 
+            await statusEvent(uuid, stats, debug=true);
         }
     }
 }
@@ -1205,15 +1203,16 @@ $(document).ready( async function () {
     const pla = await getPlatform();
     if (pla) document.getElementById("title_framework").textContent = `( ${pla} )`
     
-
     // Update Global Parameters
     updateMapModelUUID();
     updateMapModelApp();
-    
-    // Check the status of each task
-    checkTaskStatus();
 
     // Define the launch Switch Button
     defineLaunchButton();
+
+    // Check the status of each task
+    checkTaskStatus();
+
+
 
 });
