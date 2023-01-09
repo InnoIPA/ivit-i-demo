@@ -161,12 +161,9 @@ function getSourceType(src){
 }
 
 async function streamStart(uuid){
-
     const data = getAPI(`/task/${uuid}/stream/start`, ALERT);
     if(!data) return undefined;
-
     console.log(data);
-    
 }
 
 function streamStop(uuid){

@@ -128,25 +128,20 @@ async function stopStream() {
 // Delete WebRTC
 async function delWebRTC(streamID){
     
-    if(!streamID) { alert("Unknown streamID ... " ); return undefined; };
+    if(!streamID) { alert("Empty streamID ... " ); return undefined; };
 
     let url = `http://${DOMAIN}:8083/stream/${streamID}/delete`;
     
     let data = await getAPI( url, LOG, true, "demo:demo");
     if(!data) return undefined;
     
+    // For debug
     getStreamList();
 }
 
 // Add WebRTC
 async function addWebRTC(streamID, streamURL){
     let api;
-
-    // Create RTSP
-    // api = `/rtsp/start`
-    // let runRTSPData = await getAPI( api, LOG, true, "demo:demo" );
-    // if(!runRTSPData) return undefined;
-    // console.log(runRTSPData);
 
     // Create WebRTC
     if(!streamID) streamID = document.getElementById("rtsp-name").value;
@@ -170,27 +165,26 @@ async function addWebRTC(streamID, streamURL){
     let runRtcData = await postAPI( api, inData, JSON_FMT, LOG, true, "demo:demo");
     if(!runRtcData) return undefined;
     console.log(runRtcData);
+    
+    // For debug
     getStreamList();
 
 }
 
-// Get WebRTC
+// Get WebRTC List
 async function getStreamList(){
     let url;
     // url = "http://demo:demo@127.0.0.1:8083/streams";
     // url = "http://172.16.92.130:8083/streams"
     url = `http://${DOMAIN}:8083/streams`;
-    console.log(`${url}`);
-
 
     let data = await getAPI( url, LOG, true, "demo:demo");
     if(!data) return undefined;
 
     // get data
     data = data['payload'];
-    for ( const key in data){
-        console.log(data[key]['name']);
-    }
-
+    const logData = [];
+    for ( const key in data){ logData.push( data[key]['name'] ) }
+    console.log( 'Check webrtc stream: ',  ...logData );
     return data;
 }
