@@ -808,7 +808,7 @@ function enableVectorIcon(){
 
 function appAreaEvent(){
     
-    enableAlarm();
+    // enableAlarm();
     // initCanvasParam();
     document.getElementById('area-header').textContent = "Detected Area ( 0 ) ";
     enableAppArea();
@@ -818,7 +818,7 @@ function appAreaEvent(){
 }
 
 function appCountingEvent(){
-    enableAlarm();
+    // // enableAlarm();
     enableLogic();
     enableAppArea();
 }
@@ -828,7 +828,7 @@ function appTrackingEvent(){
 }
 
 function appDirectionEvent(){
-    enableAlarm();
+    // // enableAlarm();
     // initCanvasParam();
     enableAppArea();
     enableSensitive();
@@ -840,7 +840,7 @@ function appDirectionEvent(){
 }
 
 function initAppItem(){
-    disableAlarm();
+    // disableAlarm();
     disableLogic();
     disableAppArea();
     disableSensitive();
