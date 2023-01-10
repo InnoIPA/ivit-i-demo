@@ -591,8 +591,8 @@ async function parseAppInfo(){
             appData[appThres]   = _logicThres; }
 
     // Alarm
-    const _alarm = document.getElementById('app_alarm').value;
-    if ( _alarm ) appData[appAlarm]   = _alarm;
+    // const _alarm = document.getElementById('app_alarm').value;
+    // if ( _alarm ) appData[appAlarm]   = _alarm;
     
     // Area Information
     const _retArea = await getRescaleAreaPoint();
@@ -718,7 +718,7 @@ async function importSubmit() {
     };
 
     // Add other information: capture from /import_proc, it's the same with the return infor of /import_zip (web api)
-    const eleZipDiv = document.getElementById('import_zip_model_label')
+    const eleZipDiv = document.getElementById('import_zip_model')
     const eleUrlDiv = document.getElementById('import_url_model_value')
     
     // Show the file name on ZIP div
@@ -734,6 +734,7 @@ async function importSubmit() {
     }
 
     // Parse output from importProcData
+    console.log(importProcData, fileName);
     let trg_data = importProcData[fileName]["info"];
 
     // Add more data into formData
