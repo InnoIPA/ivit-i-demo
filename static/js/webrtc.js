@@ -23,20 +23,28 @@ async function setWebRTC(streamID){
             // console.log(data);
             // 如果同意的話就會回傳資訊，透過該資訊設定 WebRTC Remote 端的資訊
             // 當雙方都 setRemoteDescription 就可以開始連線
-            webrtc.setRemoteDescription(
-                new RTCSessionDescription({
-                    type: 'answer',
-                    sdp: atob(data)
-                }))
-            return true
+            try{
+                webrtc.setRemoteDescription(
+                    new RTCSessionDescription({
+                        type: 'answer',
+                        sdp: atob(data)
+                    }))
+                return true    
+            } catch (e){
+                console.warn('WebRTC Server has been crashed, please refresh page')
+                return false;    
+            }
         })
         .fail(async function(xhr, textStatus, errorThrown){
-            if(!xhr) console.log('Error: ', JSON.parse(xhr.responseText)['payload']);
-            else alert('WebRTC Server has been crashed, please restart ivit-i !')
+            console.warn('WebRTC Server has been crashed, please refresh page')
+            // if(!xhr) console.log('Error: ', JSON.parse(xhr.responseText)['payload']);
+            // else alert('WebRTC Server has been crashed, please restart ivit-i !')
             return false
         })
+    } catch (e){
+        console.warn('WebRTC Server has been crashed, please refresh page')
+    }
 
-    } catch(e){ }
 
     return false;
 }
