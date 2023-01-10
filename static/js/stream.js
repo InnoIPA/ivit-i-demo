@@ -53,7 +53,6 @@ function get_detection_data(frameID, dets){
 async function app_alarm_event(val){
     // No Alarm
     if(val==="") return undefined;
-
     alert(dets[key]);
 }
 
@@ -62,8 +61,8 @@ async function get_application_data(frameID, dets){
     // 更新 LOG
     const result_element=document.getElementById('result');
     let detsList = `<p> [ Frame ID: ${frameID} ] </p>`;
-    
     if (dets.constructor == Object){
+
         for( const key in dets){
             
             if(key==='alarm'){
@@ -71,8 +70,30 @@ async function get_application_data(frameID, dets){
                 if(!alarm) continue;
             }
 
-            detsList += `<p> ${key}: ${dets[key]} </p>`;
+            if ( Array.isArray(dets[key])) {
+                const detsArr = dets[key];
+                for(let i=0; i<detsArr.length; i++){
+                    detsList += `[ ${i} ] \t`;
+                    let detail = Object.keys(detsArr[i]);
+                    detail.forEach(function(key, index){
+                        detsList += `${key}: ${detsArr[i][key]} \t`;
+                    })
+                    detsList += "</p>";
+                }
+            }
+            else{
+                detsList += `<p> ${key}: ${dets[key]} </p>`;
+            }
         }    
+    } else if (Array.isArray(dets)){
+        for(let i=0; i<dets.length; i++){
+            detsList += `[ ${i} ] \t`;
+            let detail = Object.keys(dets[i]);
+            detail.forEach(function(key, index){
+                detsList += `${key}: ${dets[i][key]} \t`;
+            })
+            detsList += "</p>";
+        }
     } else {
         // detsList += ("<p>"+dets+"</p>") 
         detsList += `<p>${dets}</p>`;
