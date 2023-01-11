@@ -15,38 +15,23 @@ const videoEl = document.querySelector('#webrtc-video')
 // Setup WebRTC: Asking for remote
 async function setWebRTC(streamID){
     console.log('Ask for setting webrtc');
+    
     // Check URL
     let trg_url = `http://${DOMAIN}:8083/stream/${streamID}/channel/0/webrtc`;
-    try{
-        await $.post(trg_url, { data: btoa(webrtc.localDescription.sdp) })
-        .done(async function (data) {
-            // console.log(data);
-            // 如果同意的話就會回傳資訊，透過該資訊設定 WebRTC Remote 端的資訊
-            // 當雙方都 setRemoteDescription 就可以開始連線
-            try{
-                webrtc.setRemoteDescription(
-                    new RTCSessionDescription({
-                        type: 'answer',
-                        sdp: atob(data)
-                    }))
-                return true    
-            } catch (e){
-                console.warn('WebRTC Server has been crashed, please refresh page')
-                return false;    
-            }
-        })
-        .fail(async function(xhr, textStatus, errorThrown){
-            console.warn('WebRTC Server has been crashed, please refresh page')
-            // if(!xhr) console.log('Error: ', JSON.parse(xhr.responseText)['payload']);
-            // else alert('WebRTC Server has been crashed, please restart ivit-i !')
-            return false
-        })
-    } catch (e){
-        console.warn('WebRTC Server has been crashed, please refresh page')
-    }
-
-
-    return false;
+    
+    fetch(trg_url, {
+        method: 'POST',
+        body: new URLSearchParams({ data: btoa(webrtc.localDescription.sdp) })
+    })
+    .then(response => response.text())
+    .then(data => {
+        try {
+            webrtc.setRemoteDescription(
+                new RTCSessionDescription(
+                    { type: 'answer', sdp: atob(data) 
+            }))
+        } catch (e) { console.warn(e) }
+    })
 }
 
 // Connect to RTSPtoWeb Project
@@ -64,6 +49,17 @@ async function connectWebRTC(streamID) {
         }],
         sdpSemantics: 'unified-plan'
     })
+
+    // ontrack
+    // 完成連線後，透過該事件能夠在發現遠端傳輸的多媒體檔案時觸發，來處理/接收多媒體數據。
+    console.log("Define Track Event");
+    webrtc.ontrack = function (event) {
+        document.getElementById('webrtc-video').style.display = '';
+        document.getElementById('loader').style.display = 'none';
+        // console.log(event.streams.length + ' track is delivered')
+        videoEl.srcObject = event.streams[0]
+        videoEl.play()
+    }
 
     // Add Track or Transceiver to capture the video
     // 建立 RTP Stream 每次隨機產生 SSRC， 在 createOffer 的 SDP 當中會帶入
@@ -89,17 +85,6 @@ async function connectWebRTC(streamID) {
         await setWebRTC(streamID);
     }
 
-    // ontrack
-    // 完成連線後，透過該事件能夠在發現遠端傳輸的多媒體檔案時觸發，來處理/接收多媒體數據。
-    console.log("Define Track Event");
-    webrtc.ontrack = function (event) {
-        document.getElementById('webrtc-video').style.display = '';
-        document.getElementById('loader').style.display = 'none';
-        // console.log(event.streams.length + ' track is delivered')
-        videoEl.srcObject = event.streams[0]
-        videoEl.play()
-    }
-
     // 建立 P2P 中雙向資料傳輸的通道
     console.log("Create Data Channel");
     const webrtcSendChannel = webrtc.createDataChannel('rtsptowebSendChannel')
@@ -109,6 +94,7 @@ async function connectWebRTC(streamID) {
         console.log(`${webrtcSendChannel.label} has opened`)
         webrtcSendChannel.send('ping')
     }
+
     // 當呼叫 close() method 的時候
     webrtcSendChannel.onclose = (_event) => {
         console.log(`${webrtcSendChannel.label} has closed`);
@@ -116,7 +102,7 @@ async function connectWebRTC(streamID) {
     }
     // 呼叫 send() 並且兩邊都連接上的時候
     webrtcSendChannel.onmessage = event => console.log(event.data)
-    
+ 
 }
 
 // Play Video Element
