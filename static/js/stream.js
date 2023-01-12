@@ -20,8 +20,8 @@ for(let i=0; i < el_path.length; i++){
 
 // Define Socket in socket.js
 // const socket = new WebSocket('ws://' + `${DOMAIN}:${PORT}` + '/ivit_i');
-// const SOCK_SYS = "sys";
-// const SOCK_RES = "result";
+const SOCK_SYS = "sys";
+const SOCK_RES = "result";
 
 // Set up the socketio address
 const URL = `http://${DOMAIN}:${PORT}/task/${uuid}/stream`;
@@ -275,7 +275,9 @@ $(document).ready(async function(){
     
     // Connect Socket
     try{ 
-        socketStream = new WebSocket('ws://' + `${DOMAIN}:${PORT}` + sockEvent);
+
+        const socket = new WebSocket('ws://' + `${DOMAIN}:${PORT}` + '/ivit_i');
+
     } catch(e){ 
         console.warn(e) 
     }
@@ -292,5 +294,6 @@ $(document).ready(async function(){
     // Define Socket Event
     socketStream.addEventListener('message', sockMessageEvent);
     socketStream.addEventListener('close', sockCloseEvent);
+    
 
 });
