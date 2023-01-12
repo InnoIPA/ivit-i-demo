@@ -23,88 +23,119 @@ zipModelUploader.addEventListener("change", importZipFileUpload);
 // --------------------------------------------------
 // Import URL
 
-function importURL(){
-    
-    // Close Next button
-    document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
-        ele.textContent = "Converting ...";
-        ele.disabled = true;
-    })
+async function importURL(){
+    try{
+        // Close Next Button
+        const appNextBT = document.getElementById("bt_modal_app")
+        appNextBT.disabled = true;
+        appNextBT.textContent = "Donwloading ...";
 
-    // Capture URL
-    //      - 172.16.92.124:6530/da138368/iteration1/share
-    let url = eleOptUrl.value;
-    let data = {
-        "url": url
-    }
+        // Capture URL, Example: 172.16.92.124:6530/da138368/iteration1/share
+        let url = eleOptUrl.value;
+        let json_data = { "url": url }
 
-    // Send to Server
-    $.ajax({
-        url: SCRIPT_ROOT + "/extract_url/",
-        data: JSON.stringify( data ),
-        type: 'POST',
-        dataType: 'json',
-        contentType: "application/json;charset=utf-8",
-        success: function (data, textStatus, xhr){
+        // Send to Server
+        $.ajax({
+            url: SCRIPT_ROOT + "/extract_url/",
+            data: JSON.stringify( data ),
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json;charset=utf-8",
+            success: function (data, textStatus, xhr){
 
-            console.log(data);
-            
-            updateTagApp("model", data["tag"]);
-
-            eleOptUrlDiv.value = `${data["name"]}`;
-
-            getConvertStatus(data["name"]);
-            if (convertStatus === false) {
-                let intervalTime = 5000;
-                timer = window.setInterval(function () { getConvertStatus(data["name"]) }, intervalTime);
-            }
-
-            // update application label in depend_on
-            let labelPath = { "path": data["label_path"] };
+                console.log(data);
                 
-            $.ajax({
-                url: SCRIPT_ROOT + "/read_file/",
-                data: JSON.stringify(labelPath),
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: function (data, textStatus, xhr) {
-                    
-                    console.log("updated label", data);
-                    
+                updateTagApp("model", data["tag"]);
 
-                    // Update depend_on
-                    const appOptList = document.getElementById("label_list");
-                    
-                    // Clear dropdown-div
-                    document.querySelectorAll("#dropdown-div").forEach( function(ele, idx){
-                        ele.remove();
-                    })
-                    for(let i=0; i<data.length; i++){
-                        appOptList.innerHTML += '<div id="dropdown-div" class="dropdown-item d-flex flex-row align-items-center">'+
-                            '<input class="app-opt" type="checkbox" onchange="atLeastOneRadio(this)" checked>' +
-                            `<a class="app-opt-text">${data[i]}</a>` +
-                            '</div>'
-                        document.getElementById("label_list_menu").textContent = `Select ${i+1} Labels`;
-                    }
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    window.clearInterval( timer );
-                    alert(`Read file error ( ${xhr.responseText} )`);
+                eleOptUrlDiv.value = `${data["name"]}`;
 
+                getConvertStatus(data["name"]);
+                if (convertStatus === false) {
+                    let intervalTime = 5000;
+                    timer = window.setInterval(function () { getConvertStatus(data["name"]) }, intervalTime);
                 }
-            });
 
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
-                ele.textContent = "Next";
-                ele.disabled = false;
-            })
-            alert(`Extract URL error, make sure you have correct URL ...`);
-        }
-    });
+                // update application label in depend_on
+                let labelPath = { "path": data["label_path"] };
+                    
+                $.ajax({
+                    url: SCRIPT_ROOT + "/read_file/",
+                    data: JSON.stringify(labelPath),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: function (data, textStatus, xhr) {
+                        
+                        console.log("updated label", data);
+                        
+
+                        // Update depend_on
+                        const appOptList = document.getElementById("label_list");
+                        
+                        // Clear dropdown-div
+                        document.querySelectorAll("#dropdown-div").forEach( function(ele, idx){
+                            ele.remove();
+                        })
+                        for(let i=0; i<data.length; i++){
+                            appOptList.innerHTML += '<div id="dropdown-div" class="dropdown-item d-flex flex-row align-items-center">'+
+                                '<input class="app-opt" type="checkbox" onchange="atLeastOneRadio(this)" checked>' +
+                                `<a class="app-opt-text">${data[i]}</a>` +
+                                '</div>'
+                            document.getElementById("label_list_menu").textContent = `Select ${i+1} Labels`;
+                        }
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        window.clearInterval( timer );
+                        alert(`Read file error ( ${xhr.responseText} )`);
+
+                    }
+                });
+
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                document.getElementsByName("bt_modal_app").forEach(function(ele, idx){
+                    ele.textContent = "Next";
+                    ele.disabled = false;
+                })
+                alert(`Extract URL error, make sure you have correct URL ...`);
+            }
+        })
             
+        // update application label in depend_on
+        const labelPath = { "path": urlData["label_path"] };
+        // Check File Status /read_file
+        const data = await postAPI(`/read_file/`, labelPath, JSON_FMT, ALERT);
+
+        // If no data reset Next button
+        if(!data){
+            console.log("Error");
+            window.clearInterval( timer );
+            await resetNextButton();
+            return undefined;
+        } 
+        console.log(data);
+        // Update depend_on
+        
+        const appOptList = document.getElementById("label_list");
+
+        // Clear dropdown-div
+        document.querySelectorAll("#dropdown-div").forEach( function(ele, idx){
+            ele.remove();
+        })
+        
+        // Add New Label
+        for(let i=0; i<data.length; i++){
+            appOptList.innerHTML += '<div id="dropdown-div" class="dropdown-item d-flex flex-row align-items-center">'+
+                '<input class="app-opt" type="checkbox" onchange="atLeastOneRadio(this)" checked>' +
+                `<a class="app-opt-text">${data[i]}</a>` +
+                '</div>'
+            document.getElementById("label_list_menu").textContent = `Select ${i+1} Labels`;
+        }
+
+    } catch(e) {
+        alert(e);
+        await resetNextButton();
+    }
 }
 
 // --------------------------------------------------
@@ -230,7 +261,6 @@ async function importZipFileUpload(e) {
     }
 
 }
-
 
 async function getConvertStatus(task_name) {
     const data = await getAPI(`/import_proc/${task_name}/status`)
