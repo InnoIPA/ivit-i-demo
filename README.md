@@ -1,6 +1,6 @@
 ![LOGO](docs/images/iVIT-I-Logo-B.png)
 
-# ivit-i-web-ui
+# iVIT-T-WEB-UI ( For Xilinx ) 
 The web demo site for ivit-i-xilinx
 
 * [Requirements](#requirements)
@@ -23,7 +23,7 @@ The web demo site for ivit-i-xilinx
 
 1. Download the repository
     ```bash
-    git clone https://github.com/InnoIPA/ivit-i-web-ui.git && cd ivit-i-web-ui
+    git clone -b r1.0.3.1-xlnx https://github.com/InnoIPA/ivit-i-web-ui.git && cd ivit-i-web-ui
     ```
 2. Build the docker image
     ```bash
