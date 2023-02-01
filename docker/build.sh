@@ -28,7 +28,7 @@ fi
 # Build the docker image
 cd "${ROOT}" || exit
 printd "Build the docker image... (${IMAGE_NAME})" Cy;
-docker build -t "${IMAGE_NAME}" .
+docker build --platform liunux/arm64 -t "${IMAGE_NAME}" .
 
 # Check Docker Image
-docker run --rm -it "${IMAGE_NAME}" echo -ne "\niVIT-I-Web-UI Test\n"
+# docker run --rm -it "${IMAGE_NAME}" echo -ne "\niVIT-I-Web-UI Test\n"
