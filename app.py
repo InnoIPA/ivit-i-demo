@@ -3,9 +3,7 @@ import logging
 import sys, requests, os, time, json
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_socketio import SocketIO
-import eventlet
 from werkzeug.utils import secure_filename
-eventlet.monkey_patch()  
 
 from logging.config import dictConfig
 from flask_cors import CORS
@@ -45,8 +43,8 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 # gunicorn --worker-class eventlet -w 1 --threads ${THREAD} --bind ${BIND} ${MODULE}:app
 # ------------
 # app.config['AF']='intel'
-app.config['HOST']='172.16.92.130'
-app.config['PORT']='819'
+app.config['HOST']='10.204.16.118'
+app.config['PORT']='820'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 def webapi(cmds:list, method:str='GET', data=None):

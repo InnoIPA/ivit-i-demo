@@ -17,6 +17,7 @@ CONF="ivit-i.json"
 RUN_CMD="./demo.sh"
 WORKSPACE="/workspace"
 C_PORT=""
+CLI=0
 
 # Read the config at first time
 IP=$(cat ${CONF} | jq -r '.server.ip')
@@ -26,16 +27,17 @@ PORT=$(cat ${CONF} | jq -r '.server.port')
 function help(){
 	echo "Run the iVIT-I-DEMO environment."
 	echo
-	echo "Syntax: scriptTemplate [-f|b|i|p]"
+	echo "Syntax: scriptTemplate [-f|b|i|p|t]"
 	echo "options:"
 	# echo "b		brand or platform"   
     echo "i		ip"
     echo "p		port"
 	echo "h		help."
+	echo "t		CLI, command line mode"
 }
 
 # Parse the argument
-while getopts "b:i:p:c:h" option; do
+while getopts "b:i:p:c:ht" option; do
 	case $option in
 		i )
 			IP=$OPTARG ;;
@@ -43,6 +45,8 @@ while getopts "b:i:p:c:h" option; do
 			PORT=$OPTARG ;;
 		c )
 			C_PORT=$OPTARG ;;
+		t )
+			CLI=1 ;;
         h )
 			help; exit ;;
 		\? )
