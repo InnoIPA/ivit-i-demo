@@ -1,5 +1,5 @@
-const DOMAIN = '172.16.92.130';
-const PORT = '819';
+const DOMAIN = '10.204.16.118';
+const PORT = '820';
 
 const SCRIPT_ROOT       = `http://${DOMAIN}:${PORT}`;
 const DEBUG_MODE        = false;
