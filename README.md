@@ -1,7 +1,7 @@
 ![LOGO](docs/images/iVIT-I-Logo-B.png)
 
 # ivit-i-web-ui
-The web demo site for ivit-i
+The web demo site for ivit-i-xilinx
 
 * [Requirements](#requirements)
 * [How to work](#how-to-work)
