@@ -8,6 +8,14 @@ SERVER      = "server"
 IP          = "ip"
 PORT        = "port"
 
+def get_all_addr():
+    """ Get All Available IP Address """
+    from subprocess import check_output
+    ips = check_output(['hostname', '--all-ip-addresses']).decode("utf-8").strip()
+    ips = ips.split(' ')
+    print('Detected available IP Address: {}'.format(ips))
+    return ips
+
 def extract_ip():
     st = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:       
@@ -37,11 +45,15 @@ def main(args):
     data = parse_cfg_info(CONF)
     
     # Get server ip
-    ip = data[SERVER][IP] if args.ip == "" else args.ip
-    if ip in [ "" , "0.0.0.0" ]:
-        print("User not setting IP Address, searching dynamically ... ")
-        ip = extract_ip()
+    # ip = data[SERVER][IP] if args.ip == "" else args.ip
+    # if ip in [ "" , "0.0.0.0" ]:
+        # ip = get_all_addr()[0]
+        # ip = extract_ip()
+        # print("User not setting IP Address, searching dynamically ... " , ip )
 
+    ip = extract_ip()
+    print("Searching dynamically ... " , ip )
+        
     # Get server port
     port = data[SERVER][PORT] if args.port == "" else args.port
     
