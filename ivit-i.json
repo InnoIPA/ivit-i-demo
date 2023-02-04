@@ -2,7 +2,7 @@
   "project": "ivit-i-web-ui",
   "version": "v1.0",
   "server": {
-    "ip": "10.204.16.118",
+    "ip": "172.16.92.123",
     "port": "820"
   },
   "client": {

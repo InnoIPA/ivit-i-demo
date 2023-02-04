@@ -1,4 +1,4 @@
-const DOMAIN = '10.204.16.118';
+const DOMAIN = '127.0.0.1';
 const PORT = '820';
 
 const SCRIPT_ROOT       = `http://${DOMAIN}:${PORT}`;
