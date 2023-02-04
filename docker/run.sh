@@ -17,7 +17,7 @@ CONF="ivit-i.json"
 RUN_CMD="./demo.sh"
 WORKSPACE="/workspace"
 C_PORT=""
-CLI=0
+RUN_MODE="-it"
 
 # Read the config at first time
 IP=$(cat ${CONF} | jq -r '.server.ip')
@@ -27,17 +27,17 @@ PORT=$(cat ${CONF} | jq -r '.server.port')
 function help(){
 	echo "Run the iVIT-I-DEMO environment."
 	echo
-	echo "Syntax: scriptTemplate [-f|b|i|p|t]"
+	echo "Syntax: scriptTemplate [-f|b|i|p|d]"
 	echo "options:"
 	# echo "b		brand or platform"   
     echo "i		ip"
     echo "p		port"
+	echo "d		detech, run in background"
 	echo "h		help."
-	echo "t		CLI, command line mode"
 }
 
 # Parse the argument
-while getopts "b:i:p:c:ht" option; do
+while getopts "b:i:p:c:dh" option; do
 	case $option in
 		i )
 			IP=$OPTARG ;;
@@ -45,8 +45,8 @@ while getopts "b:i:p:c:ht" option; do
 			PORT=$OPTARG ;;
 		c )
 			C_PORT=$OPTARG ;;
-		t )
-			CLI=1 ;;
+		d )
+			RUN_MODE="-d" ;;
         h )
 			help; exit ;;
 		\? )
@@ -61,7 +61,6 @@ RUN_CMD="${RUN_CMD} -i ${IP} -p ${PORT}"
 if [[ ${C_PORT} != "" ]]; then RUN_CMD="${RUN_CMD} -c ${C_PORT}"; fi
 
 # Parse information from configuration
-check_jq
 BASE_NAME=$(cat ${CONF} | jq -r '.project')
 TAG_VER=$(cat ${CONF} | jq -r '.version')
 
@@ -75,7 +74,8 @@ CONTAINER_NAME="${BASE_NAME}-${TAG_VER}"
 # Combine the docker command
 DOCKER_CMD="docker run \n\
 --name ${CONTAINER_NAME} \n\
---rm -it \n\
+--rm \n\
+${RUN_MODE} \n\
 --net=host --ipc=host \n\
 -w ${WORKSPACE} \n\
 -v $(pwd):${WORKSPACE} \n\
