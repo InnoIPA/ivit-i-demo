@@ -8,8 +8,8 @@ S_IP=$(cat ${CONF} | jq -r '.server.ip')
 S_PORT=$(cat ${CONF} | jq -r '.server.port')
 
 PORT=$(cat ${CONF} | jq -r '.client.port')
-# IP=$(cat ${CONF} | jq -r '.client.ip')
-IP=$(python3 -c "from before_demo import extract_ip; print(extract_ip())")
+IP=$(cat ${CONF} | jq -r '.client.ip')
+# IP=$(python3 -c "from before_demo import extract_ip; print(extract_ip())")
 
 # Help information
 function help(){
