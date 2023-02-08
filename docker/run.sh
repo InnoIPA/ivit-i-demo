@@ -20,7 +20,8 @@ C_PORT=""
 RUN_MODE="-it"
 
 # Read the config at first time
-IP=$(cat ${CONF} | jq -r '.server.ip')
+# IP=$(cat ${CONF} | jq -r '.server.ip')
+IP=""
 PORT=$(cat ${CONF} | jq -r '.server.port')
 
 # Help information
