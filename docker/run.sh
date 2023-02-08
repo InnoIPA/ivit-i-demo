@@ -57,7 +57,18 @@ while getopts "b:i:p:c:dh" option; do
 done
 
 # Update the parameters of configuration
-RUN_CMD="${RUN_CMD} -i ${IP} -p ${PORT}"
+IP_OPT=""
+PORT_OPT=""
+if [[ ${IP} != "" ]]; then 
+	IP_OPT="-i ${IP}"; 
+else
+	NEW_IP=$(python3 tools/get_address.py)
+	IP_OPT="-i ${NEW_IP}"
+	echo "Get new ip address: ${NEW_IP}"
+fi
+
+if [[ ${PORT} != "" ]]; then PORT_OPT="-p ${PORT}"; fi
+RUN_CMD="${RUN_CMD} ${IP_OPT} ${PORT_OPT}"
 if [[ ${C_PORT} != "" ]]; then RUN_CMD="${RUN_CMD} -c ${C_PORT}"; fi
 
 # Parse information from configuration
