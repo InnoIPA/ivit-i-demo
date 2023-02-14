@@ -12,10 +12,10 @@ source "${ROOT}/utils.sh"
 # Parse information from configuration
 check_jq
 BASE_NAME=$(cat ${CONF} | jq -r '.project')
-TAG_VER=$(cat ${CONF} | jq -r '.version')
+VERSION=$(cat ${CONF} | jq -r '.version')
 
 # Concate name
-IMAGE_NAME="${DOCKER_USER}/${BASE_NAME}:${TAG_VER}"
+IMAGE_NAME="${DOCKER_USER}/${BASE_NAME}:${VERSION}"
 printd "Concatenate docker image name: ${IMAGE_NAME}" Cy
 
 # Unpack ZIP file
@@ -26,9 +26,10 @@ if [[ -z "${VENDOR_ZIP}" ]];then
 fi
 
 # Build the docker image
-cd "${ROOT}" || exit
+# cd "${ROOT}" || exit
 printd "Build the docker image... (${IMAGE_NAME})" Cy;
-docker build -t "${IMAGE_NAME}" .
+
+docker build -f docker/Dockerfile -t "${IMAGE_NAME}" .
 
 # Check Docker Image
-docker run --rm -it "${IMAGE_NAME}" echo -ne "\niVIT-I-Web-UI Test\n"
+docker run --rm "${IMAGE_NAME}"

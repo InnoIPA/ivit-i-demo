@@ -1,0 +1,10 @@
+#!/bin/sh
+CONF="/workspace/ivit-i.json"
+
+if [ -z $(echo ${IVIT_VERSION}) ];then
+    VER=$(cat ${CONF} | jq -r '.version')
+    export IVIT_VERSION=${VER}
+fi
+
+ivit-logo
+exec "$@"
