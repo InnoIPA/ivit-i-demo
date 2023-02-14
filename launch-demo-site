@@ -38,11 +38,14 @@ function help(){
 }
 
 # Parse the argument
+NGINX_PORT=6532
 PORT=""
-while getopts "p:h" option; do
+while getopts "p:n:h" option; do
 	case $option in
         p )
 			PORT=$OPTARG ;;
+		n )
+			NGINX_PORT=$OPTARG ;;
         h )
 			help; exit ;;
 		\? )
@@ -58,17 +61,22 @@ CONF=ivit-i.json
 cd ${WS}
 
 # Check the environment configuration is exist
-if [[ "${PORT}"="" ]];then
+if [[ "${PORT}" = "" ]];then
 
 	echo "Not define PORT number, parsing from \"${WS}/${CONF}\" ..."
 	
 	if [[ -z $(ls ${WS} | grep ${CONF}) ]]; then
-		printd "Could not find configuration (${CONF}) !!! " R
+		printd "Could not find configuration (${CONF}) !!! "
 		exit 1
 	else
 		PORT=$(cat ${CONF} | jq -r '.port')
-		printd "Found port number in ${CONF}, Setup port to ${PORT} !!!" BR
+		printd "Found port number in ${CONF}, Setup port to ${PORT} !!!"
 	fi
 	
 fi
+
+export NGINX_PORT=${NGINX_PORT}
+printd "Define flask port: ${PORT}" Cy
+printd "Define nginx port: ${NGINX_PORT}" Cy
+
 gunicorn --worker-class eventlet -w 1 --threads 10 --bind 127.0.0.1:${PORT} app:app;

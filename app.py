@@ -43,11 +43,14 @@ CORS(app)
 
 # app.config['AF']='intel'
 app.config['HOST']='127.0.0.1'
-app.config['PORT']='819'
+
+port = os.environ.get("NGINX_PORT", 6532)
+logging.info('Get nginx port: {}'.format(port))
+app.config['PORT']=port
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 def webapi(cmds:list, method:str='GET', data=None):
-    url = "http://127.0.0.1:6532/ivit"
+    url = "http://127.0.0.1:{}/ivit".format(port)
     # url = "{}:{}".format(app.config['HOST'], app.config['PORT'])
     for cmd in cmds:
         url += "/{}".format(cmd)
