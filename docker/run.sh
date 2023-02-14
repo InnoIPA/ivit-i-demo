@@ -1,48 +1,59 @@
 #!/bin/bash
 
+# ========================================================
 # Basic Parameters
 CONF="ivit-i.json"
 DOCKER_USER="maxchanginnodisk"
 
+# ========================================================
 # Store the utilities
 FILE=$(realpath "$0")
 ROOT=$(dirname "${FILE}")
 source "${ROOT}/utils.sh"
 
+# ========================================================
 # Install pre-requirement
 check_jq
 
+# ========================================================
 # Define the configuration path
 CONF="ivit-i.json"
-RUN_CMD="./demo.sh"
-WORKSPACE="/workspace"
-C_PORT=""
+RUN_CMD="launch-demo-site"
+BG=false
 
 # Read the config at first time
-IP=$(cat ${CONF} | jq -r '.server.ip')
-PORT=$(cat ${CONF} | jq -r '.server.port')
+BASE_NAME=$(cat ${CONF} | jq -r '.project')
+VERSION=$(cat ${CONF} | jq -r '.version')
+PORT=$(cat ${CONF} | jq -r '.port')
 
+# ========================================================
 # Help information
+function waitTime(){
+	TIME_FLAG=$1
+	while [ $TIME_FLAG -gt 0 ]; do
+		printf "\rWait ... (${TIME_FLAG}) "; sleep 1
+		(( TIME_FLAG-- ))
+	done
+	printf "\r                 \n"
+}
+
 function help(){
 	echo "Run the iVIT-I-DEMO environment."
 	echo
-	echo "Syntax: scriptTemplate [-f|b|i|p]"
+	echo "Syntax: scriptTemplate [-f|b|p]"
 	echo "options:"
-	# echo "b		brand or platform"   
-    echo "i		ip"
-    echo "p		port"
+	echo "b		background"
+	echo "p		port"
 	echo "h		help."
 }
 
 # Parse the argument
-while getopts "b:i:p:c:h" option; do
+while getopts "p:bh" option; do
 	case $option in
-		i )
-			IP=$OPTARG ;;
+		b )
+			BG=true ;;
         p )
 			PORT=$OPTARG ;;
-		c )
-			C_PORT=$OPTARG ;;
         h )
 			help; exit ;;
 		\? )
@@ -52,36 +63,36 @@ while getopts "b:i:p:c:h" option; do
 	esac
 done
 
-# Update the parameters of configuration
-RUN_CMD="${RUN_CMD} -i ${IP} -p ${PORT}"
-if [[ ${C_PORT} != "" ]]; then RUN_CMD="${RUN_CMD} -c ${C_PORT}"; fi
+# ========================================================
+# Combine each parameters
+IMAGE_NAME="${DOCKER_USER}/${BASE_NAME}:${VERSION}"
+CONTAINER_NAME="${BASE_NAME}-${VERSION}"
+RUN_CMD="${RUN_CMD} -p ${PORT}"
 
-# Parse information from configuration
-check_jq
-BASE_NAME=$(cat ${CONF} | jq -r '.project')
-TAG_VER=$(cat ${CONF} | jq -r '.version')
-
-# Concate name
-IMAGE_NAME="${DOCKER_USER}/${BASE_NAME}:${TAG_VER}"
-CONTAINER_NAME="${BASE_NAME}-${TAG_VER}"
-
-# Allow all device connect to display
-# xhost + > /dev/null 2>&1
-
+if [[ ${BG} = false ]];then
+	SET_MODE="-it"
+else
+	SET_MODE="-dt"
+fi
+# ========================================================
 # Combine the docker command
-DOCKER_CMD="docker run \n\
---name ${CONTAINER_NAME} \n\
---rm -it \n\
---net=host --ipc=host \n\
--w ${WORKSPACE} \n\
--v $(pwd):${WORKSPACE} \n\
-${IMAGE_NAME} \n\
-'${RUN_CMD}'"
+DOCKER_CMD="docker run \
+--name ${CONTAINER_NAME} \
+--rm \
+${SET_MODE} \
+--net=host \
+${IMAGE_NAME} \
+${RUN_CMD}"
 
+# ========================================================
 # Show Log
-printd "Docker Command:\n${DOCKER_CMD}\n" Cy
-DOCKER_CMD="${DOCKER_CMD//\\n/}"
+printd "Please Check Docker Command" Cy
+echo -e "\n${DOCKER_CMD}\n"
 
+waitTime 3
+
+# ========================================================
 # Run docker container
-printd "Start up docker container ..."
+DOCKER_CMD="${DOCKER_CMD//\\n/}"
+printd "Start up docker container ..." R
 bash -c "${DOCKER_CMD}"
