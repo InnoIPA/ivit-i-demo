@@ -1,0 +1,74 @@
+#!/bin/bash
+
+REST='\e[0m'
+GREEN='\e[0;32m'
+BGREEN='\e[7;32m'
+RED='\e[0;31m'
+BRED='\e[7;31m'
+YELLOW='\e[0;33m'
+BYELLOW='\e[7;33m'
+Cyan='\033[0;36m'
+BCyan='\033[7;36m'
+
+function printd(){            
+    
+    if [ -z $2 ];then COLOR=$REST
+    elif [ $2 = "G" ];then COLOR=$GREEN
+	elif [ $2 = "BG" ];then COLOR=$BGREEN
+	elif [ $2 = "R" ];then COLOR=$RED
+    elif [ $2 = "BR" ];then COLOR=$BRED
+	elif [ $2 = "Y" ];then COLOR=$YELLOW
+    elif [ $2 = "BY" ];then COLOR=$BYELLOW
+    elif [ $2 = "Cy" ];then COLOR=$Cyan
+    elif [ $2 = "BCy" ];then COLOR=$BCyan
+    else COLOR=$REST
+    fi
+
+    echo -e "$(date +"%y:%m:%d %T") ${COLOR}$1${REST}"
+}
+
+# Help information
+function help(){
+	echo "Run the iVIT-I-Web-UI environment."
+	echo
+	echo "Syntax: scriptTemplate [-f|i|p]"
+	echo "options:"
+    echo "p		port"
+	echo "h		help."
+}
+
+# Parse the argument
+PORT=""
+while getopts "p:h" option; do
+	case $option in
+        p )
+			PORT=$OPTARG ;;
+        h )
+			help; exit ;;
+		\? )
+			help; exit ;;
+		* )
+			help; exit ;;
+	esac
+done
+
+# Move to workspace
+WS=/workspace
+CONF=ivit-i.json
+cd ${WS}
+
+# Check the environment configuration is exist
+if [[ "${PORT}"="" ]];then
+
+	echo "Not define PORT number, parsing from \"${WS}/${CONF}\" ..."
+	
+	if [[ -z $(ls ${WS} | grep ${CONF}) ]]; then
+		printd "Could not find configuration (${CONF}) !!! " R
+		exit 1
+	else
+		PORT=$(cat ${CONF} | jq -r '.port')
+		printd "Found port number in ${CONF}, Setup port to ${PORT} !!!" BR
+	fi
+	
+fi
+gunicorn --worker-class eventlet -w 1 --threads 10 --bind 127.0.0.1:${PORT} app:app;
