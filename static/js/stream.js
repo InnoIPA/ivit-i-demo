@@ -19,7 +19,7 @@ for(let i=0; i < el_path.length; i++){
 };
  
 // Set up the socketio address
-const URL = `http://${DOMAIN}:${PORT}/task/${uuid}/stream`;
+const URL = `http://${SCRIPT_ROOT}/task/${uuid}/stream`;
 
 function get_detection_data(frameID, dets){
 
@@ -136,7 +136,7 @@ $(document).ready(async function(){
     
     // Connect Socket
     try{ 
-        socketStream = new WebSocket('ws://' + `${DOMAIN}:${PORT}` + sockEvent);
+        socketStream = new WebSocket('ws://' + `${HOST}/ivit` + sockEvent);
     } catch(e){ 
         console.warn(e) 
     }
