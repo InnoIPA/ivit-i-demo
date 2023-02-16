@@ -40,20 +40,17 @@ function waitTime(){
 function help(){
 	echo "Run the iVIT-I-DEMO environment."
 	echo
-	echo "Syntax: scriptTemplate [-f|b|p]"
+	echo "Syntax: scriptTemplate [-f|b]"
 	echo "options:"
 	echo "b		background"
-	echo "p		port"
 	echo "h		help."
 }
 
 # Parse the argument
-while getopts "p:bh" option; do
+while getopts "bh" option; do
 	case $option in
 		b )
 			BG=true ;;
-        p )
-			PORT=$OPTARG ;;
         h )
 			help; exit ;;
 		\? )
@@ -67,7 +64,6 @@ done
 # Combine each parameters
 IMAGE_NAME="${DOCKER_USER}/${BASE_NAME}:${VERSION}"
 CONTAINER_NAME="${BASE_NAME}-${VERSION}"
-RUN_CMD="${RUN_CMD} -p ${PORT}"
 
 if [[ ${BG} = false ]];then
 	SET_MODE="-it"
