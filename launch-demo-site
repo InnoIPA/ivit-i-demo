@@ -31,52 +31,28 @@ function printd(){
 function help(){
 	echo "Run the iVIT-I-Web-UI environment."
 	echo
-	echo "Syntax: scriptTemplate [-f|i|p]"
+	echo "Syntax: scriptTemplate [-f|i|p|n|h]"
 	echo "options:"
-    echo "p		port"
+    echo "p		the port of demo site, default is 4999"
+	echo "n		the port nginx listening, default is 6532"
 	echo "h		help."
 }
 
-# Parse the argument
-NGINX_PORT=6532
-PORT=""
-while getopts "p:n:h" option; do
-	case $option in
-        p )
-			PORT=$OPTARG ;;
-		n )
-			NGINX_PORT=$OPTARG ;;
-        h )
-			help; exit ;;
-		\? )
-			help; exit ;;
-		* )
-			help; exit ;;
-	esac
-done
+CONF="/workspace/ivit-i.json"
 
-# Move to workspace
-WS=/workspace
-CONF=ivit-i.json
-cd ${WS}
+WORKER_NUM=$(cat ${CONF} | jq -r '.workers')
+THREAD_NUM=$(cat ${CONF} | jq -r '.threads')
+WEB_PORT=$(cat ${CONF} | jq -r '.web_port')
+NGINX_PORT=$(cat ${CONF} | jq -r '.nginx_port')
 
-# Check the environment configuration is exist
-if [[ "${PORT}" = "" ]];then
-
-	echo "Not define PORT number, parsing from \"${WS}/${CONF}\" ..."
-	
-	if [[ -z $(ls ${WS} | grep ${CONF}) ]]; then
-		printd "Could not find configuration (${CONF}) !!! "
-		exit 1
-	else
-		PORT=$(cat ${CONF} | jq -r '.port')
-		printd "Found port number in ${CONF}, Setup port to ${PORT} !!!"
-	fi
-	
-fi
-
+export WORKER_NUM=${WORKER_NUM}
+export THREAD_NUM=${THREAD_NUM}
+export WEB_PORT=${WEB_PORT}
 export NGINX_PORT=${NGINX_PORT}
-printd "Define flask port: ${PORT}" Cy
+
+printd "Define worker: ${WORKER_NUM}" Cy
+printd "Define threads: ${THREAD_NUM}" Cy
+printd "Define flask port: ${WEB_PORT}" Cy
 printd "Define nginx port: ${NGINX_PORT}" Cy
 
-gunicorn --worker-class eventlet -w 1 --threads 10 --bind 127.0.0.1:${PORT} app:app;
+gunicorn --worker-class eventlet -w ${WORKER_NUM} --threads ${THREAD_NUM} --bind 127.0.0.1:${WEB_PORT} app:app;
