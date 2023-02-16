@@ -2,11 +2,15 @@ FROM ubuntu:focal
 
 USER root
 
-ENV TEMP_WS=/opt/inno/ivit_i \
+ARG DOCKER_TAG
+
+ENV INNO_WS=/opt/inno/ivit_i \
     WS=/workspace \
     DEBIAN_FRONTEND=noninteractive \
-    TIMEZONE=Asia/Taipeia 
+    TIMEZONE=Asia/Taipeia \
+    IVIT_VERSION=${DOCKER_TAG}
 
+RUN mkdir -p ${INNO_WS}
 WORKDIR $WS
 
 # Setting TimeZone
@@ -35,7 +39,6 @@ RUN pip3 install \
     Flask-SocketIO==5.1.1 \
     Flask-SQLAlchemy==2.5.1 \
     futures==2.2.0 \
-    GPUtil==1.4.0 \
     greenlet==1.1.2 \
     gunicorn==20.1.0 \
     idna==3.3 \
@@ -47,7 +50,6 @@ RUN pip3 install \
     MarkupSafe==2.0.1 \
     mistune==2.0.2 \
     numpy==1.19.5 \
-    opencv-python==4.5.5.64 \
     pyrsistent==0.18.0 \
     python-dateutil==2.8.2 \
     python-engineio==4.3.1 \
@@ -76,4 +78,4 @@ RUN cp "./launch-demo-site" "./docker/ivit-logo" "./docker/entrypoint" "/usr/bin
 
 ENTRYPOINT [ "entrypoint" ]
 
-CMD [ "bash" ]
+CMD [ "launch-demo-site" ]

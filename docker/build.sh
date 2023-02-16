@@ -29,7 +29,9 @@ fi
 # cd "${ROOT}" || exit
 printd "Build the docker image... (${IMAGE_NAME})" Cy;
 
-docker build -f docker/Dockerfile -t "${IMAGE_NAME}" .
+docker build -f docker/Dockerfile \
+--build-arg DOCKER_TAG=$VERSION \
+-t "${IMAGE_NAME}" .
 
 # Check Docker Image
-docker run --rm "${IMAGE_NAME}"
+docker run --rm "${IMAGE_NAME}" echo ""
