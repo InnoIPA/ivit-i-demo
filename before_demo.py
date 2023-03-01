@@ -1,7 +1,8 @@
 import os, socket, argparse, json
 
 CONF        = "./ivit-i.json"
-MODIFY_JS   = ['./static/js/common.js']
+# MODIFY_JS   = ['./static/js/common.js']
+MODIFY_JS   = []
 MODIFY_PY   = ['app.py']
 
 SERVER      = "server"
