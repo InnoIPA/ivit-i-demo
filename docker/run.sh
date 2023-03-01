@@ -77,6 +77,7 @@ DOCKER_CMD="docker run \
 --rm \
 ${SET_MODE} \
 --net=host \
+-v $(pwd):/workspace/ \
 ${IMAGE_NAME} \
 ${RUN_CMD}"
 

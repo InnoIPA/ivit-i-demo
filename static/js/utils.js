@@ -5,12 +5,19 @@ const ENABLE_OPACITY        = 1;
 
 
 async function parseError(xhr){
-    err = xhr.responseText;
+    let err = xhr.responseText;
     
     if(!err) return undefined;
 
     if( err.includes("[") && err.includes("]")){
         err = err.slice(err.search("\\["), -1)
+    }
+    err = JSON.parse(err)
+        
+    if (err["message"] === ""){
+        err = err["data"]
+    }else{
+        err = err["message"]
     }
     return err
 }
@@ -24,7 +31,7 @@ async function alertError (xhr, _textStatus, _errorThrown) {
 
 async function logError (xhr, _textStatus, _errorThrown) {
     const errMsg = await parseError(xhr);
-    console.log( errMsg );
+    console.error( errMsg );
     return( errMsg );
 }
 
@@ -78,6 +85,7 @@ async function getAPI(api, errType=LOG, log=false, author) {
     if(api.includes("http")) trg_api = api;
     else trg_api = SCRIPT_ROOT + api;
 
+    console.log(trg_api);
     if(log) console.log(`[GET] Called API: ${trg_api}`);
 
     // Setup error event
@@ -96,12 +104,14 @@ async function getAPI(api, errType=LOG, log=false, author) {
                 if(author){
                     xhr.setRequestHeader("Authorization", "Basic " + btoa('demo' + ":" + 'demo'));
                 }
-            }
+            },
         });
     } catch (e) {
-        errEvent(e);
+        logError(e);
     }
 
+    console.log(data);
+    
     // $.LoadingOverlay("hide");
     // Return Data
     if (data) return data;
@@ -158,7 +168,7 @@ async function postAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, aut
             });    
         }
     } catch (e) {
-        errEvent(e);
+        logError(e);
     }
 
     // Return Data
@@ -170,14 +180,14 @@ async function postAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, aut
 async function updateMapModelUUID(){
     
     const data = await getAPI("/model")
-    if (data) window[MODEL_UUID] = data;
+    if (data) window[MODEL_UUID] = data["data"];
     else return(undefined);
 }
 
 async function updateMapModelApp(){
 
     const data = await getAPI("/model_app");
-    if (data) window[MODEL_APP] = data;
+    if (data) window[MODEL_APP] = data["data"];
     else return(undefined);
 }
 

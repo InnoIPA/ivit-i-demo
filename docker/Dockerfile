@@ -4,23 +4,22 @@ USER root
 
 ARG DOCKER_TAG
 
-ENV INNO_WS=/opt/inno/ivit_i \
-    WS=/workspace \
-    DEBIAN_FRONTEND=noninteractive \
-    TIMEZONE=Asia/Taipeia \
-    IVIT_VERSION=${DOCKER_TAG}
+ENV WS=/workspace \
+    IVIT_VERSION=${DOCKER_TAG} \
+    DEBIAN_FRONTEND=noninteractive
 
-RUN mkdir -p ${INNO_WS}
 WORKDIR $WS
 
 # Setting TimeZone
-RUN apt-get -yq update \
-    && apt-get -yq install tzdata \
-    && ln -fs /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
-    && dpkg-reconfigure -f noninteractive tzdata
+# ENV TIMEZONE=Asia/Taipeia
+# RUN apt-get -yq update \
+#     && apt-get -yq install tzdata \
+#     && ln -fs /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
+#     && dpkg-reconfigure -f noninteractive tzdata
 
 # Basic Package
-RUN apt-get update -q \
+RUN apt-get update -qy \
+    && apt-get install -qqy locales apt-utils \
     && apt-get install -qqy boxes tree jq bsdmainutils vim zip \
     && apt-get install -qqy python3-dev python3-pip
 
@@ -49,7 +48,6 @@ RUN pip3 install \
     jsonschema==3.2.0 \
     MarkupSafe==2.0.1 \
     mistune==2.0.2 \
-    numpy==1.19.5 \
     pyrsistent==0.18.0 \
     python-dateutil==2.8.2 \
     python-engineio==4.3.1 \

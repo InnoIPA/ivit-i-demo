@@ -6,8 +6,8 @@ let gpu;
 let intervalTime = 5000;
 
 // Global Variable - results event
-let socketStream
-const sockEvent = "/results"
+let inferSock
+const inferSockEvent = "/results"
 let info = new Array;
 
 // Get uuid from route
@@ -111,7 +111,7 @@ async function get_application_data(frameID, dets){
     result_element.scrollTop = result_element.scrollHeight;
 }
 
-function sockMessageEvent(ev){
+function inferSockMesgEvent(ev){
     let data = JSON.parse(ev.data);
     data = JSON.parse(data[uuid])
     
@@ -128,18 +128,21 @@ function sockMessageEvent(ev){
     get_application_data(frameID, dets)
 }
 
-function sockCloseEvent(){
+function inferSockCloseEvent(){
     console.log('The connection has been closed successfully.');
 }
 
 $(document).ready(async function(){
     
-    // Connect Socket
+    // Define Socket Event
     try{ 
-        socketStream = new WebSocket('ws://' + `${HOST}/ivit` + sockEvent);
+        inferSock = new WebSocket('ws://' + `${HOST}/ivit`+ inferSockEvent);
     } catch(e){ 
         console.warn(e) 
     }
+    // Connect Socket
+    inferSock.addEventListener('message', inferSockMesgEvent);
+    inferSock.addEventListener('close', inferSockCloseEvent);
 
     // Update Basic Information
     updateBasicInfo();
@@ -149,11 +152,6 @@ $(document).ready(async function(){
 
     // Seting Interval: Update GPU temperature every 5 seconds
     window.setInterval(updateGPUTemperature, intervalTime);
-
-    // Define Socket Event
-    socketStream.addEventListener('message', sockMessageEvent);
-    socketStream.addEventListener('close', sockCloseEvent);
-
 });
 
 function backEvent(){
@@ -201,11 +199,6 @@ function getSourceType(src){
     return ret
 }
 
-async function streamStart(uuid){
-    const data = getAPI(`/task/${uuid}/stream/start`, ALERT);
-    if(!data) return undefined;
-    console.log(data);
-}
 
 function streamStop(uuid){
     $.ajax({
@@ -237,7 +230,7 @@ async function updateBasicInfo(){
 
     let data = await getAPI(`/task/${uuid}/info`);
     if(!data) return undefined;
-
+    data = data["data"]
     console.log(data);
     document.getElementById("title").textContent = data['name'];
     // document.getElementById("app_name").textContent = data['app_name'];
@@ -258,9 +251,11 @@ async function updateBasicInfo(){
 async function updateGPUTemperature(){
    
     // Get GPU Information
-    const gpuData = await getAPI('/device')
+    let gpuData = await getAPI('/device')
     if(!gpuData) return undefined;
-
+    gpuData = gpuData["data"]
+    console.log('......................');
+    console.log(gpuData);
     // Check GPU is correct
     if(! gpu in gpuData){
         console.warn(`Could not find GPU (${gpu}) Information`);

@@ -35,8 +35,9 @@ async function importURL(){
         let json_data = { "url": url }
 
         // Sending data via web api ( /import_url )
-        const urlData = await postAPI(`/import_url/`, json_data, JSON_FMT, ALERT);
+        let urlData = await postAPI(`/import_url`, json_data, JSON_FMT, ALERT);
         if(!urlData) { return undefined; }
+        urlData = urlData["data"]
 
         // Reset Next Button
         console.log(urlData);
@@ -63,7 +64,7 @@ async function importURL(){
         // update application label in depend_on
         const labelPath = { "path": urlData["label_path"] };
         // Check File Status /read_file
-        const data = await postAPI(`/read_file/`, labelPath, JSON_FMT, ALERT);
+        const data = await postAPI(`/read_file`, labelPath, JSON_FMT, ALERT);
 
         // If no data reset Next button
         if(!data){
@@ -127,11 +128,17 @@ async function updateTagApp(eleKey, tagKey) {
     appMenu.textContent = "Please select one";
 
     // Update content
-    const data = await getAPI(`/tag_app`)
-    console.log('Get application: ', data[tagKey]);
-    data[tagKey].forEach(function (item, i) {
-        appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
-    });
+    let data = await getAPI(`/tag_app`)
+    
+    if(data){
+        data = data["data"]
+        console.log('Get application: ', data[tagKey]);
+        data[tagKey].forEach(function (item, i) {
+            appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
+        });    
+    } else{
+        console.warn('Could not get application')
+    }
     document.getElementById(appDefNmae).style.display = "none";
     document.getElementById(appMenuName).removeAttribute("style");
 }
@@ -162,8 +169,9 @@ async function importZipFileUpload(e) {
         appNextBT.textContent = "Extracting ...";
         
         // Sending data via web api ( /import_zip )
-        const zipData = await postAPI(`/import_zip`, form_data, FORM_FMT, ALERT);
+        let zipData = await postAPI(`/import_zip`, form_data, FORM_FMT, ALERT);
         if(!zipData) { return undefined; }
+        zipData = zipData["data"]
         
         // Reset Next Button
         console.log(zipData);
@@ -186,7 +194,7 @@ async function importZipFileUpload(e) {
         // update application label in depend_on
         const labelPath = { "path": zipData["label_path"] };
         // Check File Status /read_file
-        const data = await postAPI(`/read_file/`, labelPath, JSON_FMT, ALERT);
+        const data = await postAPI(`/read_file`, labelPath, JSON_FMT, ALERT);
     
         // If no data reset Next button
         if(!data){
@@ -222,7 +230,10 @@ async function importZipFileUpload(e) {
 }
 
 async function getConvertStatus(task_name) {
-    const data = await getAPI(`/import_proc/${task_name}/status`)
+
+    let data = await getAPI(`/import_proc/${task_name}/status`)
+    data = data["data"]
+
     if (data === "done") {
         // alert("Convert finished !!!");
         console.log("Convert finished !!!")

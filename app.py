@@ -58,7 +58,7 @@ def webapi(cmds:list, method:str='GET', data=None):
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    task_info = json.loads(webapi(['task'], 'GET'))
+    task_info = json.loads(webapi(['task'], 'GET'))['data']
     return render_template('entrance.html', data=task_info)
 
 @app.route('/task/<uuid>/stream')
