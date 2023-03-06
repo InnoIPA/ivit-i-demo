@@ -37,8 +37,7 @@ function ivitSockCloseEvent(){
 async function streamStart(uuid){
     const data = await getAPI(`/task/${uuid}/stream/start`);
     if (!data) return undefined;
-
-    return data["message"]
+    return data["data"]
 }
 
 // Stop task when turn off the swich
@@ -804,7 +803,7 @@ async function errModalEvent(obj) {
     const uuid  = obj.id.split('_')[0];
     let data  = await getAPI(`/task/${uuid}/error`);
     if (data){
-        data = data["message"]
+        data = data["data"]
         if( typeof data === 'object'){
             document.getElementById("errMsg").textContent = JSON.stringify(data);
         } else {
