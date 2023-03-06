@@ -32,17 +32,20 @@ async function setWebRTC(streamID){
                 return true    
             } catch (e){
                 console.warn('WebRTC Server has been crashed, please refresh page')
+                location.reload()
                 return false;    
             }
         })
         .fail(async function(xhr, textStatus, errorThrown){
             console.warn('WebRTC Server has been crashed, please refresh page')
+            location.reload()
             // if(!xhr) console.log('Error: ', JSON.parse(xhr.responseText)['payload']);
             // else alert('WebRTC Server has been crashed, please restart ivit-i !')
             return false
         })
     } catch (e){
         console.warn('WebRTC Server has been crashed, please refresh page')
+        location.reload()
     }
 
 
