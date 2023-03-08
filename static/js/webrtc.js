@@ -32,7 +32,6 @@ async function setWebRTC(streamID){
                 return true    
             } catch (e){
                 console.warn('WebRTC Server has been crashed, please refresh page')
-                location.reload()
                 return false;    
             }
         })
@@ -45,7 +44,6 @@ async function setWebRTC(streamID){
         })
     } catch (e){
         console.warn('WebRTC Server has been crashed, please refresh page')
-        location.reload()
     }
 
 
