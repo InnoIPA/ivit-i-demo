@@ -80,9 +80,7 @@ async function runEvent(uuid, statsButton, optionButton){
     const data = await streamStart(uuid);
 
     if(!data) alert("Stream Stop Failed");
-
-    const rtc = await addWebRTC(uuid, `rtsp://127.0.0.1:8554/${uuid}`);
-        
+    
     // Add hyperlink
     addStreamHref(uuid);
     

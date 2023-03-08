@@ -134,24 +134,37 @@ function inferSockCloseEvent(){
 
 $(document).ready(async function(){
     
-    // Define Socket Event
-    try{ 
-        inferSock = new WebSocket('ws://' + `${HOST}/ivit`+ inferSockEvent);
-    } catch(e){ 
-        console.warn(e) 
+    const data = await getAPI(`/task/${uuid}/status`)
+    console.warn(data);
+    if(!data) return undefined;
+
+    
+    if( data['message']==='run'){
+
+        const rtc = await addWebRTC(uuid, `rtsp://127.0.0.1:8554/${uuid}`);
+        // alert('Task is running')
+        // Define Socket Event
+        try{ 
+            inferSock = new WebSocket('ws://' + `${HOST}/ivit`+ inferSockEvent);
+        } catch(e){ 
+            console.warn(e) 
+        }
+        // Connect Socket
+        inferSock.addEventListener('message', inferSockMesgEvent);
+        inferSock.addEventListener('close', inferSockCloseEvent);
+
+        // Update Basic Information
+        updateBasicInfo();
+
+        // Start the stream
+        connectWebRTC(uuid);
+
+        // Seting Interval: Update GPU temperature every 5 seconds
+        window.setInterval(updateGPUTemperature, intervalTime);
+
     }
-    // Connect Socket
-    inferSock.addEventListener('message', inferSockMesgEvent);
-    inferSock.addEventListener('close', inferSockCloseEvent);
 
-    // Update Basic Information
-    updateBasicInfo();
 
-    // Start the stream
-    connectWebRTC(uuid);
-
-    // Seting Interval: Update GPU temperature every 5 seconds
-    window.setInterval(updateGPUTemperature, intervalTime);
 });
 
 function backEvent(){
