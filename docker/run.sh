@@ -43,14 +43,17 @@ function help(){
 	echo "Syntax: scriptTemplate [-f|b]"
 	echo "options:"
 	echo "b		background"
+	echo "q		quick run"
 	echo "h		help."
 }
 
 # Parse the argument
-while getopts "bh" option; do
+while getopts "bhq" option; do
 	case $option in
 		b )
 			BG=true ;;
+		q )
+			QUICK=true ;;
         h )
 			help; exit ;;
 		\? )
@@ -77,6 +80,7 @@ DOCKER_CMD="docker run \
 --rm \
 ${SET_MODE} \
 --net=host \
+--ipc=host \
 -v $(pwd):/workspace/ \
 ${IMAGE_NAME} \
 ${RUN_CMD}"
@@ -86,7 +90,7 @@ ${RUN_CMD}"
 printd "Please Check Docker Command" Cy
 echo -e "\n${DOCKER_CMD}\n"
 
-waitTime 3
+if [[ ${QUICK} = false ]];then waitTime 3; fi
 
 # ========================================================
 # Run docker container
