@@ -2,9 +2,9 @@ from cmath import log
 import logging
 import sys, requests, os, time, json
 from flask import Flask, render_template, request, jsonify, redirect, url_for
-import eventlet
 from werkzeug.utils import secure_filename
-eventlet.monkey_patch()  
+# import eventlet
+# eventlet.monkey_patch()  
 
 from logging.config import dictConfig
 from flask_cors import CORS
