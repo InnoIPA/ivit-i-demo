@@ -24,14 +24,14 @@ The web demo site for ivit-i
     ```bash
     sudo docker run --name ivit-i-web-ui --rm -it \
     --net=host \
-    maxchanginnodisk/ivit-i-web-ui:v1.1
+    maxchanginnodisk/ivit-i-web-ui:v1.0.3.1
     ```
 2. Mount custom config
     ```bash
     sudo docker run --name ivit-i-web-ui --rm -it \
     --net=host \
     -v $(pwd)/custom.json:/workspace/ivit-i.json \
-    maxchanginnodisk/ivit-i-web-ui:v1.1
+    maxchanginnodisk/ivit-i-web-ui:v1.0.3.1
     ```
 
 # Configuration for User ( [ivit-i.json](/ivit-i.json) )
