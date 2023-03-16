@@ -169,7 +169,7 @@ $(document).ready(async function(){
 
 function backEvent(){
     location.href='/';
-    streamStop(uuid);
+    // streamStop(uuid);
 }
 
 function convertTime(total_sec){
