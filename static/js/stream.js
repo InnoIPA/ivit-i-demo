@@ -145,13 +145,13 @@ $(document).ready(async function(){
         // alert('Task is running')
         // Define Socket Event
         try{ 
+            // Connect Socket
             inferSock = new WebSocket('ws://' + `${HOST}/ivit`+ inferSockEvent);
+            inferSock.addEventListener('message', inferSockMesgEvent);
+            inferSock.addEventListener('close', inferSockCloseEvent);
         } catch(e){ 
             console.warn(e) 
         }
-        // Connect Socket
-        inferSock.addEventListener('message', inferSockMesgEvent);
-        inferSock.addEventListener('close', inferSockCloseEvent);
 
         // Update Basic Information
         updateBasicInfo();

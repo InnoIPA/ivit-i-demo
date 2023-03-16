@@ -20,7 +20,6 @@ async function setWebRTC(streamID){
     try{
         await $.post(trg_url, { data: btoa(webrtc.localDescription.sdp) })
         .done(async function (data) {
-            // console.log(data);
             // 如果同意的話就會回傳資訊，透過該資訊設定 WebRTC Remote 端的資訊
             // 當雙方都 setRemoteDescription 就可以開始連線
             try{
@@ -29,8 +28,10 @@ async function setWebRTC(streamID){
                         type: 'answer',
                         sdp: atob(data)
                     }))
-                return true    
+                return true
             } catch (e){
+
+                // can't setup webrtc
                 console.warn('WebRTC Server has been crashed, please refresh page')
                 return false;    
             }
@@ -38,11 +39,13 @@ async function setWebRTC(streamID){
         .fail(async function(xhr, textStatus, errorThrown){
             console.warn('WebRTC Server has been crashed, please refresh page')
             location.reload()
-            // if(!xhr) console.log('Error: ', JSON.parse(xhr.responseText)['payload']);
-            // else alert('WebRTC Server has been crashed, please restart ivit-i !')
+
+            // maybe is register failed
+
             return false
         })
     } catch (e){
+        // can't connect to webrtc
         console.warn('WebRTC Server has been crashed, please refresh page')
     }
 
