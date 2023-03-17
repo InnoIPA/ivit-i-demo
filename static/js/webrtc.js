@@ -14,7 +14,7 @@ const videoEl = document.querySelector('#webrtc-video')
 
 // Setup WebRTC: Asking for remote
 async function setWebRTC(streamID){
-    console.log('Ask for setting webrtc');
+    console.log('\t- Ask for setting webrtc');
     // Check URL
     let trg_url = `http://${DOMAIN}:8083/stream/${streamID}/channel/0/webrtc`;
     try{
@@ -38,7 +38,7 @@ async function setWebRTC(streamID){
         })
         .fail(async function(xhr, textStatus, errorThrown){
             console.warn('WebRTC Server has been crashed, please refresh page')
-            location.reload()
+            // location.reload()
 
             // maybe is register failed
 
@@ -61,7 +61,7 @@ async function connectWebRTC(streamID) {
     }
 
     // Create RTCPeerConnection
-    console.log("Create Peer Connection");
+    console.log("\t- Create Peer Connection");
     webrtc = new RTCPeerConnection({
         iceServers: [{
             urls: ['stun:stun.l.google.com:19302']
@@ -72,15 +72,15 @@ async function connectWebRTC(streamID) {
     // Add Track or Transceiver to capture the video
     // 建立 RTP Stream 每次隨機產生 SSRC， 在 createOffer 的 SDP 當中會帶入
     // 並且建立 media session，當 ICE 成功建立 SRTP 連線就會把 Media Packet 送出去
-    console.log("Add Transceiver");
+    console.log("\t- Add Transceiver");
     webrtc.addTransceiver('video', { 'direction': 'sendrecv' })
 
     // onnegotiationneeded
     // 每當 RTCPeerConnection 要進行會話溝通(連線)時，第一次也就是在addTrack後會觸發該事件， 通常會在此處理createOffer，來通知remote peer與我們連線。
-    console.log("Define Negotiation");
+    console.log("\t- Define Negotiation");
     webrtc.onnegotiationneeded = async function handleNegotiationNeeded() {
 
-        console.log('Create Offer');
+        console.log('\t- Create Offer');
 
         // 建立請求
         const offer = await webrtc.createOffer()
@@ -95,7 +95,7 @@ async function connectWebRTC(streamID) {
 
     // ontrack
     // 完成連線後，透過該事件能夠在發現遠端傳輸的多媒體檔案時觸發，來處理/接收多媒體數據。
-    console.log("Define Track Event");
+    console.log("\t- Define Track Event");
     webrtc.ontrack = function (event) {
         document.getElementById('webrtc-video').style.display = '';
         document.getElementById('loader').style.display = 'none';
@@ -105,7 +105,7 @@ async function connectWebRTC(streamID) {
     }
 
     // 建立 P2P 中雙向資料傳輸的通道
-    console.log("Create Data Channel");
+    console.log("\t- Create Data Channel");
     const webrtcSendChannel = webrtc.createDataChannel('rtsptowebSendChannel')
 
     // 當兩邊資料都對接上的時候會執行這個動作
@@ -150,11 +150,9 @@ async function delWebRTC(streamID){
 
     let url = `http://${DOMAIN}:8083/stream/${streamID}/delete`;
     
-    let data = await getAPI( url, LOG, true, "demo:demo");
-    if(!data) return undefined;
-    
+    let data = await getAPI( url, null, true, "demo:demo");    
     // For debug
-    getStreamList();
+    await getStreamList();
 }
 
 // Add WebRTC
@@ -180,7 +178,7 @@ async function addWebRTC(streamID, streamURL){
         }
     }
 
-    let runRtcData = await postAPI( api, inData, JSON_FMT, LOG, true, "demo:demo");
+    let runRtcData = await postAPI( api, inData, JSON_FMT, null, true, "demo:demo");
     if(!runRtcData) return undefined;
     console.log(runRtcData);
     
@@ -208,4 +206,16 @@ async function getStreamList(){
     for ( const key in data){ logData.push( data[key]['name'] ) }
     console.log( 'Check webrtc stream: ',  ...logData );
     return data;
+}
+
+async function getStreamInfo(uuid){
+    let url = `http://${DOMAIN}:8083/stream/${uuid}/channel/0/info`
+
+    let data = getAPI( url, LOG, true, "demo:demo" );
+    if (!data){
+        alert('get webrtc information failed !!')
+        return undefined;
+    }
+    
+    return data
 }
