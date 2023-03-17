@@ -88,7 +88,6 @@ async function runEvent(uuid, statsButton, optionButton){
 
 // Stop AI Task
 async function stopEvent(uuid, statsButton, optionButton){
-
     statsButton.innerText = STOP;
     statsButton.setAttribute("class", "btn btn-gray custom");
 
@@ -753,7 +752,7 @@ async function importSubmit() {
 
     // Parse output from importProcData
     console.log(importProcData, fileName);
-    let trg_data = importProcData["data"][fileName]["info"];
+    let trg_data = importProcData[fileName]["info"];
 
     // Add more data into formData
     formData.append( "path"         , trg_data["path"] );
