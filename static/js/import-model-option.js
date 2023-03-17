@@ -40,7 +40,7 @@ async function importURL(){
         urlData = urlData["data"]
 
         // Reset Next Button
-        console.log(urlData);
+        console.warn(urlData);
         appNextBT.disabled = false;
         appNextBT.textContent = "Next";
 
@@ -64,7 +64,7 @@ async function importURL(){
         // update application label in depend_on
         const labelPath = { "path": urlData["label_path"] };
         // Check File Status /read_file
-        const data = await postAPI(`/read_file`, labelPath, JSON_FMT, ALERT);
+        let data = await postAPI(`/read_file`, labelPath, JSON_FMT, ALERT);
 
         // If no data reset Next button
         if(!data){
@@ -73,7 +73,8 @@ async function importURL(){
             await resetNextButton();
             return undefined;
         } 
-        console.log(data);
+        data = data['data']
+        console.warn(data);
         // Update depend_on
         
         const appOptList = document.getElementById("label_list");
@@ -154,7 +155,7 @@ async function importZipFileUpload(e) {
         document.getElementById('import_zip_model_label').textContent = file['name'];
     
         // showPreviewImage(file);
-        console.log('Extract a task');
+        console.warn('Extract a task');
         const ele = document.querySelector('[data-target="import-zip-model-uploader"]');
     
         // Create and append information
@@ -174,7 +175,7 @@ async function importZipFileUpload(e) {
         zipData = zipData["data"]
         
         // Reset Next Button
-        console.log(zipData);
+        console.warn(zipData);
         appNextBT.disabled = false;
         appNextBT.textContent = "Next";
         
@@ -194,7 +195,7 @@ async function importZipFileUpload(e) {
         // update application label in depend_on
         const labelPath = { "path": zipData["label_path"] };
         // Check File Status /read_file
-        const data = await postAPI(`/read_file`, labelPath, JSON_FMT, ALERT);
+        let data = await postAPI(`/read_file`, labelPath, JSON_FMT, ALERT);
     
         // If no data reset Next button
         if(!data){
@@ -203,7 +204,8 @@ async function importZipFileUpload(e) {
             await resetNextButton();
             return undefined;
         } 
-
+        data = data['data']
+        console.warn(data)
         // Update depend_on
         
         const appOptList = document.getElementById("label_list");
@@ -232,7 +234,7 @@ async function importZipFileUpload(e) {
 async function getConvertStatus(task_name) {
 
     let data = await getAPI(`/import_proc/${task_name}/status`)
-    data = data["data"]
+    data = data["message"]
 
     if (data === "done") {
         // alert("Convert finished !!!");
