@@ -132,39 +132,58 @@ function inferSockCloseEvent(){
     console.log('The connection has been closed successfully.');
 }
 
+
+
 $(document).ready(async function(){
     
     const data = await getAPI(`/task/${uuid}/status`)
-    console.warn(data);
     if(!data) return undefined;
 
+    // Check the status is run
+    if( data['message']!=='run') return undefined;
     
-    if( data['message']==='run'){
+    // Check to add RTC
+    let addRtcFlag = false;
+    let uuidList = await getAPI('/uuid');
+    uuidList = uuidList['data']
 
-        const rtc = await addWebRTC(uuid, `rtsp://127.0.0.1:8554/${uuid}`);
-        // alert('Task is running')
-        // Define Socket Event
-        try{ 
-            // Connect Socket
-            inferSock = new WebSocket('ws://' + `${HOST}/ivit`+ inferSockEvent);
-            inferSock.addEventListener('message', inferSockMesgEvent);
-            inferSock.addEventListener('close', inferSockCloseEvent);
-        } catch(e){ 
-            console.warn(e) 
+    const streamList = await getStreamList()
+
+    // Check to add RTC - empty stream list
+    if (Object.keys(streamList).length === 0 ) addRtcFlag = true;
+
+    // Check to add RTC - key not in 
+    for( const key in streamList ){
+        if ( ! (key in uuidList) ) {
+            console.warn(`DEL WebRTC: ${key}`);
+            await delWebRTC(key); continue;
         }
+        if ( ! ('status' in streamList[key]['channels']['0'])) addRtcFlag = true
+    }    
 
-        // Update Basic Information
-        updateBasicInfo();
-
-        // Start the stream
-        connectWebRTC(uuid);
-
-        // Seting Interval: Update GPU temperature every 5 seconds
-        window.setInterval(updateGPUTemperature, intervalTime);
-
+    if (addRtcFlag){
+        console.warn(`Add RTSP to WebRTC: ${uuid}`);
+        await addWebRTC(uuid, `rtsp://127.0.0.1:8554/${uuid}`);
     }
 
+    // Define Socket Event
+    try{ 
+        // Connect Socket
+        inferSock = new WebSocket('ws://' + `${HOST}/ivit`+ inferSockEvent);
+        inferSock.addEventListener('message', inferSockMesgEvent);
+        inferSock.addEventListener('close', inferSockCloseEvent);
+    } catch(e){ 
+        console.warn(e) 
+    }
 
+    // Update Basic Information
+    updateBasicInfo();
+
+
+    // Seting Interval: Update GPU temperature every 5 seconds
+    window.setInterval(updateGPUTemperature, intervalTime);
+
+    await connectWebRTC(uuid);
 });
 
 function backEvent(){
@@ -244,7 +263,6 @@ async function updateBasicInfo(){
     let data = await getAPI(`/task/${uuid}/info`);
     if(!data) return undefined;
     data = data["data"]
-    console.log(data);
     document.getElementById("title").textContent = data['name'];
     // document.getElementById("app_name").textContent = data['app_name'];
     document.getElementById("model").textContent = data['model'];
@@ -267,8 +285,6 @@ async function updateGPUTemperature(){
     let gpuData = await getAPI('/device')
     if(!gpuData) return undefined;
     gpuData = gpuData["data"]
-    console.log('......................');
-    console.log(gpuData);
     // Check GPU is correct
     if(! gpu in gpuData){
         console.warn(`Could not find GPU (${gpu}) Information`);
