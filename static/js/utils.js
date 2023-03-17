@@ -35,6 +35,12 @@ async function logError (xhr, _textStatus, _errorThrown) {
     return( errMsg );
 }
 
+async function emptyError (xhr, _textStatus, _errorThrown) {
+    const errMsg = await parseError(xhr);
+    return( errMsg );
+}
+
+
 async function getDocURL() {
     return await getPureURL( document.URL );
 }
@@ -92,7 +98,7 @@ async function getAPI(api, errType=LOG, log=false, author) {
     let errEvent;
     if (errType === ALERT) errEvent = alertError;
     else if(errType === LOG ) errEvent = logError;
-    else errEvent = null
+    else errEvent = emptyError;
 
     // Call API
     let data;
@@ -133,7 +139,7 @@ async function postAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, aut
     let errEvent;
     if (errType === ALERT) errEvent = alertError;
     else if(errType === LOG ) errEvent = logError;
-    else errEvent = null
+    else errEvent = emptyError
 
     // Call API
     try {
