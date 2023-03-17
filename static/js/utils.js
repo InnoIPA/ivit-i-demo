@@ -91,7 +91,8 @@ async function getAPI(api, errType=LOG, log=false, author) {
     // Setup error event
     let errEvent;
     if (errType === ALERT) errEvent = alertError;
-    else errEvent = logError;
+    else if(errType === LOG ) errEvent = logError;
+    else errEvent = null
 
     // Call API
     let data;
@@ -107,11 +108,10 @@ async function getAPI(api, errType=LOG, log=false, author) {
             },
         });
     } catch (e) {
-        logError(e);
+        // logError(e);
     }
 
-    console.log(data);
-    
+    // console.log(data);    
     // $.LoadingOverlay("hide");
     // Return Data
     if (data) return data;
@@ -129,10 +129,11 @@ async function postAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, aut
     if(log) console.log(`[POST] Called API: ${trg_api}`);
 
     // Setup error event
-    let errEvent
     let retData;
+    let errEvent;
     if (errType === ALERT) errEvent = alertError;
-    else errEvent = logError;
+    else if(errType === LOG ) errEvent = logError;
+    else errEvent = null
 
     // Call API
     try {
@@ -168,7 +169,7 @@ async function postAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, aut
             });    
         }
     } catch (e) {
-        logError(e);
+        // logError(e);
     }
 
     // Return Data
