@@ -23,6 +23,8 @@ async function setWebRTC(streamID){
             // 如果同意的話就會回傳資訊，透過該資訊設定 WebRTC Remote 端的資訊
             // 當雙方都 setRemoteDescription 就可以開始連線
             try{
+                console.log(data);
+
                 webrtc.setRemoteDescription(
                     new RTCSessionDescription({
                         type: 'answer',
@@ -30,26 +32,25 @@ async function setWebRTC(streamID){
                     }))
                 return true
             } catch (e){
-
                 // can't setup webrtc
-                console.warn('WebRTC Server has been crashed, please refresh page')
-                return false;    
+                console.warn('Can not setup WebRTC')
+                return false;
             }
         })
         .fail(async function(xhr, textStatus, errorThrown){
-            console.warn('WebRTC Server has been crashed, please refresh page')
-            // location.reload()
-
             // maybe is register failed
-
+            console.warn('Connect to WebRTC failed, reload windows to re-connect')
+            // location.reload()
+            // await setWebRTC()
             return false
         })
     } catch (e){
         // can't connect to webrtc
         console.warn('WebRTC Server has been crashed, please refresh page')
+        // await setWebRTC()
     }
 
-
+    
     return false;
 }
 
@@ -61,13 +62,24 @@ async function connectWebRTC(streamID) {
     }
 
     // Create RTCPeerConnection
-    console.log("\t- Create Peer Connection");
+    console.log(`\t- Create Peer Connection: ${streamID}`);
     webrtc = new RTCPeerConnection({
         iceServers: [{
             urls: ['stun:stun.l.google.com:19302']
         }],
         sdpSemantics: 'unified-plan'
     })
+
+    // ontrack
+    // 完成連線後，透過該事件能夠在發現遠端傳輸的多媒體檔案時觸發，來處理/接收多媒體數據。
+    console.log("\t- Define Track Event");
+    webrtc.ontrack = function (event) {
+        document.getElementById('webrtc-video').style.display = '';
+        document.getElementById('loader').style.display = 'none';
+        console.log('\t- ' + event.streams.length + ' track is delivered')
+        videoEl.srcObject = event.streams[0]
+        videoEl.play()
+    }
 
     // Add Track or Transceiver to capture the video
     // 建立 RTP Stream 每次隨機產生 SSRC， 在 createOffer 的 SDP 當中會帶入
@@ -78,30 +90,62 @@ async function connectWebRTC(streamID) {
     // onnegotiationneeded
     // 每當 RTCPeerConnection 要進行會話溝通(連線)時，第一次也就是在addTrack後會觸發該事件， 通常會在此處理createOffer，來通知remote peer與我們連線。
     console.log("\t- Define Negotiation");
-    webrtc.onnegotiationneeded = async function handleNegotiationNeeded() {
+    // webrtc.onnegotiationneeded = async function handleNegotiationNeeded() {
+    //     console.log('\t- Create Offer');
+    //     // 建立請求
+    //     const offer = await webrtc.createOffer()
+    //     // 提供本地端的資訊
+    //     await webrtc.setLocalDescription(offer)
+    //     // 使用 http 與 remote 進行請求，需要透過 sdp 去請求
+    //     // setWebRTCInterval(streamID);
+    //     await setWebRTC(streamID);
+    // }
+    
+    let trg_url = `http://${DOMAIN}:8083/stream/${streamID}/channel/0/webrtc`;
 
-        console.log('\t- Create Offer');
-
-        // 建立請求
+    webrtc.onnegotiationneeded = async function handleNegotiationNeeded () {
         const offer = await webrtc.createOffer()
-
-        // 提供本地端的資訊
+  
         await webrtc.setLocalDescription(offer)
-        
-        // 使用 http 與 remote 進行請求，需要透過 sdp 去請求
-        // setWebRTCInterval(streamID);
-        await setWebRTC(streamID);
-    }
+  
+        await fetch(trg_url, {
+            method: 'POST',
+            body: new URLSearchParams({ data: btoa(webrtc.localDescription.sdp) })
+        })
+        .then(response => response.text())
+        .then(async data => {
+            try {
+                let setupFlag = true
+                try {
+                    /*  Failed Case 1 :  {
+                            "status": 0,
+                            "payload": stream not found
+                        }
+                        Failed Case 2 :  {
+                            "status": 0,
+                            "payload": stream channel codec not ready, possible stream offline
+                        }
+                    */
+                    // console.warn(jsonData);
+                    await addWebRTC(uuid, `rtsp://127.0.0.1:8554/${streamID}`);
+                    console.error();(JSON.parse(data)['payload'] + ', ' + 'auto reload');
+                    await new Promise(r => setTimeout(r, 1000));
+                    location.reload()
 
-    // ontrack
-    // 完成連線後，透過該事件能夠在發現遠端傳輸的多媒體檔案時觸發，來處理/接收多媒體數據。
-    console.log("\t- Define Track Event");
-    webrtc.ontrack = function (event) {
-        document.getElementById('webrtc-video').style.display = '';
-        document.getElementById('loader').style.display = 'none';
-        // console.log(event.streams.length + ' track is delivered')
-        videoEl.srcObject = event.streams[0]
-        videoEl.play()
+                } catch {
+                    /*  If the correct data, JSON.parse will be failed, because that have no key
+                    
+                        - Example: "dj0wDQpvPS0gMjAxNDY2NDMzODIyNTI4MDc5MyAx ... a=="
+                    */
+                    console.log(`\t- Get Description: ...${data.substring(10, 50)}...`);
+                    webrtc.setRemoteDescription(
+                        new RTCSessionDescription({ type: 'answer', sdp: atob(data) })
+                    )
+                }
+            } catch (e) {
+                console.warn(e)
+            }
+        })
     }
 
     // 建立 P2P 中雙向資料傳輸的通道
@@ -144,15 +188,15 @@ async function stopStream() {
 }
 
 // Delete WebRTC
-async function delWebRTC(streamID){
+async function delWebRTC(streamID, debug=false){
     
     if(!streamID) { alert("Empty streamID ... " ); return undefined; };
 
     let url = `http://${DOMAIN}:8083/stream/${streamID}/delete`;
     
     let data = await getAPI( url, null, true, "demo:demo");    
-    // For debug
-    await getStreamList();
+    
+    // if (debug) await getStreamList();  // For debug
 }
 
 // Add WebRTC

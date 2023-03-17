@@ -164,6 +164,7 @@ $(document).ready(async function(){
     if (addRtcFlag){
         console.warn(`Add RTSP to WebRTC: ${uuid}`);
         await addWebRTC(uuid, `rtsp://127.0.0.1:8554/${uuid}`);
+        await new Promise(r => setTimeout(r, 1000));
     }
 
     // Define Socket Event
