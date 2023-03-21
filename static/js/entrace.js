@@ -415,11 +415,11 @@ function updateSourceType(key="source_type", data=""){
     let el_list = document.getElementById(`${key}_list`);
     let el_menu = document.getElementById(`${key}_menu`);
     
-    
+    el_list.innerHTML = "";
     console.log(`Add the source type (${srcTypeList})`);
     for(let step=0; step<srcTypeList.length; step++){
         el_list.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="${key}" name=${ srcTypeList[step] } >${ srcTypeList[step] }</a>`;
-    }
+    }    
 
     function setTextValue(ele, val){
         ele.textContent = val;
@@ -1243,7 +1243,5 @@ $(document).ready( async function () {
 
     // Check the status of each task
     checkTaskStatus();
-
-
 
 });
