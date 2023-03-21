@@ -150,16 +150,19 @@ $(document).ready(async function(){
     const streamList = await getStreamList()
 
     // Check to add RTC - empty stream list
-    if (Object.keys(streamList).length === 0 ) addRtcFlag = true;
-
-    // Check to add RTC - key not in 
-    for( const key in streamList ){
-        if ( ! (key in uuidList) ) {
-            console.warn(`DEL WebRTC: ${key}`);
-            await delWebRTC(key); continue;
-        }
-        if ( ! ('status' in streamList[key]['channels']['0'])) addRtcFlag = true
-    }    
+    if ( ( ! streamList ) || Object.keys(streamList).length === 0 ){
+        addRtcFlag = true;
+    }
+    else {
+        // Check to add RTC - key not in 
+        for( const key in streamList ){
+            if ( ! (key in uuidList) ) {
+                console.warn(`DEL WebRTC: ${key}`);
+                await delWebRTC(key); continue;
+            }
+            if ( ! ('status' in streamList[key]['channels']['0'])) addRtcFlag = true
+        }    
+    }
 
     if (addRtcFlag){
         console.warn(`Add RTSP to WebRTC: ${uuid}`);
