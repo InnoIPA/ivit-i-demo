@@ -1,7 +1,7 @@
-let areaPoints = {};
+let areaPoints = { 0: [] };
 let areaIndex = 0;
 
-let vecPoints = {};
+let vecPoints = { 0: [] };
 let vecIndex = 0;
 
 
@@ -272,8 +272,8 @@ function drawVecEvent(inVectorIndex) {
 
 
 function drawCurPoly(inAreaIndex){
-    if ( inAreaIndex === undefined || inAreaIndex === 'NaN' ) inAreaIndex = areaIndex;
-    // if(areaPoints[inAreaIndex].length===0) return undefined;
+    if ( inAreaIndex === undefined || inAreaIndex === 'NaN' || isNaN(inAreaIndex) ) inAreaIndex = areaIndex;
+    
     console.log('Draw Current Poly, ', inAreaIndex);
     
     appCtx.fillStyle = areaPalette[inAreaIndex%areaPalette.length];
@@ -313,11 +313,12 @@ function drawPrePoly(){
         if(areaPoints[areaKey].length===0) return undefined;    
         drawCurPoly(areaKey);
     }
+    
 }
 
 function drawPolyEvent(inAreaIndex){
     // console.log("Draw Poly Event");
-    if ( inAreaIndex === undefined ) inAreaIndex = areaIndex;
+    if ( inAreaIndex === undefined || inAreaIndex === 'NaN' || isNaN(inAreaIndex) ) inAreaIndex = areaIndex;
 
     // Draw Preview Polygons
     drawPreview(inAreaIndex)
@@ -554,6 +555,8 @@ async function initCanvasParam(){
         if(!hasVec) vecIndex = areaMinIndex;
         
     }
+    if( isNaN(areaIndex) ) areaIndex = 0
+    if( isNaN(vecIndex) ) vecIndex = 0
     
     // Init New Area or Vector Index
     areaPoints[areaIndex]   = [];
