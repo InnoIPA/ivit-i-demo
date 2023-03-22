@@ -459,7 +459,7 @@ function updateModelSource(srcType){
     for( let i=0; i<eleModelList.length; i++) eleModelList[i].style = "display: none";
 
     if(srcType===undefined){
-        eleModelSrcDef.style = "display: block";
+        eleModelSrcDef.style = "display: block; pointer-events: none;";
         return undefined;
     }
 
