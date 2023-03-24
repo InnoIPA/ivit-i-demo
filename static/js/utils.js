@@ -186,7 +186,7 @@ async function postAPI(api, inData, inType=JSON_FMT, errType=LOG, log=false, aut
 
 async function updateMapModelUUID(){
     
-    const data = await getAPI("/model")
+    const data = await getAPI("/model_task")
     if (data) window[MODEL_UUID] = data["data"];
     else return(undefined);
 }

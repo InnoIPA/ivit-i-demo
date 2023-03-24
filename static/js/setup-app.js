@@ -608,7 +608,7 @@ async function updateLabelDropdown(dependOn) {
         .forEach( function(ele, idx){ ele.remove(); });
 
     // Get the model UUID
-    let modelWithUUID = await getAPI( "/model", logError, true );
+    let modelWithUUID = await getAPI( "/model_task", logError, true );
     if (! modelWithUUID) return undefined;
     modelWithUUID = modelWithUUID["data"]
 
