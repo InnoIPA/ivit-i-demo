@@ -153,7 +153,8 @@ async function importZipFileUpload(e) {
     
         // alert("File Uploaded Success");
         document.getElementById('import_zip_model_label').textContent = file['name'];
-    
+        document.getElementById('model_menu').textContent = file['name'].trim().split(".")[0];
+        
         // showPreviewImage(file);
         console.warn('Extract a task');
         const ele = document.querySelector('[data-target="import-zip-model-uploader"]');
