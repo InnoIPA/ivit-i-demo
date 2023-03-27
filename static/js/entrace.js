@@ -650,6 +650,7 @@ async function parseInfoToForm(){
     const dSrcType  = "source_type"
     const dDevice   = "device"
 
+
     // Collection the related data from ADD modal
     data[dName]     = document.getElementById(`${head}name`).value;
     data[dThres]    = document.getElementById(`${head}thres`).value;
@@ -751,11 +752,12 @@ async function importSubmit() {
     }
 
     // Parse output from importProcData
-    console.log(importProcData, fileName);
+    console.warn(importProcData, fileName);
     let trg_data = importProcData[fileName]["info"];
 
     // Add more data into formData
     formData.append( "path"         , trg_data["path"] );
+    formData.append( "model"        , fileName );
     formData.append( "model_path"   , trg_data["model_path"] );
     formData.append( "label_path"   , trg_data["label_path"] );
     formData.append( "config_path"  , trg_data["config_path"] );
@@ -768,12 +770,16 @@ async function importSubmit() {
 
     // Import Event
     const retData = await postAPI( `/import`, formData, FORM_FMT, ALERT )
-    if(!retData) return undefined;
+    if(!retData){
+        console.error('import failed !');        
+    } else {
+        // if success
+        console.log(retData);
+        location.reload();
+        setDefaultModal();
+
+    }
     
-    // if success
-    console.log(retData);
-    location.reload();
-    setDefaultModal();
         
 }
 
@@ -1235,7 +1241,7 @@ $(document).ready( async function () {
 
 
     // Update Global Parameters
-    updateMapModelUUID();
+    // updateMapModelUUID();
     updateMapModelApp();
 
     // Define the launch Switch Button
