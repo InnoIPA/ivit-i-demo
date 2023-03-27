@@ -608,17 +608,23 @@ async function updateLabelDropdown(dependOn) {
         .forEach( function(ele, idx){ ele.remove(); });
 
     // Get the model UUID
-    let modelWithUUID = await getAPI( "/model_task", logError, true );
-    if (! modelWithUUID) return undefined;
-    modelWithUUID = modelWithUUID["data"]
+    // let modelWithUUID = await getAPI( "/model_task", logError, true );
+    // if (! modelWithUUID) return undefined;
+    // modelWithUUID = modelWithUUID["data"]
 
-    // Get model label
-    const taskUUID    = modelWithUUID[modelName][0];
-    let taskLabel   = await getAPI( `/task/${taskUUID}/label`, logError, true )
-    if (! taskLabel) return undefined;
-    taskLabel = taskLabel["data"]
+    // // Get model label
+    // const taskUUID    = modelWithUUID[modelName][0];
+    // let taskLabel   = await getAPI( `/task/${taskUUID}/label`, logError, true )
+    // if (! taskLabel) return undefined;
+    // taskLabel = taskLabel["data"]
+    // // Update label on background
+    // updateLabelBackground(taskLabel, dependOn);
+
+    let modelLabel = await getAPI( `/model/${modelName}/labels`, logError, true );
+    if (! modelLabel) return undefined;
+    modelLabel = modelLabel["data"]
     // Update label on background
-    updateLabelBackground(taskLabel, dependOn);
+    updateLabelBackground(modelLabel, dependOn);
 }
 
 function updateLabelBackground(taskLabel, dependOn){
