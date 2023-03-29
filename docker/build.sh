@@ -14,6 +14,11 @@ check_jq
 BASE_NAME=$(cat ${CONF} | jq -r '.project')
 VERSION=$(cat ${CONF} | jq -r '.version')
 
+if [[ ! -z "${1}" ]];then
+    printd "Detect specific platform: ${1}" R
+    VERSION="${VERSION}-${1}"
+fi
+
 # Concate name
 IMAGE_NAME="${DOCKER_USER}/${BASE_NAME}:${VERSION}"
 printd "Concatenate docker image name: ${IMAGE_NAME}" Cy
@@ -35,3 +40,4 @@ docker build -f docker/Dockerfile \
 
 # Check Docker Image
 docker run --rm "${IMAGE_NAME}" echo ""
+exit
