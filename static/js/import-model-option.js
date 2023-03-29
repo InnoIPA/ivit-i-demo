@@ -243,12 +243,12 @@ async function getConvertStatus(task_name) {
         convertStatus = true;
         window.clearInterval(timer);
         // Open Button
-        // document.getElementById("modal_app_submit").textContent = `${MODE}`;
+        document.getElementById("modal_app_submit").textContent = `${window[MODE]}`;
         document.getElementById('modal_app_submit').disabled = false;
         
     } else {
 
-        // document.getElementById("modal_app_submit").textContent = `Converting ..`;
+        document.getElementById("modal_app_submit").textContent = data;
         document.getElementById("modal_app_submit").disabled = true;
         console.log("Converting model to tensorrt engine ... ");
     }
