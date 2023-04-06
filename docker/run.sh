@@ -20,6 +20,7 @@ check_jq
 CONF="ivit-i.json"
 RUN_CMD="launch-demo-site"
 BG=false
+PLATFORM=""
 
 # Read the config at first time
 BASE_NAME=$(cat ${CONF} | jq -r '.project')
@@ -48,12 +49,14 @@ function help(){
 }
 
 # Parse the argument
-while getopts "bhq" option; do
+while getopts "a:bhq" option; do
 	case $option in
 		b )
 			BG=true ;;
 		q )
 			QUICK=true ;;
+		a )
+			PLATFORM=$OPTARG ;;
         h )
 			help; exit ;;
 		\? )
@@ -67,6 +70,11 @@ done
 # Combine each parameters
 IMAGE_NAME="${DOCKER_USER}/${BASE_NAME}:${VERSION}"
 CONTAINER_NAME="${BASE_NAME}-${VERSION}"
+
+if [[ ! -z "${PLATFORM}" ]];then
+	IMAGE_NAME="${IMAGE_NAME}-${PLATFORM}"
+	CONTAINER_NAME="${CONTAINER_NAME}-${PLATFORM}"
+fi
 
 if [[ ${BG} = false ]];then
 	SET_MODE="-it"

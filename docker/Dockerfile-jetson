@@ -1,0 +1,79 @@
+FROM ubuntu:focal
+
+USER root
+
+ARG DOCKER_TAG
+
+ENV WS=/workspace \
+    IVIT_VERSION=${DOCKER_TAG} \
+    DEBIAN_FRONTEND=noninteractive
+
+WORKDIR $WS
+
+# Setting TimeZone
+# ENV TIMEZONE=Asia/Taipeia
+# RUN apt-get -yq update \
+#     && apt-get -yq install tzdata \
+#     && ln -fs /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
+#     && dpkg-reconfigure -f noninteractive tzdata
+
+# Basic Package
+RUN apt-get update -qy \
+    && apt-get install -qqy locales apt-utils \
+    && apt-get install -qqy boxes tree jq bsdmainutils vim zip \
+    && apt-get install -qqy python3-dev python3-pip
+
+# Python Library
+RUN pip3 install \
+    attrs==21.4.0 \
+    bidict==0.21.4 \
+    certifi==2021.10.8 \
+    charset-normalizer==2.0.12 \
+    click==8.0.4 \
+    eventlet==0.30.2 \
+    Faker==13.3.4 \
+    flasgger==0.9.5 \
+    Flask==2.0.3 \
+    Flask-Cors==3.0.10 \
+    Flask-SocketIO==5.1.1 \
+    Flask-SQLAlchemy==2.5.1 \
+    futures==2.2.0 \
+    greenlet==1.1.2 \
+    gunicorn==20.1.0 \
+    idna==3.3 \
+    importlib-metadata==4.8.3 \
+    importlib-resources==5.4.0 \
+    itsdangerous==2.0.1 \
+    Jinja2==3.0.3 \
+    jsonschema==3.2.0 \
+    MarkupSafe==2.0.1 \
+    mistune==2.0.2 \
+    pyrsistent==0.18.0 \
+    python-dateutil==2.8.2 \
+    python-engineio==4.3.1 \
+    python-slugify==6.1.1 \
+    python-socketio==5.5.2 \
+    PyYAML==6.0 \
+    requests==2.27.1 \
+    six==1.16.0 \
+    SQLAlchemy==1.4.35 \
+    text-unidecode==1.3 \
+    tqdm==4.63.0 \
+    typing_extensions==4.1.1 \
+    urllib3==1.26.9 \
+    websocket-client==1.3.1 \
+    Werkzeug==2.0.3 \
+    zipp==3.6.0
+
+# Clear Cache
+RUN rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
+
+# Copy iVIT-Web-UI
+COPY [ ".", "${WS}" ]
+
+RUN cp "./launch-demo-site" "./docker/ivit-logo" "./docker/entrypoint" "/usr/bin"
+
+ENTRYPOINT [ "entrypoint" ]
+
+CMD [ "launch-demo-site" ]

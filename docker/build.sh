@@ -3,6 +3,7 @@
 # Basic Parameters
 CONF="ivit-i.json"
 DOCKER_USER="maxchanginnodisk"
+DOCKER_FILE="./docker/Dockerfile"
 
 # Store the utilities
 FILE=$(realpath "$0")
@@ -17,6 +18,7 @@ VERSION=$(cat ${CONF} | jq -r '.version')
 if [[ ! -z "${1}" ]];then
     printd "Detect specific platform: ${1}" R
     VERSION="${VERSION}-${1}"
+    DOCKER_FILE="${DOCKER_FILE}-${1}"
 fi
 
 # Concate name
@@ -36,7 +38,7 @@ printd "Build the docker image... (${IMAGE_NAME})" Cy;
 
 docker build -f docker/Dockerfile \
 --build-arg DOCKER_TAG=$VERSION \
--t "${IMAGE_NAME}" .
+-t "${IMAGE_NAME}" -f "${DOCKER_FILE}" .
 
 # Check Docker Image
 docker run --rm "${IMAGE_NAME}" echo ""
