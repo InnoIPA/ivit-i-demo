@@ -55,4 +55,4 @@ printd "Define threads: ${THREAD_NUM}" Cy
 printd "Define flask port: ${WEB_PORT}" Cy
 printd "Define nginx port: ${NGINX_PORT}" Cy
 
-gunicorn --worker-class eventlet -w ${WORKER_NUM} --threads ${THREAD_NUM} --bind 127.0.0.1:${WEB_PORT} app:app;
+gunicorn -w ${WORKER_NUM} --threads ${THREAD_NUM} --bind 127.0.0.1:${WEB_PORT} app:app;

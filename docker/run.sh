@@ -49,7 +49,7 @@ function help(){
 }
 
 # Parse the argument
-while getopts "a:bhq" option; do
+while getopts "a:bhcq" option; do
 	case $option in
 		b )
 			BG=true ;;
@@ -57,6 +57,8 @@ while getopts "a:bhq" option; do
 			QUICK=true ;;
 		a )
 			PLATFORM=$OPTARG ;;
+		c )
+			RUN_CMD="bash";;
         h )
 			help; exit ;;
 		\? )
