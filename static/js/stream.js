@@ -6,8 +6,8 @@ let gpu;
 let intervalTime = 5000;
 
 // Global Variable - results event
-let socketStream
-const sockEvent = "/results"
+let inferSock
+const inferSockEvent = "/results"
 let info = new Array;
 
 // Get uuid from route
@@ -19,7 +19,7 @@ for(let i=0; i < el_path.length; i++){
 };
  
 // Set up the socketio address
-const URL = `http://${DOMAIN}:${PORT}/task/${uuid}/stream`;
+const URL = `http://${SCRIPT_ROOT}/task/${uuid}/stream`;
 
 function get_detection_data(frameID, dets){
 
@@ -111,7 +111,7 @@ async function get_application_data(frameID, dets){
     result_element.scrollTop = result_element.scrollHeight;
 }
 
-function sockMessageEvent(ev){
+function inferSockMesgEvent(ev){
     let data = JSON.parse(ev.data);
     data = JSON.parse(data[uuid])
     
@@ -128,15 +128,54 @@ function sockMessageEvent(ev){
     get_application_data(frameID, dets)
 }
 
-function sockCloseEvent(){
+function inferSockCloseEvent(){
     console.log('The connection has been closed successfully.');
 }
 
+
+
 $(document).ready(async function(){
     
-    // Connect Socket
+    const data = await getAPI(`/task/${uuid}/status`)
+    if(!data) return undefined;
+
+    // Check the status is run
+    if( data['message']!=='run') return undefined;
+    
+    // Check to add RTC
+    let addRtcFlag = false;
+    let uuidList = await getAPI('/uuid');
+    uuidList = uuidList['data']
+
+    const streamList = await getStreamList()
+
+    // Check to add RTC - empty stream list
+    if ( ( ! streamList ) || Object.keys(streamList).length === 0 ){
+        addRtcFlag = true;
+    }
+    else {
+        // Check to add RTC - key not in 
+        for( const key in streamList ){
+            if ( ! (key in uuidList) ) {
+                console.warn(`DEL WebRTC: ${key}`);
+                await delWebRTC(key); continue;
+            }
+            if ( ! ('status' in streamList[key]['channels']['0'])) addRtcFlag = true
+        }    
+    }
+
+    if (addRtcFlag){
+        console.warn(`Add RTSP to WebRTC: ${uuid}`);
+        await addWebRTC(uuid, `rtsp://127.0.0.1:8554/${uuid}`);
+        await new Promise(r => setTimeout(r, 1000));
+    }
+
+    // Define Socket Event
     try{ 
-        socketStream = new WebSocket('ws://' + `${DOMAIN}:${PORT}` + sockEvent);
+        // Connect Socket
+        inferSock = new WebSocket('ws://' + `${HOST}/ivit`+ inferSockEvent);
+        inferSock.addEventListener('message', inferSockMesgEvent);
+        inferSock.addEventListener('close', inferSockCloseEvent);
     } catch(e){ 
         console.warn(e) 
     }
@@ -144,21 +183,16 @@ $(document).ready(async function(){
     // Update Basic Information
     updateBasicInfo();
 
-    // Start the stream
-    connectWebRTC(uuid);
 
     // Seting Interval: Update GPU temperature every 5 seconds
     window.setInterval(updateGPUTemperature, intervalTime);
 
-    // Define Socket Event
-    socketStream.addEventListener('message', sockMessageEvent);
-    socketStream.addEventListener('close', sockCloseEvent);
-
+    await connectWebRTC(uuid);
 });
 
 function backEvent(){
     location.href='/';
-    streamStop(uuid);
+    // streamStop(uuid);
 }
 
 function convertTime(total_sec){
@@ -201,11 +235,6 @@ function getSourceType(src){
     return ret
 }
 
-async function streamStart(uuid){
-    const data = getAPI(`/task/${uuid}/stream/start`, ALERT);
-    if(!data) return undefined;
-    console.log(data);
-}
 
 function streamStop(uuid){
     $.ajax({
@@ -237,8 +266,7 @@ async function updateBasicInfo(){
 
     let data = await getAPI(`/task/${uuid}/info`);
     if(!data) return undefined;
-
-    console.log(data);
+    data = data["data"]
     document.getElementById("title").textContent = data['name'];
     // document.getElementById("app_name").textContent = data['app_name'];
     document.getElementById("model").textContent = data['model'];
@@ -258,9 +286,9 @@ async function updateBasicInfo(){
 async function updateGPUTemperature(){
    
     // Get GPU Information
-    const gpuData = await getAPI('/device')
+    let gpuData = await getAPI('/device')
     if(!gpuData) return undefined;
-
+    gpuData = gpuData["data"]
     // Check GPU is correct
     if(! gpu in gpuData){
         console.warn(`Could not find GPU (${gpu}) Information`);

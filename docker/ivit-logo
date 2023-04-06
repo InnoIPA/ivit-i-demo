@@ -1,0 +1,17 @@
+#!/bin/bash
+
+REST='\e[0m'
+RED="\e[31m"
+
+echo ""
+echo -e "${RED}\n"
+echo "  ___     _____ _____           ___  ";
+echo " (_) \   / /_ _|_   _|         |_ _| ";
+echo " | |\ \ / / | |  | |    _____   | |  ";
+echo " | | \ V /  | |  | |   |_____|  | |  ";
+echo " |_|  \_/  |___| |_|           |___| ";
+echo "                                     ";
+echo "Copyright 2023 Innodisk Dev. Dep., IPA";
+echo "";
+echo "                             ($(echo ${IVIT_VERSION}))";
+echo -e " ${REST}\n\n"

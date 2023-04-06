@@ -1,0 +1,58 @@
+#!/bin/bash
+
+REST='\e[0m'
+GREEN='\e[0;32m'
+BGREEN='\e[7;32m'
+RED='\e[0;31m'
+BRED='\e[7;31m'
+YELLOW='\e[0;33m'
+BYELLOW='\e[7;33m'
+Cyan='\033[0;36m'
+BCyan='\033[7;36m'
+
+function printd(){            
+    
+    if [ -z $2 ];then COLOR=$REST
+    elif [ $2 = "G" ];then COLOR=$GREEN
+	elif [ $2 = "BG" ];then COLOR=$BGREEN
+	elif [ $2 = "R" ];then COLOR=$RED
+    elif [ $2 = "BR" ];then COLOR=$BRED
+	elif [ $2 = "Y" ];then COLOR=$YELLOW
+    elif [ $2 = "BY" ];then COLOR=$BYELLOW
+    elif [ $2 = "Cy" ];then COLOR=$Cyan
+    elif [ $2 = "BCy" ];then COLOR=$BCyan
+    else COLOR=$REST
+    fi
+
+    echo -e "$(date +"%y:%m:%d %T") ${COLOR}$1${REST}"
+}
+
+# Help information
+function help(){
+	echo "Run the iVIT-I-Web-UI environment."
+	echo
+	echo "Syntax: scriptTemplate [-f|i|p|n|h]"
+	echo "options:"
+    echo "p		the port of demo site, default is 4999"
+	echo "n		the port nginx listening, default is 6532"
+	echo "h		help."
+}
+
+CONF="/workspace/ivit-i.json"
+
+WORKER_NUM=$(cat ${CONF} | jq -r '.workers')
+THREAD_NUM=$(cat ${CONF} | jq -r '.threads')
+WEB_PORT=$(cat ${CONF} | jq -r '.web_port')
+NGINX_PORT=$(cat ${CONF} | jq -r '.nginx_port')
+
+export WORKER_NUM=${WORKER_NUM}
+export THREAD_NUM=${THREAD_NUM}
+export WEB_PORT=${WEB_PORT}
+export NGINX_PORT=${NGINX_PORT}
+
+printd "Define worker: ${WORKER_NUM}" Cy
+printd "Define threads: ${THREAD_NUM}" Cy
+printd "Define flask port: ${WEB_PORT}" Cy
+printd "Define nginx port: ${NGINX_PORT}" Cy
+
+gunicorn --worker-class eventlet -w ${WORKER_NUM} --threads ${THREAD_NUM} --bind 127.0.0.1:${WEB_PORT} app:app;

@@ -1,12 +1,8 @@
 {
   "project": "ivit-i-web-ui",
-  "version": "v1.0",
-  "server": {
-    "ip": "172.16.92.130",
-    "port": "819"
-  },
-  "client": {
-    "ip": "0.0.0.0",
-    "port": "4999"
-  }
+  "version": "v1.0.3.1",
+  "workers": 1,
+  "threads": 10,
+  "web_port": "4999",
+  "nginx_port": "6632"
 }

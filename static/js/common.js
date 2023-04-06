@@ -1,7 +1,10 @@
-const DOMAIN = '172.16.92.130';
+const DOMAIN = window.location.hostname;
 const PORT = '819';
+const HOST = window.location.host
 
-const SCRIPT_ROOT       = `http://${DOMAIN}:${PORT}`;
+// const SCRIPT_ROOT       = `http://${DOMAIN}:${PORT}`;
+const SCRIPT_ROOT       = `http://${HOST}/ivit`;
+
 const DEBUG_MODE        = false;
 
 const UUID              = "UUID"

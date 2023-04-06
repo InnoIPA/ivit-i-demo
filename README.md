@@ -19,30 +19,29 @@ The web demo site for ivit-i
     * [ivit-i-nvidia](https://github.com/InnoIPA/ivit-i-nvidia/)
     * [ivit-i-xilinx](https://github.com/InnoIPA/ivit-i-xilinx/)
 
-# How to work
-
-1. Download the repository
+# Usage
+1. Run with docker command
     ```bash
-    git clone https://github.com/InnoIPA/ivit-i-web-ui.git && cd ivit-i-web-ui
+    sudo docker run --name ivit-i-web-ui --rm -it \
+    --net=host \
+    maxchanginnodisk/ivit-i-web-ui:v1.0.3.1
     ```
-2. Build the docker image
+2. Mount custom config
     ```bash
-    ./docker/build.sh
+    sudo docker run --name ivit-i-web-ui --rm -it \
+    --net=host \
+    -v $(pwd)/custom.json:/workspace/ivit-i.json \
+    maxchanginnodisk/ivit-i-web-ui:v1.0.3.1
     ```
-3. Run the docker container
 
-    ```bash
-    ./docker/run.sh -i 172.16.92.130 -p 819
-    ```
-    
-    |   Argument    |   Describe    
-    |   ---         |   ---
-    |   -i          |   server ip, which will show up in your device when `ivit-i-{platform}` is started, if not provided, default is the IP Address of `ivit-i-web-ui`
-    |   -p          |   server port defined in `ivit-i-{platform}/ivit-i.json`
-    |   -c          |   client port, default is `4999`
+# Configuration for User ( [ivit-i.json](/ivit-i.json) )
+|   Parameters        |   Default       |   Description
+|   ---               |   ---           |   ---
+|   workers           |   1             |   Set up gunicorn worker
+|   threads           |   10            |   Set up the maxmium threads
+|   web_port          |   4999          |   Set up demo site port 
+|   nginx_port        |   6532          |   Set up nginx port 
 
-    ![image](docs/images/iVIT-I-IP.png)
-            
 # Demo
 
 <details>
@@ -84,13 +83,45 @@ The web demo site for ivit-i
     </summary>
     <img src="./docs/images/iVIT-I-Stream.png">
 </details>
+<br>
 
-# Log
-* r1.0.2
-    * Support new applications ( r1.0.2+ )
-        1. let each application could draw the area.
-        2. let user could draw the vector on application modal canvas.
+# Development
 
+* Build docker image
+    ```bash
+    ./docker/build.sh
+    ```
+* Run docker image which will mount whole project item into `/workspace`
+    ```bash
+    ./docker/run.sh
 
-* r1.0.3
-    * Improve AI inference stream by changing stream method from socket to webrtc.
+    # if need running at background, run `./docker/run.sh -b`
+    ```
+* Development parameters in configuration ( [ivit-i.json](/ivit-i.json) )
+    |   Parameters        |   Default       |   Description
+    |   ---               |   ---           |   ---
+    |   project           |   ivit-i-web-ui |   Set up the docker image name
+    |   version           |                 |   Set up the version
+        
+ 
+
+# Structure
+
+* `docker/`
+    * `build.sh`: build docker image.
+    * `Dockerfile`: the building workflow of docker image.
+    * `entrypoint`: define docker entrypoint.
+    * `ivit-logo`: print ivit logo after enter docker container.
+    * `run.sh`: run docker container and mount whole project into it.
+    * `utils.sh`: some utilities for `build.sh` and `run.sh`.
+* `docs/` : place document and figures
+* `static/` : the demo site script
+* `vendor/` : third party
+* `vendor.zip` : git track the vendor with zip file not folder, because github not support too many file at once.
+* `templates/` : place the html file
+* `tools`: some utilities for develop
+* `app.py`: the entrance of flask
+* `launch-demo-site`: launch flask via gunicorn
+* `package_vendor`: compress the vendor folder because github could not upload too many files.
+* `README.md`: user guide
+* `ivit-i.json`: configuration

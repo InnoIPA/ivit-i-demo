@@ -8,21 +8,46 @@ Parameters from common.js
 
 */
 
+const ivitSockEvent = '/ivit';
+
+async function sockDetectErrorEvent(data){
+    if(data['stop_task']===true){
+        const uuid = data['uuid']
+        const statsButton = document.getElementById( `${uuid}_status_btn`);
+        const optionButton = document.getElementById(`${uuid}_more`);
+        const launchButton = document.getElementById(`${uuid}_switch`);
+        await errEvent(uuid, statsButton, optionButton, launchButton);
+        console.warn(`[Task Error] ${data['message']}`)
+    }
+}
+
+async function ivitSockMesgEvent(ev){
+    let data = JSON.parse(ev.data);
+    
+    if ( 'error' in data ){
+        await sockDetectErrorEvent(data['error']);
+    }
+}
+
+function ivitSockCloseEvent(){
+    console.log('The connection has been closed successfully.');
+}
+
 // Start streaming when press the name superlink
 async function streamStart(uuid){
-    const data = await getAPI(`/task/${uuid}/stream/start`, errType=ALERT);
-    if(data) console.log(data);
-    else return undefined;
+    const data = await getAPI(`/task/${uuid}/stream/start`);
+    if (!data) return undefined;
+    return data["data"]
 }
 
 // Stop task when turn off the swich
 async function stopTask(uuid){
 
-    const stopStreamLog = await getAPI(`/task/${uuid}/stream/stop`, ALERT)
+    const stopStreamLog = await getAPI(`/task/${uuid}/stream/stop`)
     if(stopStreamLog) console.log(stopStreamLog);
     else return undefined;
 
-    const stopTaskLog = await getAPI(`/task/${uuid}/stop`, ALERT)
+    const stopTaskLog = await getAPI(`/task/${uuid}/stop`)
     if(stopTaskLog) console.log(stopTaskLog);
     else return undefined;
 }
@@ -51,17 +76,18 @@ async function runEvent(uuid, statsButton, optionButton){
     disableButton(optionButton);
 
     // Start the stream
-    streamStart(uuid);
-    await addWebRTC(uuid, `rtsp://127.0.0.1:8554/${uuid}`);
+
+    const data = await streamStart(uuid);
+
+    if(!data) alert("Stream Stop Failed");
     
     // Add hyperlink
     addStreamHref(uuid);
-
+    
 }
 
 // Stop AI Task
 async function stopEvent(uuid, statsButton, optionButton){
-
     statsButton.innerText = STOP;
     statsButton.setAttribute("class", "btn btn-gray custom");
 
@@ -78,6 +104,7 @@ async function errEvent(uuid, statsButton, optionButton, launchButton){
 
     addErrorHref(uuid);
     enableButton(optionButton);
+    launchButton.checked = false;
     disableButtonParent(launchButton);
 }
 
@@ -388,11 +415,11 @@ function updateSourceType(key="source_type", data=""){
     let el_list = document.getElementById(`${key}_list`);
     let el_menu = document.getElementById(`${key}_menu`);
     
-    
+    el_list.innerHTML = "";
     console.log(`Add the source type (${srcTypeList})`);
     for(let step=0; step<srcTypeList.length; step++){
         el_list.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="${key}" name=${ srcTypeList[step] } >${ srcTypeList[step] }</a>`;
-    }
+    }    
 
     function setTextValue(ele, val){
         ele.textContent = val;
@@ -432,7 +459,7 @@ function updateModelSource(srcType){
     for( let i=0; i<eleModelList.length; i++) eleModelList[i].style = "display: none";
 
     if(srcType===undefined){
-        eleModelSrcDef.style = "display: block";
+        eleModelSrcDef.style = "display: block; pointer-events: none;";
         return undefined;
     }
 
@@ -462,7 +489,7 @@ function updateModelSourceType(key="model_source_type", data=""){
 }
 
 // Update V4L2 list
-function updateSourceV4L2(key="source"){
+async function updateSourceV4L2(key="source"){
     console.log(`Update v4l2, element:${key}`);
     
     const el_source_menu = document.getElementById(`${key}_menu`);
@@ -471,49 +498,38 @@ function updateSourceV4L2(key="source"){
     el_source_menu.disabled = false;
     el_source_list.innerHTML = "";
 
-    $.ajax({
-        url: SCRIPT_ROOT + `/v4l2`,
-        type: "GET",
-        dataType: "json",
-        success: function (data, textStatus, xhr) {
-            if (Array.isArray(data)) {
-                data.forEach((v, i) => {
-                    el_source_list.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="${key}" value="${v}">${v}</a>`;
-                });
-            }
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            alert(xhr.responseText);
-            el_source_menu.disabled = true;
-        },
-    });
+    let data = await getAPI('/v4l2', ALERT);
+    if(!data){
+        el_source_menu.disabled = true;
+        return
+    }
+    
+    data = data['data']
+
+    if (Array.isArray(data)) {
+        data.forEach((v, i) => {
+            el_source_list.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="${key}" value="${v}">${v}</a>`;
+        });
+    }
 
 }
 
 // Update GPU information
-function updateGPU(el_key="device"){
+async function updateGPU(el_key="device"){
     console.log(`Update gpu device, element:${el_key}`);   
     
     const el_device_menu = document.getElementById(`${el_key}_menu`);
     const el_device_list = document.getElementById(`${el_key}_list`);
     
-    $.ajax({
-        url: SCRIPT_ROOT + `/device`,
-        type: "GET",
-        dataType: "json",
-        success: function (data, textStatus, xhr) {
+    let gpuData = await getAPI('/device')
+    if(!gpuData) return undefined;
+    gpuData = gpuData["data"]
+    for (const key of Object.keys(gpuData)) {
+        const deviceName = gpuData[key]['name'];
+        el_device_menu.textContent = deviceName;
+        el_device_list.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="${el_key}" value="${deviceName}}">${deviceName}</a>`;
+    };
 
-            for (const key of Object.keys(data)) {
-                const deviceName = data[key]['name'];
-                el_device_menu.textContent = deviceName;
-                el_device_list.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this);" id="${el_key}" value="${deviceName}}">${deviceName}</a>`;
-            };
-
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log("Error in capture device");
-        },
-    });
 }
 
 // About AI Task Behavior - START
@@ -634,6 +650,7 @@ async function parseInfoToForm(){
     const dSrcType  = "source_type"
     const dDevice   = "device"
 
+
     // Collection the related data from ADD modal
     data[dName]     = document.getElementById(`${head}name`).value;
     data[dThres]    = document.getElementById(`${head}thres`).value;
@@ -726,7 +743,8 @@ async function importSubmit() {
     else fileName = eleUrlDiv.value;
     console.log(`Checking import process: ${fileName}`);
     // Get extracted information from /import_porc
-    const importProcData = await getAPI( `/import_proc`, ALERT);
+    let importProcData = await getAPI( `/import_proc`, ALERT);
+    importProcData = importProcData["data"]
 
     // If Failed
     if(!importProcData) {
@@ -734,11 +752,12 @@ async function importSubmit() {
     }
 
     // Parse output from importProcData
-    console.log(importProcData, fileName);
+    console.warn(importProcData, fileName);
     let trg_data = importProcData[fileName]["info"];
 
     // Add more data into formData
     formData.append( "path"         , trg_data["path"] );
+    formData.append( "model"        , fileName );
     formData.append( "model_path"   , trg_data["model_path"] );
     formData.append( "label_path"   , trg_data["label_path"] );
     formData.append( "config_path"  , trg_data["config_path"] );
@@ -751,12 +770,16 @@ async function importSubmit() {
 
     // Import Event
     const retData = await postAPI( `/import`, formData, FORM_FMT, ALERT )
-    if(!retData) return undefined;
+    if(!retData){
+        console.error('import failed !');        
+    } else {
+        // if success
+        console.log(retData);
+        location.reload();
+        setDefaultModal();
+
+    }
     
-    // if success
-    console.log(retData);
-    location.reload();
-    setDefaultModal();
         
 }
 
@@ -768,7 +791,7 @@ async function delSubmit(obj) {
 
     console.log(`Remove application ${uuid}`);
 
-    const retData = await postAPI( "/remove/", data, JSON_FMT, ALERT );
+    const retData = await postAPI( "/remove", data, JSON_FMT, ALERT );
 
     if(retData) { console.log(retData); location.reload(); }
     else return undefined;
@@ -781,9 +804,15 @@ async function delSubmit(obj) {
 async function errModalEvent(obj) {
     
     const uuid  = obj.id.split('_')[0];
-    const data  = await getAPI(`/task/${uuid}/error`);
-
-    if (data) document.getElementById("errMsg").textContent = data;
+    let data  = await getAPI(`/task/${uuid}/error`);
+    if (data){
+        data = data["data"]
+        if( typeof data === 'object'){
+            document.getElementById("errMsg").textContent = JSON.stringify(data);
+        } else {
+            document.getElementById("errMsg").textContent = data;
+        }
+    }
     else return undefined;
 }
 
@@ -823,10 +852,11 @@ async function editModalEvent(obj, init=false) {
 
     // updateModelOption("edit_model_list");
 
-    const data = await getAPI(`/task/${task_uuid}/info`)
-    
+    let data = await getAPI(`/task/${task_uuid}/info`)
     if(!data) return(undefined);
     
+    data = data["data"]
+
     console.log(task_uuid, data);
     document.getElementById("edit_name").value = data["name"];
     
@@ -1114,7 +1144,7 @@ async function updateModalOpen(){
 // Get the platform of the backend
 async function getPlatform(){
     const data = await getAPI('/platform')
-    if (data) return data.toUpperCase();
+    if (data) return data["message"].toUpperCase();
     else return undefined;    
 }
 
@@ -1141,8 +1171,10 @@ async function defineLaunchButton(){
         disableButton(document.getElementById(`${uuid}_more`));
 
         // run app or stop appdefineLaunchButton
-        const data = await getAPI(`/task/${uuid}/${stats}`);
+        let data = await getAPI(`/task/${uuid}/${stats}`);
         if(data){
+            data = data["message"]
+        
             parentTarget.style = `pointer-events: all; opacity: ${ENABLE_OPACITY};`;
             await statusEvent(uuid, stats);
             eventTarget.disabled = false;
@@ -1178,9 +1210,10 @@ async function checkTaskStatus() {
         
         if ( uuid === "" && uuid.length<=6 ) continue
 
-        const data = await getAPI(`/task/${uuid}/status`)
+        let data = await getAPI(`/task/${uuid}/status`)
         if (data) {
-            let stats = data;
+
+            let stats = data["message"];
             if ( stats==='run') ele[i].checked = true;
             else ele[i].checked = false;
             await statusEvent(uuid, stats, debug=true);
@@ -1195,9 +1228,20 @@ $(document).ready( async function () {
     // Capture the platform and setup sub-title
     const pla = await getPlatform();
     if (pla) document.getElementById("title_framework").textContent = `( ${pla} )`
-    
+
+        // Define Socket Event
+        try{ 
+            ivitSock = new WebSocket('ws://' + `${HOST}/ivit` + ivitSockEvent);
+        } catch(e){ 
+            console.warn(e) 
+        }
+        // Connect Socket
+        ivitSock.addEventListener('message', ivitSockMesgEvent);
+        ivitSock.addEventListener('close', ivitSockCloseEvent);
+
+
     // Update Global Parameters
-    updateMapModelUUID();
+    // updateMapModelUUID();
     updateMapModelApp();
 
     // Define the launch Switch Button
@@ -1205,7 +1249,5 @@ $(document).ready( async function () {
 
     // Check the status of each task
     checkTaskStatus();
-
-
 
 });

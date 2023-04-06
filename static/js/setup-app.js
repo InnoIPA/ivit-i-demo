@@ -1,7 +1,7 @@
-let areaPoints = {};
+let areaPoints = { 0: [] };
 let areaIndex = 0;
 
-let vecPoints = {};
+let vecPoints = { 0: [] };
 let vecIndex = 0;
 
 
@@ -272,12 +272,10 @@ function drawVecEvent(inVectorIndex) {
 
 
 function drawCurPoly(inAreaIndex){
+    if ( inAreaIndex === undefined || inAreaIndex === 'NaN' || isNaN(inAreaIndex) ) inAreaIndex = areaIndex;
     
-    if ( inAreaIndex === undefined ) inAreaIndex = areaIndex;
-    if(areaPoints[inAreaIndex].length===0) return undefined;
-
     console.log('Draw Current Poly, ', inAreaIndex);
-
+    
     appCtx.fillStyle = areaPalette[inAreaIndex%areaPalette.length];
     appCtx.strokeStyle = areaPalette[inAreaIndex%areaPalette.length];
     // new path to draw
@@ -315,11 +313,12 @@ function drawPrePoly(){
         if(areaPoints[areaKey].length===0) return undefined;    
         drawCurPoly(areaKey);
     }
+    
 }
 
 function drawPolyEvent(inAreaIndex){
     // console.log("Draw Poly Event");
-    if ( inAreaIndex === undefined ) inAreaIndex = areaIndex;
+    if ( inAreaIndex === undefined || inAreaIndex === 'NaN' || isNaN(inAreaIndex) ) inAreaIndex = areaIndex;
 
     // Draw Preview Polygons
     drawPreview(inAreaIndex)
@@ -515,35 +514,49 @@ async function initCanvasParam(){
     }
     else if ( window[MODE]===EDIT_MODE ) {
 
-        const scale     = parseFloat(document.getElementById("app_scale").textContent);
-        const hasArea   = Boolean(areaInfo.textContent);
-        const hasVec    = Boolean(vecInfo.textContent);
+        const areaScale     = parseFloat(document.getElementById("app_scale").textContent);
+        let hasArea   = Boolean(areaInfo.textContent);
+        let hasVec    = Boolean(vecInfo.textContent);
 
         let areaMinIndex    = 0; 
         let vecMinIndex     = 0; 
-
+        
+        let availableData = true;
+        
         if(hasArea){
             
             let _areaPoints = JSON.parse(areaInfo.textContent);
-            areaPoints      = await _rescaleHelper(_areaPoints, scale);
-            areaKeys        = Object.keys(areaPoints).map(function(x){ return parseInt(x) });
-            areaMinIndex    = areaKeys[0];
-            areaIndex       = areaKeys[ areaKeys.length-1 ] + 1;
+            Object.keys(_areaPoints).forEach( item => {
+                if(item==='NaN'){
+                    alert('Detect unexpected data ... Clear all area')
+                    availableData = false;
+                    hasArea = false;
+                    hasVec = false;
+                }
+            })
+            if (availableData){
+                areaPoints      = await _rescaleHelper(_areaPoints, areaScale);
+                areaKeys        = Object.keys(areaPoints).map(function(x){ return parseInt(x) });
+                areaMinIndex    = areaKeys[0];
+                areaIndex       = areaKeys[ areaKeys.length-1 ] + 1;    
+            }
         }
-
+        
         if (hasVec) {
             
             let _vecPoints = JSON.parse(vecInfo.textContent);
-            vecPoints       = await _rescaleHelper(_vecPoints, scale);
+            vecPoints       = await _rescaleHelper(_vecPoints, areaScale);
             vecKeys         = Object.keys(vecPoints).map(function(x){ return parseInt(x) });
             vecMinIndex     = vecKeys[0];
             vecIndex        = vecKeys[ vecKeys.length-1 ] + 1;
         }
-
+        
         if(!hasArea) areaIndex = vecMinIndex;            
         if(!hasVec) vecIndex = areaMinIndex;
-
+        
     }
+    if( isNaN(areaIndex) ) areaIndex = 0
+    if( isNaN(vecIndex) ) vecIndex = 0
     
     // Init New Area or Vector Index
     areaPoints[areaIndex]   = [];
@@ -595,16 +608,23 @@ async function updateLabelDropdown(dependOn) {
         .forEach( function(ele, idx){ ele.remove(); });
 
     // Get the model UUID
-    const modelWithUUID = await getAPI( "/model" );
-    if (! modelWithUUID) return undefined;
+    // let modelWithUUID = await getAPI( "/model_task", logError, true );
+    // if (! modelWithUUID) return undefined;
+    // modelWithUUID = modelWithUUID["data"]
 
-    // Get model label
-    const taskUUID    = modelWithUUID[modelName][0];
-    const taskLabel   = await getAPI( `/task/${taskUUID}/label` )
-    if (! taskLabel) return undefined;
-    
+    // // Get model label
+    // const taskUUID    = modelWithUUID[modelName][0];
+    // let taskLabel   = await getAPI( `/task/${taskUUID}/label`, logError, true )
+    // if (! taskLabel) return undefined;
+    // taskLabel = taskLabel["data"]
+    // // Update label on background
+    // updateLabelBackground(taskLabel, dependOn);
+
+    let modelLabel = await getAPI( `/model/${modelName}/labels`, logError, true );
+    if (! modelLabel) return undefined;
+    modelLabel = modelLabel["data"]
     // Update label on background
-    updateLabelBackground(taskLabel, dependOn);
+    updateLabelBackground(modelLabel, dependOn);
 }
 
 function updateLabelBackground(taskLabel, dependOn){

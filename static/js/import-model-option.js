@@ -35,11 +35,12 @@ async function importURL(){
         let json_data = { "url": url }
 
         // Sending data via web api ( /import_url )
-        const urlData = await postAPI(`/import_url/`, json_data, JSON_FMT, ALERT);
+        let urlData = await postAPI(`/import_url`, json_data, JSON_FMT, ALERT);
         if(!urlData) { return undefined; }
+        urlData = urlData["data"]
 
         // Reset Next Button
-        console.log(urlData);
+        console.warn(urlData);
         appNextBT.disabled = false;
         appNextBT.textContent = "Next";
 
@@ -63,7 +64,7 @@ async function importURL(){
         // update application label in depend_on
         const labelPath = { "path": urlData["label_path"] };
         // Check File Status /read_file
-        const data = await postAPI(`/read_file/`, labelPath, JSON_FMT, ALERT);
+        let data = await postAPI(`/read_file`, labelPath, JSON_FMT, ALERT);
 
         // If no data reset Next button
         if(!data){
@@ -72,7 +73,8 @@ async function importURL(){
             await resetNextButton();
             return undefined;
         } 
-        console.log(data);
+        data = data['data']
+        console.warn(data);
         // Update depend_on
         
         const appOptList = document.getElementById("label_list");
@@ -127,11 +129,17 @@ async function updateTagApp(eleKey, tagKey) {
     appMenu.textContent = "Please select one";
 
     // Update content
-    const data = await getAPI(`/tag_app`)
-    console.log('Get application: ', data[tagKey]);
-    data[tagKey].forEach(function (item, i) {
-        appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
-    });
+    let data = await getAPI(`/tag_app`)
+    
+    if(data){
+        data = data["data"]
+        console.log('Get application: ', data[tagKey]);
+        data[tagKey].forEach(function (item, i) {
+            appList.innerHTML += `<a class="dropdown-item custom" href="#" onclick="dropdownSelectEvent(this); return false;" id="${appName}" name="${item}">${item}</a>`;
+        });    
+    } else{
+        console.warn('Could not get application')
+    }
     document.getElementById(appDefNmae).style.display = "none";
     document.getElementById(appMenuName).removeAttribute("style");
 }
@@ -145,9 +153,10 @@ async function importZipFileUpload(e) {
     
         // alert("File Uploaded Success");
         document.getElementById('import_zip_model_label').textContent = file['name'];
-    
+        document.getElementById('model_menu').textContent = file['name'].trim().split(".")[0];
+        
         // showPreviewImage(file);
-        console.log('Extract a task');
+        console.warn('Extract a task');
         const ele = document.querySelector('[data-target="import-zip-model-uploader"]');
     
         // Create and append information
@@ -162,11 +171,12 @@ async function importZipFileUpload(e) {
         appNextBT.textContent = "Extracting ...";
         
         // Sending data via web api ( /import_zip )
-        const zipData = await postAPI(`/import_zip`, form_data, FORM_FMT, ALERT);
+        let zipData = await postAPI(`/import_zip`, form_data, FORM_FMT, ALERT);
         if(!zipData) { return undefined; }
+        zipData = zipData["data"]
         
         // Reset Next Button
-        console.log(zipData);
+        console.warn(zipData);
         appNextBT.disabled = false;
         appNextBT.textContent = "Next";
         
@@ -186,7 +196,7 @@ async function importZipFileUpload(e) {
         // update application label in depend_on
         const labelPath = { "path": zipData["label_path"] };
         // Check File Status /read_file
-        const data = await postAPI(`/read_file/`, labelPath, JSON_FMT, ALERT);
+        let data = await postAPI(`/read_file`, labelPath, JSON_FMT, ALERT);
     
         // If no data reset Next button
         if(!data){
@@ -195,7 +205,8 @@ async function importZipFileUpload(e) {
             await resetNextButton();
             return undefined;
         } 
-
+        data = data['data']
+        console.warn(data)
         // Update depend_on
         
         const appOptList = document.getElementById("label_list");
@@ -222,19 +233,22 @@ async function importZipFileUpload(e) {
 }
 
 async function getConvertStatus(task_name) {
-    const data = await getAPI(`/import_proc/${task_name}/status`)
+
+    let data = await getAPI(`/import_proc/${task_name}/status`)
+    data = data["message"]
+
     if (data === "done") {
         // alert("Convert finished !!!");
         console.log("Convert finished !!!")
         convertStatus = true;
         window.clearInterval(timer);
         // Open Button
-        // document.getElementById("modal_app_submit").textContent = `${MODE}`;
+        document.getElementById("modal_app_submit").textContent = `${window[MODE]}`;
         document.getElementById('modal_app_submit').disabled = false;
         
     } else {
 
-        // document.getElementById("modal_app_submit").textContent = `Converting ..`;
+        document.getElementById("modal_app_submit").textContent = data;
         document.getElementById("modal_app_submit").disabled = true;
         console.log("Converting model to tensorrt engine ... ");
     }
