@@ -2,6 +2,8 @@ const DOMAIN = window.location.hostname;
 const PORT = '819';
 const HOST = window.location.host
 
+console.log(`Common: ${Date.now()}`);
+
 // const SCRIPT_ROOT       = `http://${DOMAIN}:${PORT}`;
 const SCRIPT_ROOT       = `http://${HOST}/ivit`;
 

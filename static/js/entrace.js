@@ -1225,13 +1225,15 @@ async function checkTaskStatus() {
 let isCheckedAll = true;
 $(document).ready( async function () {
 
+    console.log(`Entrance Ready: ${Date.now()}`);
+
     // Capture the platform and setup sub-title
     const pla = await getPlatform();
     if (pla) document.getElementById("title_framework").textContent = `( ${pla} )`
 
         // Define Socket Event
         try{ 
-            ivitSock = new WebSocket('ws://' + `${HOST}/ivit` + ivitSockEvent);
+            ivitSock = new WebSocket('ws://' + `${window.location.host}/ivit` + ivitSockEvent);
         } catch(e){ 
             console.warn(e) 
         }
